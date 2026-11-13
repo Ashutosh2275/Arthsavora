@@ -204,7 +204,21 @@ Arthsavora must look and behave like an institutional-grade financial product.
 
 ---
 
-## 10. DEFINITION OF DONE (DoD)
+## 11. OBSERVABILITY, CORRELATION IDS & DISTRIBUTED TRACING
+
+### 11.1 Correlation IDs
+- Every HTTP request passing through the FastAPI gateway must carry or be assigned an `X-Request-ID` (UUIDv4) via `backend/app/api/middleware/audit.py`.
+- The correlation ID must be bound to request state (`request.state.correlation_id`), logged with all structured server log entries, and returned in the HTTP response headers.
+- The frontend Axios client (`apps/web/src/lib/axios.ts`) and observability layer (`apps/web/src/lib/observability.ts`) must capture and report this ID when reporting client-side errors.
+
+### 11.2 Structured Logging & Redaction
+- All application logs must be structured and human/machine-readable.
+- **Strict Data Sanitization Invariant:** Under no circumstances shall passwords, bearer tokens, card numbers, CVVs, or Indian tax identifiers (PAN, Aadhaar) be emitted in logs, query strings, or exception messages.
+
+### 11.3 Error Boundaries & Sentry Readiness
+- All major views must be wrapped in `ErrorBoundary` components.
+- Errors must never present raw stack traces or internal server error messages to users. Instead, display an actionable message with an incident reference ID (`errorId`).
+- Prepare interfaces for Sentry SDK (`initObservability`, `captureException`) to ensure seamless plug-and-play APM instrumentation.
 
 A development prompt in the Arthsavora programme is considered complete only when:
 1. **Requirements Satisfied:** All requirements specified in the prompt scope are fully implemented without shortcuts.

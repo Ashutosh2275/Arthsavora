@@ -9,7 +9,10 @@
     "build:web": "pnpm --filter @arthsavora/web build",
     "lint:web": "pnpm --filter @arthsavora/web lint",
     "typecheck:web": "pnpm --filter @arthsavora/web typecheck",
+    "test:web": "pnpm --filter @arthsavora/web test",
     "build:all": "pnpm -r run build",
-    "lint:all": "pnpm -r run lint"
+    "lint:all": "pnpm -r run lint",
+    "typecheck:all": "pnpm -r run typecheck",
+    "test:all": "pnpm --filter @arthsavora/web test"
   }
 }

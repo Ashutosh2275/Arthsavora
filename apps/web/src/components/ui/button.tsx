@@ -2,9 +2,10 @@ import React, { type ButtonHTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'danger';
+  size?: 'sm' | 'md' | 'lg' | 'icon';
   isLoading?: boolean;
+  loadingText?: string;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -14,6 +15,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = 'primary',
       size = 'md',
       isLoading = false,
+      loadingText = 'Processing...',
+      type = 'button',
       children,
       disabled,
       ...props
@@ -21,32 +24,41 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] select-none';
+      'inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:pointer-events-none disabled:opacity-50 select-none';
 
-    const variants = {
+    // Map danger alias to destructive
+    const effectiveVariant = variant === 'danger' ? 'destructive' : variant;
+
+    const variants: Record<string, string> = {
       primary:
-        'bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/20',
+        'bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700 shadow-sm shadow-indigo-600/30',
       secondary:
-        'bg-slate-800 text-slate-100 hover:bg-slate-700 border border-slate-700',
+        'bg-slate-800 text-slate-100 hover:bg-slate-700 active:bg-slate-900 border border-slate-700/80',
       outline:
-        'border border-slate-700 bg-transparent text-slate-300 hover:bg-slate-800 hover:text-white',
+        'border border-slate-700 bg-transparent text-slate-300 hover:bg-slate-800 hover:text-white active:bg-slate-850',
       ghost:
-        'text-slate-400 hover:text-white hover:bg-slate-800/50',
-      danger:
-        'bg-rose-600 text-white hover:bg-rose-500 shadow-md shadow-rose-600/20',
+        'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 active:bg-slate-800',
+      destructive:
+        'bg-rose-600 text-white hover:bg-rose-500 active:bg-rose-700 shadow-sm shadow-rose-600/30',
     };
 
-    const sizes = {
-      sm: 'h-8 px-3 text-xs rounded-lg',
-      md: 'h-11 px-5 text-sm rounded-xl',
-      lg: 'h-13 px-7 text-base rounded-2xl',
+    const sizes: Record<string, string> = {
+      sm: 'h-8 px-3 text-xs rounded-md gap-1.5',
+      md: 'h-10 px-4 text-sm rounded-lg gap-2',
+      lg: 'h-12 px-6 text-base rounded-xl gap-2.5',
+      icon: 'h-10 w-10 p-0 rounded-lg',
     };
+
+    const isButtonDisabled = disabled || isLoading;
 
     return (
       <button
         ref={ref}
-        className={cn(baseStyles, variants[variant], sizes[size], className)}
-        disabled={disabled || isLoading}
+        type={type}
+        className={cn(baseStyles, variants[effectiveVariant], sizes[size], className)}
+        disabled={isButtonDisabled}
+        aria-busy={isLoading}
+        aria-disabled={isButtonDisabled}
         {...props}
       >
         {isLoading ? (
@@ -56,6 +68,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <circle
                 className="opacity-25"
@@ -71,7 +84,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 d="M4 12a8 8 0 018-8v8H4z"
               />
             </svg>
-            <span>Processing...</span>
+            {size !== 'icon' && <span>{loadingText}</span>}
           </span>
         ) : (
           children

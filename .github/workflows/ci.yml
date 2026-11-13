@@ -53,5 +53,8 @@ jobs:
       - name: Lint web application
         run: pnpm --filter @arthsavora/web lint
 
+      - name: Run component tests
+        run: pnpm --filter @arthsavora/web test
+
       - name: Build web application
         run: pnpm --filter @arthsavora/web build
