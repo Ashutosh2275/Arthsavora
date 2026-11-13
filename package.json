@@ -1,0 +1,15 @@
+{
+  "name": "arthsavora-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "packageManager": "pnpm@12.18.0",
+  "scripts": {
+    "dev:web": "pnpm --filter @arthsavora/web dev",
+    "build:web": "pnpm --filter @arthsavora/web build",
+    "lint:web": "pnpm --filter @arthsavora/web lint",
+    "typecheck:web": "pnpm --filter @arthsavora/web typecheck",
+    "build:all": "pnpm -r run build",
+    "lint:all": "pnpm -r run lint"
+  }
+}

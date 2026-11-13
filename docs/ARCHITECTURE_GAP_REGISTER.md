@@ -10,36 +10,36 @@ This register documents every discrepancy between the existing Arthsavora implem
 
 ## GAP SUMMARY MATRIX
 
-| Gap ID | Area | Title | Severity | Target Prompt |
+| Gap ID | Area | Title | Severity | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **GAP-001** | Database | Database Engine is MongoDB Instead of PostgreSQL | **CRITICAL** | Prompt 02 |
-| **GAP-002** | Financial | Money Represented as Floating-Point (`float`) | **CRITICAL** | Prompt 02 |
-| **GAP-003** | Financial | Absence of Double-Entry Ledger and Account Models | **CRITICAL** | Prompt 03 |
-| **GAP-004** | Security | Insecure Wildcard CORS with Credentials Allowed | **CRITICAL** | Prompt 02 |
-| **GAP-005** | Backend | Startup Crash Due to Mandatory Unconfigured Environment | **CRITICAL** | Prompt 02 |
-| **GAP-006** | Financial | Budget Status Endpoint Groups All Historical Expenses | **CRITICAL** | Prompt 03 |
-| **GAP-007** | Architecture | Lack of Multi-Tenancy & Workspace Partitioning | **CRITICAL** | Prompt 02 |
-| **GAP-008** | Security | Tokens Insecurely Stored in Browser LocalStorage | **HIGH** | Prompt 04 |
-| **GAP-009** | Frontend | Frontend Written in JavaScript (JSX) Instead of TypeScript | **HIGH** | Prompt 04 |
-| **GAP-010** | Mobile | React Native / Expo Mobile Application Missing | **HIGH** | Prompt 18 |
-| **GAP-011** | QA | Complete Absence of Automated Tests (0% Coverage) | **HIGH** | Prompt 02 |
-| **GAP-012** | Background | Celery and Redis Background Processing Missing | **HIGH** | Prompt 06 |
-| **GAP-013** | AI/ML | Synchronous ML Training and Disk I/O During Request Execution | **HIGH** | Prompt 07 |
-| **GAP-014** | Security | Unbounded File Uploads & Memory Exhaustion Risk in OCR | **HIGH** | Prompt 08 |
-| **GAP-015** | Security | Public Bucket Exposure of Confidential Financial Receipts | **HIGH** | Prompt 08 |
-| **GAP-016** | Financial | Silent Hard Deletion of Financial Records (No Audit Trail) | **HIGH** | Prompt 03 |
-| **GAP-017** | DevOps | Missing Git Hygiene: Tracked Bytecode (.pyc) in Git | **HIGH** | Prompt 02 |
-| **GAP-018** | Frontend | Missing ESLint Configuration (Linting Fails) | **MEDIUM** | Prompt 02 |
-| **GAP-019** | DevOps | Absence of CI/CD Automation (.github Workflows Missing) | **MEDIUM** | Prompt 05 |
-| **GAP-020** | AI/ML | Deprecated Google Generative AI SDK & Legacy Model Name | **MEDIUM** | Prompt 09 |
-| **GAP-021** | AI/ML | Prompt Injection Vulnerability in Financial Chatbot | **MEDIUM** | Prompt 09 |
-| **GAP-022** | AI/ML | Hardcoded Mock Income (₹50k) Used for Financial Projections | **MEDIUM** | Prompt 09 |
-| **GAP-023** | Integration | Hardcoded Windows Path for Tesseract Binary in OCR | **MEDIUM** | Prompt 08 |
-| **GAP-024** | Quality | Abandoned Empty Placeholder Files (0 Bytes) | **LOW** | Prompt 04 |
-| **GAP-025** | UI/UX | Frontend Endpoint Path Mismatch (/auth/login vs /api/auth/login)| **HIGH** | Prompt 04 |
-| **GAP-026** | UI/UX | Native Blocking Window.alert() Used Across Frontend | **LOW** | Prompt 04 |
-| **GAP-027** | Code Quality | Deprecated datetime.utcnow() Used Across Backend | **LOW** | Prompt 02 |
-| **GAP-028** | Security | Outdated Frontend Dependencies (22 Vulnerabilities) | **MEDIUM** | Prompt 04 |
+| **GAP-001** | Database | Database Engine is MongoDB Instead of PostgreSQL | **CRITICAL** | In Progress (SQLAlchemy 2 scaffolded, models in Prompt 03) |
+| **GAP-002** | Financial | Money Represented as Floating-Point (`float`) | **CRITICAL** | In Progress (Contracts & Utils exact, models in Prompt 03) |
+| **GAP-003** | Financial | Absence of Double-Entry Ledger and Account Models | **CRITICAL** | Targeted for Prompt 03 |
+| **GAP-004** | Security | Insecure Wildcard CORS with Credentials Allowed | **CRITICAL** | **RESOLVED** (Prompt 02: Hardened CORS middleware) |
+| **GAP-005** | Backend | Startup Crash Due to Mandatory Unconfigured Environment | **CRITICAL** | **RESOLVED** (Prompt 02: Validated config with dev defaults) |
+| **GAP-006** | Financial | Budget Status Endpoint Groups All Historical Expenses | **CRITICAL** | Targeted for Prompt 03 |
+| **GAP-007** | Architecture | Lack of Multi-Tenancy & Workspace Partitioning | **CRITICAL** | In Progress (Targeted for Prompt 03) |
+| **GAP-008** | Security | Tokens Insecurely Stored in Browser LocalStorage | **HIGH** | Targeted for Prompt 04 |
+| **GAP-009** | Frontend | Frontend Written in JavaScript (JSX) Instead of TypeScript | **HIGH** | **RESOLVED** (Prompt 02: Complete TypeScript migration) |
+| **GAP-010** | Mobile | React Native / Expo Mobile Application Missing | **HIGH** | Targeted for Prompt 18 |
+| **GAP-011** | QA | Complete Absence of Automated Tests (0% Coverage) | **HIGH** | **RESOLVED** (Prompt 02: Pytest suite with 10 passing tests) |
+| **GAP-012** | Background | Celery and Redis Background Processing Missing | **HIGH** | Targeted for Prompt 06 |
+| **GAP-013** | AI/ML | Synchronous ML Training and Disk I/O During Request Execution | **HIGH** | Targeted for Prompt 07 |
+| **GAP-014** | Security | Unbounded File Uploads & Memory Exhaustion Risk in OCR | **HIGH** | Targeted for Prompt 08 |
+| **GAP-015** | Security | Public Bucket Exposure of Confidential Financial Receipts | **HIGH** | Targeted for Prompt 08 |
+| **GAP-016** | Financial | Silent Hard Deletion of Financial Records (No Audit Trail) | **HIGH** | Targeted for Prompt 03 |
+| **GAP-017** | DevOps | Missing Git Hygiene: Tracked Bytecode (.pyc) in Git | **HIGH** | **RESOLVED** (Prompt 02: Untracked and gitignore updated) |
+| **GAP-018** | Frontend | Missing ESLint Configuration (Linting Fails) | **MEDIUM** | **RESOLVED** (Prompt 02: Configured .eslintrc.cjs, 0 warnings) |
+| **GAP-019** | DevOps | Absence of CI/CD Automation (.github Workflows Missing) | **MEDIUM** | **RESOLVED** (Prompt 02: GitHub Actions CI workflow added) |
+| **GAP-020** | AI/ML | Deprecated Google Generative AI SDK & Legacy Model Name | **MEDIUM** | Targeted for Prompt 09 |
+| **GAP-021** | AI/ML | Prompt Injection Vulnerability in Financial Chatbot | **MEDIUM** | Targeted for Prompt 09 |
+| **GAP-022** | AI/ML | Hardcoded Mock Income (₹50k) Used for Financial Projections | **MEDIUM** | Targeted for Prompt 09 |
+| **GAP-023** | Integration | Hardcoded Windows Path for Tesseract Binary in OCR | **MEDIUM** | Targeted for Prompt 08 |
+| **GAP-024** | Quality | Abandoned Empty Placeholder Files (0 Bytes) | **LOW** | **RESOLVED** (Prompt 02: Cleaned up empty placeholders) |
+| **GAP-025** | UI/UX | Frontend Endpoint Path Mismatch (/auth/login vs /api/auth/login)| **HIGH** | **RESOLVED** (Prompt 02: Unified /api baseURL and paths) |
+| **GAP-026** | UI/UX | Native Blocking Window.alert() Used Across Frontend | **LOW** | **RESOLVED** (Prompt 02: Replaced with Sonner toast system) |
+| **GAP-027** | Code Quality | Deprecated datetime.utcnow() Used Across Backend | **LOW** | **RESOLVED** (Prompt 02: Replaced with timezone.utc) |
+| **GAP-028** | Security | Outdated Frontend Dependencies (22 Vulnerabilities) | **MEDIUM** | **RESOLVED** (Prompt 02: Upgraded Axios, Vite, React dependencies) |
 
 ---
 

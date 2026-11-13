@@ -1,18 +1,40 @@
-# Python
+# Python Bytecode and Caches
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Environments
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+venv/
+.venv/
 backend/venv/
-backend/__pycache__/
-backend/*.py[cod]
-backend/.env
 
 # ML Model Artifacts
+*.joblib
+expense_model.joblib
 backend/expense_model.joblib
 
-# Node / React
-frontend/node_modules/
-frontend/dist/
-frontend/.env
-frontend/.env.local
+# Node / Monorepo / React
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.turbo/
+*.tsbuildinfo
 
-# OS files
+# OS & Editor
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/

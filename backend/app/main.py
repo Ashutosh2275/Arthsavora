@@ -1,66 +1,87 @@
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+"""
+ARTHSAVORA — Production-Grade FinTech Application Engine
+Modular Monolith Entrypoint with centralized routing, hardened CORS, and error handling.
+"""
+
 from contextlib import asynccontextmanager
-import logging
-import time
+from fastapi import FastAPI
+from app.core.config import settings
+from app.core.limiter import limiter
+from app.core.logging import logger
+from app.api.router import api_router
+from app.api.middleware.cors import setup_cors
+from app.api.middleware.audit import setup_audit_middleware
+from app.api.middleware.error_handler import setup_exception_handlers
+from app.db.mongodb import connect_to_mongo, close_mongo_connection
 
-from .db.mongodb import connect_to_mongo, close_mongo_connection
-from .api import auth, expenses, ml_ops, budget, analytics, goals, reports
-from .core.config import settings
-from .core.limiter import limiter
-from slowapi.errors import RateLimitExceeded
-
-# 1. Setup Production Logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("ARTHSAVORA")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Initializing ARTHSAVORA Production Engine...")
-    await connect_to_mongo()
+    """Manages application startup and clean resource shutdown."""
+    logger.info(f"Initializing {settings.PROJECT_NAME} Engine (v{settings.VERSION})...")
+    logger.info(f"Environment: {settings.ENVIRONMENT} | Debug: {settings.DEBUG}")
+
+    # Initialize persistence connections gracefully
+    try:
+        await connect_to_mongo()
+    except Exception as e:
+        logger.warning(
+            f"Transitional MongoDB connection could not be established: {e}. "
+            "Continuing in standalone/offline mode."
+        )
+
     yield
-    await close_mongo_connection()
-    logger.info("Engine Shutdown Cleanly.")
 
-app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
+    logger.info("Initiating engine graceful shutdown...")
+    try:
+        await close_mongo_connection()
+    except Exception as e:
+        logger.warning(f"Error during database shutdown: {e}")
+    logger.info(f"{settings.PROJECT_NAME} Engine Shutdown Cleanly.")
 
-# 2. Rate Limiting Middleware
-app.state.limiter = limiter
-@app.exception_handler(RateLimitExceeded)
-async def _rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
-    return JSONResponse(
-        status_code=429,
-        content={"detail": "Too many requests. Please slow down."}
-    )
 
-# 3. Request Auditing Middleware
-@app.middleware("http")
-async def audit_requests(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    logger.info(f"Path: {request.url.path} | Method: {request.method} | Time: {process_time:.4f}s")
-    return response
-
-# 4. Hardened CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"], # In production, replace with ["https://your-vercel-domain.com"]
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+# Initialize FastAPI Application
+app = FastAPI(
+    title=settings.PROJECT_NAME,
+    version=settings.VERSION,
+    description="Commercial-grade AI-powered financial management ecosystem for India.",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
 
-# 5. Routers
-app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
-app.include_router(expenses.router, prefix="/api/expenses", tags=["Core"])
-app.include_router(ml_ops.router, prefix="/api/ml", tags=["AI"])
-app.include_router(budget.router, prefix="/api/budget", tags=["Budget"])
-app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
-app.include_router(goals.router, prefix="/api/goals", tags=["Goals"])
-app.include_router(reports.router, prefix="/api/reports", tags=["Export"])
+# 1. Attach Rate Limiter
+app.state.limiter = limiter
 
-@app.get("/")
+# 2. Setup Hardened CORS
+setup_cors(app)
+
+# 3. Setup Request Auditing Middleware
+setup_audit_middleware(app)
+
+# 4. Setup Standardized Exception Handlers
+setup_exception_handlers(app)
+
+# 5. Register Master API Router
+app.include_router(api_router, prefix="/api")
+
+
+@app.get("/", tags=["System"])
 async def root():
-    return {"status": "production_ready", "version": "1.1.0"}
+    """Root health and version discovery endpoint."""
+    return {
+        "status": "online",
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+        "environment": settings.ENVIRONMENT,
+    }
+
+
+@app.get("/health", tags=["System"])
+async def health():
+    """System health check endpoint."""
+    return {
+        "status": "healthy",
+        "service": settings.PROJECT_NAME,
+        "version": settings.VERSION,
+    }
