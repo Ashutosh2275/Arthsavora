@@ -18,8 +18,10 @@ from app.core.exceptions import (
     UnauthorizedException,
 )
 from app.core.permissions import (
+    Permission,
     WorkspaceContext,
     get_workspace_context_resolver,
+    has_permission,
     resolve_workspace_id,
 )
 from app.core.security import decode_token
@@ -103,3 +105,19 @@ def require_role(allowed_roles: List[WorkspaceRole]):
         return context
 
     return role_dependency
+
+
+def require_permission(permission: Permission):
+    """Enforces fine-grained workspace permissions resolved from workspace type and role."""
+    async def permission_dependency(
+        context: WorkspaceContext = Depends(get_current_workspace_context),
+    ) -> WorkspaceContext:
+        if not context.can(permission):
+            from app.core.exceptions import InsufficientPermissionsException
+            role_str = context.role.value if hasattr(context.role, "value") else str(context.role)
+            raise InsufficientPermissionsException(
+                message=f"Action '{permission.value}' requires higher authority in this {context.workspace.type} workspace. Your role is '{role_str}'."
+            )
+        return context
+
+    return permission_dependency

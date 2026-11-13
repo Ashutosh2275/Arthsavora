@@ -53,6 +53,7 @@ class Workspace(Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin):
     default_currency: Mapped[str] = mapped_column(String(3), default="INR", nullable=False)
     currency = synonym("default_currency")
     timezone: Mapped[str] = mapped_column(String(50), default="Asia/Kolkata", nullable=False)
+    country: Mapped[str] = mapped_column(String(2), default="IN", nullable=False)
     status: Mapped[str] = mapped_column(
         String(30),
         default="active",
@@ -63,6 +64,7 @@ class Workspace(Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin):
     # Relationships
     owner: Mapped["User"] = relationship("User", foreign_keys=[owner_id])
     members: Mapped[list["WorkspaceMember"]] = relationship("WorkspaceMember", back_populates="workspace", cascade="all, delete-orphan")
+    invitations: Mapped[list["WorkspaceInvitation"]] = relationship("WorkspaceInvitation", back_populates="workspace", cascade="all, delete-orphan")
     accounts: Mapped[list["Account"]] = relationship("Account", back_populates="workspace", cascade="all, delete-orphan")
     transactions: Mapped[list["Transaction"]] = relationship("Transaction", back_populates="workspace", cascade="all, delete-orphan")
 
@@ -105,3 +107,43 @@ class WorkspaceMember(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     def __repr__(self) -> str:
         return f"<WorkspaceMember workspace={self.workspace_id} user={self.user_id} role={self.role}>"
+
+
+class WorkspaceInvitation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
+    """Secure, cryptographic workspace invitations with SHA-256 token hashing and atomic acceptance."""
+    __tablename__ = "workspace_invitations"
+    __table_args__ = (
+        UniqueConstraint("token_hash", name="uq_workspace_invitation_token_hash"),
+        UniqueConstraint("workspace_id", "email", name="uq_workspace_pending_invite_email"),
+    )
+
+    workspace_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("workspaces.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    role: Mapped[str] = mapped_column(String(30), nullable=False)  # admin, member, viewer, accountant, approver, staff
+    invited_by_id: Mapped[uuid.UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    token_hash: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    status: Mapped[str] = mapped_column(
+        String(20),
+        default="pending",
+        nullable=False,
+    )  # pending, accepted, revoked, expired
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Relationships
+    workspace: Mapped["Workspace"] = relationship("Workspace", back_populates="invitations")
+    invited_by: Mapped["User"] = relationship("User", foreign_keys=[invited_by_id])
+
+    def __repr__(self) -> str:
+        return f"<WorkspaceInvitation id={self.id} workspace={self.workspace_id} email={self.email} status={self.status}>"

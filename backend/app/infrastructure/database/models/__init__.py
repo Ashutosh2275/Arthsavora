@@ -4,7 +4,14 @@ Exports all SQLAlchemy models for Alembic schema discovery and database operatio
 """
 
 from app.infrastructure.database.models.user import User, UserProfile
-from app.infrastructure.database.models.workspace import Workspace, WorkspaceMember, WorkspaceType, WorkspaceStatus, WorkspaceRole
+from app.infrastructure.database.models.workspace import (
+    Workspace,
+    WorkspaceMember,
+    WorkspaceInvitation,
+    WorkspaceType,
+    WorkspaceStatus,
+    WorkspaceRole,
+)
 from app.infrastructure.database.models.account import Account
 from app.infrastructure.database.models.category import Category
 from app.infrastructure.database.models.transaction import Transaction
@@ -17,6 +24,7 @@ __all__ = [
     "UserProfile",
     "Workspace",
     "WorkspaceMember",
+    "WorkspaceInvitation",
     "WorkspaceType",
     "WorkspaceStatus",
     "WorkspaceRole",

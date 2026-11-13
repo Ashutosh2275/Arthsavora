@@ -32,6 +32,21 @@ async def list_accounts(
     return [AccountResponse.model_validate(a) for a in accounts]
 
 
+@router.get(
+    "/{account_id}",
+    response_model=AccountResponse,
+    summary="Get financial account by ID",
+)
+async def get_account(
+    account_id: uuid.UUID,
+    context: WorkspaceContext = Depends(get_current_workspace_context),
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Retrieves account details by ID scoped to workspace. Returns 404 on cross-workspace IDOR attempt."""
+    account = await AccountService.get_account(session, context, account_id)
+    return AccountResponse.model_validate(account)
+
+
 @router.post(
     "/",
     response_model=AccountResponse,

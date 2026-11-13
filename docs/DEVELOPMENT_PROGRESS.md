@@ -11,19 +11,20 @@
 **Prompt 03 Commit Hash:** `67717478061e86ae6be71e998db493be81a5e1cf`  
 **Prompt 04 Commit Hash:** `76b444fb113a34a5df0bf6dd65b0145f18222ac9`  
 **Prompt 05 Commit Hash:** `1bb05cee39cb012a67bc6477e0c46b95b778263f`  
-**Prompt 06 Commit Hash:** `2ab11cdcfc1664cf51aafe7a1fae1c31278fce01`  
-**Remote Push Verification:** Prompts 01, 02, 03, 04, and 05 pushed and verified on `origin/main`  
+**Prompt 06 Commit Hash:** `9b76e4693a18340d828a2a578ba3c79c88a8d116`  
+**Prompt 07 Commit Hash:** `1236419435d802e6668108318dc7feb050a67033`  
+**Remote Push Verification:** Prompts 01, 02, 03, 04, 05, 06, and 07 pushed and verified on `origin/main`  
 
 ---
 
 ## 1. PROGRAMME STATUS OVERVIEW
 
 - **Total Planned Prompts:** 30
-- **Current Stage:** Stage 1 — Engineering Baseline & Core Architecture (Prompts 01–06)
-- **Current Prompt:** Prompt 06 — Core Domain Layer, API Contracts and Service Architecture
-- **Completed Prompts:** 6 of 30 (Stage 1 — Engineering Baseline, Architecture, Standards, Database, Backend, and Domain/Contracts Foundation fully established)
-- **Prompt 06 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 07 — Background Task Engine (Redis + Celery) & Async Workers (Stage 2)
+- **Current Stage:** Stage 2 — Workspaces, Identity & Operations (Prompts 07–10)
+- **Current Prompt:** Prompt 07 — Identity, User Profiles and Workspace Management
+- **Completed Prompts:** 7 of 30 (Engineering Baseline, Architecture, Standards, Database, Backend, Domain Layer, and Identity/Workspace Management fully established)
+- **Prompt 07 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 08 — Background Task Engine (Redis + Celery) & Async Workers (Stage 2)
 
 ---
 
@@ -36,9 +37,9 @@
 | **03** | Stage 1 | Engineering Standards, Design System and Development Automation | **COMPLETED** | `6771747` |
 | **04** | Stage 1 | Database Architecture and PostgreSQL Foundation | **COMPLETED** | `76b444f` |
 | **05** | Stage 1 | Backend Architecture, API Foundation and Authentication | **COMPLETED** | `1bb05ce` |
-| **06** | Stage 1 | Core Domain Layer, API Contracts and Service Architecture | **COMPLETED** | `2ab11cd` |
-| **07** | Stage 2 | Background Task Engine (Redis + Celery) & Async Workers | UPCOMING | - |
-| **08** | Stage 2 | Secure Document Storage (Supabase Signed URLs) & Robust OCR | UPCOMING | - |
+| **06** | Stage 1 | Core Domain Layer, API Contracts and Service Architecture | **COMPLETED** | `9b76e46` |
+| **07** | Stage 2 | Identity, User Profiles and Workspace Management | **COMPLETED** | `1236419` |
+| **08** | Stage 2 | Background Task Engine (Redis + Celery) & Async Workers | UPCOMING | - |
 | **09** | Stage 2 | Indian UPI SMS Ingestion Engine with Idempotency & Regex Verification | UPCOMING | - |
 | **10** | Stage 2 | Core Financial Account Management (Bank, Credit Card, Cash, Wallets) | UPCOMING | - |
 | **11** | Stage 3 | Personal & Household Multi-Account Dashboard & Cash Flow Tracker | UPCOMING | - |
@@ -213,6 +214,59 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/REPOSITORY_PATTERN.md`
   - `docs/API_CONTRACT_STANDARD.md`
   - `docs/DOMAIN_EVENTS.md`
+
+---
+
+## 10. PROMPT 07 ACCEPTANCE & VERIFICATION RECORDS
+
+- [x] **Decoupled Identity & Profile Architecture:**
+  - Separated core authentication credentials (`User`) from profile display and preferences (`UserProfile`).
+  - Added `display_name`, `avatar_url`, `preferred_language`, `locale`, `country`, `is_profile_complete` to `user_profiles`.
+  - Added unique partial index `uq_user_auth_provider_id` on `users (auth_provider, auth_provider_id) WHERE auth_provider_id IS NOT NULL` to guarantee external provider uniqueness.
+- [x] **User Profile Management Endpoints:**
+  - `GET /api/v1/users/me`: Returns complete user identity, contact details, and preference profile.
+  - `PATCH /api/v1/users/me`: Updates display name, currency, timezone, locale, and evaluates `is_profile_complete`.
+  - `POST /api/v1/users/me/deactivate`: Requires `confirm: true` and safely deactivates account with audit logging while preserving financial history.
+- [x] **Multi-Tenancy Workspace Models:**
+  - **Personal:** Enforced strict single personal workspace invariant per user (`DUPLICATE_PERSONAL_WORKSPACE` conflict).
+  - **Family:** Provisioned with explicit sharing boundaries and zero automatic leakage of personal accounts.
+  - **Business:** Supported freelancer, sole proprietorship, LLP, and Pvt Ltd profiles with legal name, trade name, GSTIN, PAN, and FY start month.
+- [x] **Workspace Lifecycle State Machine:**
+  - Validated state transitions: `CREATING` -> `ACTIVE` -> `SUSPENDED` -> `ARCHIVED` -> `DELETION_PENDING` -> `DELETED`.
+  - Built `POST /api/v1/workspaces/{id}/archive` and `POST /api/v1/workspaces/{id}/restore` with strict state validation (`INVALID_STATE_TRANSITION`).
+- [x] **Centralized RBAC Permission System:**
+  - Implemented 16 granular `Permission` enums and complete `ROLE_PERMISSIONS` matrix for Personal, Family, and Business workspace types.
+  - Built `require_permission(permission: Permission)` dependency for declarative route security.
+- [x] **Cryptographic Invitation Subsystem:**
+  - Model `WorkspaceInvitation` created with `token_hash` (SHA-256), `status`, `expires_at` (7 days), `accepted_at`, `revoked_at`.
+  - Zero raw token storage in database; 32-byte urlsafe token returned once to caller upon creation.
+  - List endpoint masks raw tokens (`invitation_token: null`).
+  - Implemented `accept_invitation` with PostgreSQL `SELECT ... FOR UPDATE` row locking to prevent race conditions and replay attacks.
+  - Enforced recipient email binding (mismatched email yields `403 Forbidden`).
+  - Supported immediate invitation revocation by workspace owners/admins.
+- [x] **Controlled Ownership Transfer Protocol:**
+  - Built `POST /api/v1/workspaces/{id}/ownership-transfer` requiring caller to be current owner, target to be an active member, and explicit confirmation (`confirm: true`).
+  - Swaps `workspace.owner_id` and membership roles atomically inside a database transaction with audit logging.
+- [x] **Member Removal & Role Governance:**
+  - Built role update endpoint enforcing role hierarchy and rejecting owner demotion or direct owner assignment.
+  - Built member removal endpoint protecting the owner from removal and allowing safe self-removal.
+- [x] **Family Privacy & Anti-IDOR Invariants:**
+  - Verified personal accounts remain strictly isolated in their respective personal workspaces.
+  - Verified family admins cannot query or inspect personal accounts or transactions of family members (HTTP 404).
+- [x] **Test Verification:**
+  - 97 passing backend tests across 18 test files (including 5 identity & profile tests, 5 workspace management tests, 5 membership/invitation tests, 4 ownership transfer tests, and 1 family privacy test).
+  - 24 passing web component tests.
+  - Monorepo typecheck: 0 errors.
+- [x] **OpenAPI & TypeScript Contracts Synchronized:**
+  - Generated fresh `docs/openapi.json` with 41 paths and 41 schema components (OpenAPI 3.1.0).
+  - Synchronized `packages/contracts/src/index.ts` with all DTOs and request/response models.
+- [x] **Documentation Delivered:**
+  - `docs/IDENTITY_MANAGEMENT.md`
+  - `docs/WORKSPACE_MANAGEMENT.md`
+  - `docs/ROLE_PERMISSION_MATRIX.md`
+  - `docs/INVITATION_SECURITY.md`
+  - `docs/FAMILY_PRIVACY_MODEL.md`
+  - `docs/WORKSPACE_API_REFERENCE.md`
 
 
 

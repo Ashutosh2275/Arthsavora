@@ -79,12 +79,119 @@ export interface WorkspaceResponse {
   created_at: ISODateString;
 }
 
+export interface UserProfileResponse {
+  display_name?: string | null;
+  avatar_url?: string | null;
+  preferred_language: string;
+  default_currency: CurrencyCode;
+  timezone: string;
+  country: string;
+  locale: string;
+  theme: string;
+  notification_preferences: Record<string, unknown>;
+  is_profile_complete: boolean;
+}
+
+export interface UserProfileUpdateRequest {
+  full_name?: string;
+  display_name?: string;
+  avatar_url?: string;
+  preferred_language?: string;
+  locale?: string;
+  default_currency?: CurrencyCode;
+  timezone?: string;
+  country?: string;
+  theme?: string;
+  notification_preferences?: Record<string, unknown>;
+}
+
+export interface DeactivateAccountRequest {
+  confirm: boolean;
+}
+
+export interface UserDetailResponse {
+  id: UUID;
+  email: string;
+  full_name: string;
+  phone_number?: string | null;
+  auth_provider: string;
+  is_active: boolean;
+  is_verified: boolean;
+  created_at: ISODateString;
+  profile?: UserProfileResponse | null;
+}
+
 export interface WorkspaceMemberResponse {
   id: UUID;
   workspace_id: UUID;
   user_id: UUID;
-  role: WorkspaceRole;
+  email?: string;
+  full_name?: string;
+  role: WorkspaceRole | string;
+  status?: string;
   joined_at: ISODateString;
+}
+
+export interface BusinessProfile {
+  legal_business_name?: string | null;
+  trade_name?: string | null;
+  business_name?: string | null;
+  entity_type?: string | null;
+  business_type?: string | null;
+  industry?: string | null;
+  tax_identifier?: string | null;
+  financial_year_start_month?: number;
+  business_email?: string | null;
+  contact_number?: string | null;
+  address?: Record<string, unknown>;
+  gstin?: string | null;
+  pan?: string | null;
+  profile_status?: string;
+}
+
+export interface WorkspaceCreateRequest {
+  name: string;
+  type: 'personal' | 'family' | 'business' | WorkspaceType;
+  currency?: CurrencyCode;
+  timezone?: string;
+  country?: string;
+  business_profile?: BusinessProfile;
+}
+
+export interface WorkspaceUpdateRequest {
+  name?: string;
+  timezone?: string;
+  default_currency?: CurrencyCode;
+  country?: string;
+  business_profile?: BusinessProfile;
+}
+
+export interface OwnershipTransferRequest {
+  new_owner_id: UUID;
+  previous_owner_role?: string;
+  confirm: boolean;
+}
+
+export interface UpdateMemberRoleRequest {
+  role: string;
+}
+
+export interface CreateInvitationRequest {
+  email: string;
+  role: string;
+}
+
+export interface InvitationResponse {
+  id: UUID;
+  workspace_id: UUID;
+  email: string;
+  role: string;
+  invited_by_id: UUID;
+  status: 'pending' | 'accepted' | 'revoked' | 'expired';
+  expires_at: ISODateString;
+  accepted_at?: ISODateString | null;
+  created_at: ISODateString;
+  invitation_token?: string | null;
 }
 
 // -------------------------------------------------------------------------

@@ -21,9 +21,21 @@ from .auth import (
 )
 from .workspace import (
     AddMemberRequest,
+    BusinessProfileSchema,
+    CreateInvitationRequest,
+    InvitationResponse,
+    OwnershipTransferRequest,
+    UpdateMemberRoleRequest,
     WorkspaceCreateRequest,
     WorkspaceMemberResponse,
     WorkspaceResponse,
+    WorkspaceUpdateRequest,
+)
+from .user import (
+    DeactivateAccountRequest,
+    UserDetailResponse,
+    UserProfileResponse,
+    UserProfileUpdateRequest,
 )
 from .account import (
     AccountCreateRequest,
@@ -49,9 +61,17 @@ __all__ = [
     "UserRegisterRequest",
     "UserResponse",
     "AddMemberRequest",
+    "BusinessProfileSchema",
+    "CreateInvitationRequest",
+    "InvitationResponse",
+    "OwnershipTransferRequest",
+    "UpdateMemberRoleRequest",
     "WorkspaceCreateRequest",
     "WorkspaceMemberResponse",
     "WorkspaceResponse",
+    "WorkspaceUpdateRequest",
+    "UserDetailResponse",
+    "UserProfileUpdateRequest",
     "AccountCreateRequest",
     "AccountResponse",
     "TransactionCreateRequest",

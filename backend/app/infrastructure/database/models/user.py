@@ -14,6 +14,15 @@ from app.infrastructure.database.base import Base, UUIDPrimaryKeyMixin, Timestam
 class User(Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin):
     """Authoritative user record supporting local and delegated (Supabase/OAuth) authentication."""
     __tablename__ = "users"
+    __table_args__ = (
+        Index(
+            "uq_user_auth_provider_id",
+            "auth_provider",
+            "auth_provider_id",
+            unique=True,
+            postgresql_where="auth_provider_id IS NOT NULL",
+        ),
+    )
 
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -61,11 +70,16 @@ class UserProfile(Base, UUIDPrimaryKeyMixin, TimestampMixin):
         nullable=False,
         index=True,
     )
+    display_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    avatar_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    preferred_language: Mapped[str] = mapped_column(String(10), default="en-IN", nullable=False)
     default_currency: Mapped[str] = mapped_column(String(3), default="INR", nullable=False)
     timezone: Mapped[str] = mapped_column(String(50), default="Asia/Kolkata", nullable=False)
+    country: Mapped[str] = mapped_column(String(2), default="IN", nullable=False)
     locale: Mapped[str] = mapped_column(String(10), default="en-IN", nullable=False)
     theme: Mapped[str] = mapped_column(String(20), default="dark", nullable=False)
     notification_preferences: Mapped[dict] = mapped_column(JSONB, default=dict, nullable=False)
+    is_profile_complete: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     user: Mapped["User"] = relationship("User", back_populates="profile")
 

@@ -224,14 +224,131 @@
         ]
       }
     },
-    "/api/v1/workspaces/": {
+    "/api/v1/users/me": {
+      "get": {
+        "tags": [
+          "User Profiles & Identity"
+        ],
+        "summary": "Get current user profile and settings",
+        "description": "Retrieves full profile details, financial preferences, and completion status.",
+        "operationId": "get_my_profile_api_v1_users_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetailResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "User Profiles & Identity"
+        ],
+        "summary": "Update current user profile and preferences",
+        "description": "Updates profile display name, avatar, preferred currency, timezone, and locale.\nRejects unauthorized modifications to server-controlled identity fields.",
+        "operationId": "update_my_profile_api_v1_users_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/me/deactivate": {
+      "post": {
+        "tags": [
+          "User Profiles & Identity"
+        ],
+        "summary": "Deactivate user account",
+        "description": "Safely marks account as inactive and terminates active sessions.",
+        "operationId": "deactivate_account_api_v1_users_me_deactivate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeactivateAccountRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/workspaces": {
       "get": {
         "tags": [
           "Workspaces & Multi-Tenancy"
         ],
         "summary": "List all accessible workspaces for current user",
         "description": "Returns all active workspaces the authenticated user belongs to.",
-        "operationId": "list_workspaces_api_v1_workspaces__get",
+        "operationId": "list_workspaces_api_v1_workspaces_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -242,7 +359,7 @@
                     "$ref": "#/components/schemas/WorkspaceResponse"
                   },
                   "type": "array",
-                  "title": "Response List Workspaces Api V1 Workspaces  Get"
+                  "title": "Response List Workspaces Api V1 Workspaces Get"
                 }
               }
             }
@@ -259,8 +376,8 @@
           "Workspaces & Multi-Tenancy"
         ],
         "summary": "Create a new workspace",
-        "description": "Provisions a new workspace (Personal, Family, or Business) and designates the user as Owner.",
-        "operationId": "create_workspace_api_v1_workspaces__post",
+        "description": "Provisions a new workspace (Personal, Family, or Business) and designates the user as Owner.\nEnforces personal workspace uniqueness, business profile capture, and family isolation boundaries.",
+        "operationId": "create_workspace_api_v1_workspaces_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -306,8 +423,126 @@
           "Workspaces & Multi-Tenancy"
         ],
         "summary": "Get workspace details by ID",
-        "description": "Retrieves workspace details.\nGuaranteed to return 404 if the user is not a member to avoid cross-tenant enumeration.",
+        "description": "Retrieves workspace details.\nGuaranteed to return 404 if the user is not an active member to avoid cross-tenant enumeration.",
         "operationId": "get_workspace_api_v1_workspaces__workspace_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Update workspace settings and profile",
+        "description": "Updates workspace title, default currency, timezone, country, and business profile.",
+        "operationId": "update_workspace_api_v1_workspaces__workspace_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/archive": {
+      "post": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Archive workspace (sets to read-only)",
+        "description": "Places active workspace into read-only ARCHIVED state. Financial mutations are prohibited.",
+        "operationId": "archive_workspace_api_v1_workspaces__workspace_id__archive_post",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -355,13 +590,133 @@
         }
       }
     },
+    "/api/v1/workspaces/{workspace_id}/restore": {
+      "post": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Restore archived workspace back to active status",
+        "description": "Restores ARCHIVED workspace back to ACTIVE status.",
+        "operationId": "restore_workspace_api_v1_workspaces__workspace_id__restore_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/ownership-transfer": {
+      "post": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Transfer workspace ownership to another active member",
+        "description": "Controlled, atomic ownership transfer.\nDesignates a target active member as OWNER, and updates previous owner to specified role.",
+        "operationId": "transfer_ownership_api_v1_workspaces__workspace_id__ownership_transfer_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OwnershipTransferRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/workspaces/{workspace_id}/members": {
       "get": {
         "tags": [
           "Workspaces & Multi-Tenancy"
         ],
         "summary": "List members of a workspace",
-        "description": "Lists all active members in the specified workspace.",
+        "description": "Lists all active members in the specified workspace with profile information.",
         "operationId": "list_workspace_members_api_v1_workspaces__workspace_id__members_get",
         "security": [
           {
@@ -417,8 +772,8 @@
         "tags": [
           "Workspaces & Multi-Tenancy"
         ],
-        "summary": "Add or invite a member to the workspace",
-        "description": "Grants a registered user access to the workspace.\nEnforces that only OWNER or ADMIN roles may invite new members.",
+        "summary": "Add an existing registered user directly to the workspace",
+        "description": "Directly attaches a registered user to the workspace. Requires INVITE_MEMBERS permission.",
         "operationId": "add_workspace_member_api_v1_workspaces__workspace_id__members_post",
         "security": [
           {
@@ -455,6 +810,397 @@
         },
         "responses": {
           "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceMemberResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/members/{membership_id}": {
+      "patch": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Update a workspace member's role",
+        "description": "Updates a member's role with strict hierarchy validation. Prohibits demoting the owner.",
+        "operationId": "update_member_role_api_v1_workspaces__workspace_id__members__membership_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "membership_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Membership Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMemberRoleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceMemberResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Remove or revoke a workspace member",
+        "description": "Revokes access immediately. Requires REMOVE_MEMBERS permission or self-removal.\nProhibits removing the owner. Historical transactions retain actor attribution.",
+        "operationId": "remove_workspace_member_api_v1_workspaces__workspace_id__members__membership_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "membership_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Membership Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/invitations": {
+      "post": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Issue a cryptographically signed workspace invitation",
+        "description": "Generates a secure 32-byte invitation token, stores only its SHA-256 hash,\nand returns the one-time raw token to the caller for delivery.",
+        "operationId": "create_invitation_api_v1_workspaces__workspace_id__invitations_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateInvitationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "List workspace invitations",
+        "description": "Lists invitations for the active workspace. Never exposes raw tokens.",
+        "operationId": "list_invitations_api_v1_workspaces__workspace_id__invitations_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status ('pending', 'accepted', 'revoked', 'expired')",
+              "title": "Status"
+            },
+            "description": "Filter by status ('pending', 'accepted', 'revoked', 'expired')"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InvitationResponse"
+                  },
+                  "title": "Response List Invitations Api V1 Workspaces  Workspace Id  Invitations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/invitations/{invitation_id}/revoke": {
+      "post": {
+        "tags": [
+          "Workspaces & Multi-Tenancy"
+        ],
+        "summary": "Revoke a pending workspace invitation",
+        "description": "Revokes a pending invitation so it can no longer be accepted.",
+        "operationId": "revoke_invitation_api_v1_workspaces__workspace_id__invitations__invitation_id__revoke_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "invitation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Invitation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/invitations/{token}/accept": {
+      "post": {
+        "tags": [
+          "Workspace Invitations"
+        ],
+        "summary": "Accept a workspace invitation using raw token",
+        "description": "Validates token SHA-256 hash, acquires row-level lock, checks expiry and recipient email binding,\nand grants the authenticated user membership in the workspace.",
+        "operationId": "accept_invitation_api_v1_invitations__token__accept_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Raw cryptographically secure invitation token",
+              "title": "Token"
+            },
+            "description": "Raw cryptographically secure invitation token"
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -595,6 +1341,71 @@
         },
         "responses": {
           "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/{account_id}": {
+      "get": {
+        "tags": [
+          "Financial Accounts"
+        ],
+        "summary": "Get financial account by ID",
+        "description": "Retrieves account details by ID scoped to workspace. Returns 404 on cross-workspace IDOR attempt.",
+        "operationId": "get_account_api_v1_accounts__account_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Account Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
@@ -1680,7 +2491,7 @@
             "type": "string",
             "format": "email",
             "title": "Email",
-            "description": "Email address of the user to grant access"
+            "description": "Email address of the registered user to grant access"
           },
           "role": {
             "$ref": "#/components/schemas/WorkspaceRole",
@@ -1693,7 +2504,7 @@
           "email"
         ],
         "title": "AddMemberRequest",
-        "description": "Payload to invite or attach a user to a workspace."
+        "description": "Direct membership payload (for immediate attachments)."
       },
       "AuthSessionResponse": {
         "properties": {
@@ -1846,6 +2657,227 @@
           "user_id"
         ],
         "title": "BudgetOut"
+      },
+      "BusinessProfileSchema": {
+        "properties": {
+          "legal_business_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Business Name",
+            "description": "Legal registered business name"
+          },
+          "trade_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trade Name",
+            "description": "Trade or brand name"
+          },
+          "business_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Name",
+            "description": "Registered or trade business name"
+          },
+          "entity_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entity Type",
+            "description": "Legal entity type (e.g. sole_proprietorship, llp, pvt_ltd)"
+          },
+          "business_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Type",
+            "description": "Business category"
+          },
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry",
+            "description": "Industry sector"
+          },
+          "tax_identifier": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tax Identifier",
+            "description": "Statutory tax identifier or EIN"
+          },
+          "financial_year_start_month": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 12.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Financial Year Start Month",
+            "description": "Start month of financial year (default 4 for India)",
+            "default": 4
+          },
+          "business_email": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "email"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Email",
+            "description": "Official business contact email"
+          },
+          "contact_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Number",
+            "description": "Primary contact telephone number"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address",
+            "description": "Business address fields"
+          },
+          "gstin": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 15
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gstin",
+            "description": "Optional GST Identification Number"
+          },
+          "pan": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pan",
+            "description": "Optional Permanent Account Number"
+          },
+          "profile_status": {
+            "type": "string",
+            "title": "Profile Status",
+            "description": "Status of the business registration profile",
+            "default": "active"
+          }
+        },
+        "type": "object",
+        "title": "BusinessProfileSchema",
+        "description": "Business entity profile and contact metadata."
+      },
+      "CreateInvitationRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "description": "Target recipient email address"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "Assigned role upon acceptance",
+            "default": "member"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email"
+        ],
+        "title": "CreateInvitationRequest",
+        "description": "Payload for issuing a cryptographically signed workspace invitation."
+      },
+      "DeactivateAccountRequest": {
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "title": "Confirm",
+            "description": "Explicit confirmation boolean required to deactivate account"
+          }
+        },
+        "type": "object",
+        "required": [
+          "confirm"
+        ],
+        "title": "DeactivateAccountRequest",
+        "description": "Payload for confirming account self-deactivation."
       },
       "ExpenseCreate": {
         "properties": {
@@ -2041,6 +3073,112 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "InvitationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "invited_by_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Invited By Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "accepted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accepted At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "invitation_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invitation Token",
+            "description": "Raw invitation token (returned ONLY upon initial creation)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "workspace_id",
+          "email",
+          "role",
+          "invited_by_id",
+          "status",
+          "expires_at",
+          "created_at"
+        ],
+        "title": "InvitationResponse",
+        "description": "Public representation of a workspace invitation."
+      },
+      "OwnershipTransferRequest": {
+        "properties": {
+          "new_owner_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "New Owner Id",
+            "description": "Active workspace member ID designated as the new owner"
+          },
+          "previous_owner_role": {
+            "type": "string",
+            "title": "Previous Owner Role",
+            "description": "Role assigned to previous owner post-transfer",
+            "default": "admin"
+          },
+          "confirm": {
+            "type": "boolean",
+            "title": "Confirm",
+            "description": "Explicit confirmation boolean required to execute ownership transfer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "new_owner_id",
+          "confirm"
+        ],
+        "title": "OwnershipTransferRequest",
+        "description": "Payload for controlled, atomic workspace ownership transfer."
       },
       "PaginatedResponse_TransactionResponse_": {
         "properties": {
@@ -2401,6 +3539,21 @@
         "title": "TransactionResponse",
         "description": "Public representation of an operational transaction."
       },
+      "UpdateMemberRoleRequest": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "Target role: owner, admin, member, viewer, accountant, approver, staff"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role"
+        ],
+        "title": "UpdateMemberRoleRequest",
+        "description": "Payload for updating an existing member's role."
+      },
       "UserCreate": {
         "properties": {
           "email": {
@@ -2424,6 +3577,73 @@
           "password"
         ],
         "title": "UserCreate"
+      },
+      "UserDetailResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "phone_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone Number"
+          },
+          "auth_provider": {
+            "type": "string",
+            "title": "Auth Provider"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "is_verified": {
+            "type": "boolean",
+            "title": "Is Verified"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/app__schemas__user__UserProfileResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "full_name",
+          "auth_provider",
+          "is_active",
+          "is_verified",
+          "created_at"
+        ],
+        "title": "UserDetailResponse",
+        "description": "Full authenticated user identity contract."
       },
       "UserLoginRequest": {
         "properties": {
@@ -2471,27 +3691,129 @@
         ],
         "title": "UserOut"
       },
-      "UserProfileResponse": {
+      "UserProfileUpdateRequest": {
         "properties": {
-          "default_currency": {
-            "type": "string",
-            "title": "Default Currency",
-            "default": "INR"
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name",
+            "description": "User's full name"
           },
-          "timezone": {
-            "type": "string",
-            "title": "Timezone",
-            "default": "Asia/Kolkata"
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "Preferred display/nickname"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1024
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url",
+            "description": "Profile avatar image URL"
+          },
+          "preferred_language": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Language",
+            "description": "Language code (e.g. en-IN, hi-IN)"
           },
           "locale": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Locale",
-            "default": "en-IN"
+            "description": "Locale identifier (e.g. en-IN)"
+          },
+          "default_currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Currency",
+            "description": "ISO 4217 currency code"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone",
+            "description": "IANA timezone (e.g. Asia/Kolkata)"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country",
+            "description": "ISO 3166-1 alpha-2 country code"
           },
           "theme": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Theme",
-            "default": "dark"
+            "description": "UI theme preference ('dark', 'light', 'system')"
           },
           "notification_preferences": {
             "anyOf": [
@@ -2503,12 +3825,13 @@
                 "type": "null"
               }
             ],
-            "title": "Notification Preferences"
+            "title": "Notification Preferences",
+            "description": "Granular alert preferences"
           }
         },
         "type": "object",
-        "title": "UserProfileResponse",
-        "description": "User preferences and configuration."
+        "title": "UserProfileUpdateRequest",
+        "description": "Payload for updating user profile attributes and settings."
       },
       "UserRegisterRequest": {
         "properties": {
@@ -2604,7 +3927,7 @@
           "profile": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/UserProfileResponse"
+                "$ref": "#/components/schemas/app__schemas__auth__UserProfileResponse"
               },
               {
                 "type": "null"
@@ -2691,6 +4014,25 @@
             "title": "Timezone",
             "description": "IANA Timezone string",
             "default": "Asia/Kolkata"
+          },
+          "country": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "title": "Country",
+            "description": "Country ISO 3166-1 alpha-2 code",
+            "default": "IN"
+          },
+          "business_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BusinessProfileSchema"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional business profile metadata"
           }
         },
         "type": "object",
@@ -2740,7 +4082,8 @@
             "title": "Full Name"
           },
           "role": {
-            "$ref": "#/components/schemas/WorkspaceRole"
+            "type": "string",
+            "title": "Role"
           },
           "status": {
             "type": "string",
@@ -2791,13 +4134,34 @@
             "type": "string",
             "title": "Currency"
           },
+          "default_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Currency"
+          },
           "timezone": {
             "type": "string",
             "title": "Timezone"
           },
+          "country": {
+            "type": "string",
+            "title": "Country",
+            "default": "IN"
+          },
           "status": {
             "type": "string",
             "title": "Status"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Settings"
           },
           "created_at": {
             "type": "string",
@@ -2841,6 +4205,187 @@
           "business"
         ],
         "title": "WorkspaceType"
+      },
+      "WorkspaceUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Updated workspace title"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone",
+            "description": "Updated IANA timezone"
+          },
+          "default_currency": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 3,
+                "minLength": 3
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Currency",
+            "description": "Base ISO currency"
+          },
+          "country": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country",
+            "description": "Country code"
+          },
+          "business_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BusinessProfileSchema"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Updated business profile"
+          }
+        },
+        "type": "object",
+        "title": "WorkspaceUpdateRequest",
+        "description": "Payload for modifying workspace settings and profile."
+      },
+      "app__schemas__auth__UserProfileResponse": {
+        "properties": {
+          "default_currency": {
+            "type": "string",
+            "title": "Default Currency",
+            "default": "INR"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "default": "Asia/Kolkata"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale",
+            "default": "en-IN"
+          },
+          "theme": {
+            "type": "string",
+            "title": "Theme",
+            "default": "dark"
+          },
+          "notification_preferences": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notification Preferences"
+          }
+        },
+        "type": "object",
+        "title": "UserProfileResponse",
+        "description": "User preferences and configuration."
+      },
+      "app__schemas__user__UserProfileResponse": {
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "avatar_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avatar Url"
+          },
+          "preferred_language": {
+            "type": "string",
+            "title": "Preferred Language",
+            "default": "en-IN"
+          },
+          "default_currency": {
+            "type": "string",
+            "title": "Default Currency",
+            "default": "INR"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "default": "Asia/Kolkata"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country",
+            "default": "IN"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale",
+            "default": "en-IN"
+          },
+          "theme": {
+            "type": "string",
+            "title": "Theme",
+            "default": "dark"
+          },
+          "notification_preferences": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Notification Preferences"
+          },
+          "is_profile_complete": {
+            "type": "boolean",
+            "title": "Is Profile Complete",
+            "default": false
+          }
+        },
+        "type": "object",
+        "title": "UserProfileResponse",
+        "description": "Public representation of user preferences and configuration."
       }
     },
     "securitySchemes": {

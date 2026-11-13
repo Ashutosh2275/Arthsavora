@@ -93,7 +93,10 @@ class ValidationException(ArthsavoraException):
         message: str = "Validation failed",
         code: str = "VALIDATION_ERROR",
         details: Optional[List[Dict[str, Any]]] = None,
+        field: Optional[str] = None,
     ):
+        if field and not details:
+            details = [{"field": field, "message": message}]
         super().__init__(
             message,
             code=code,

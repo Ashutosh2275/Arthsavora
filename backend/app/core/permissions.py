@@ -5,7 +5,8 @@ and activates transaction-local Row-Level Security (RLS) tenant context.
 """
 
 from dataclasses import dataclass
-from typing import Callable, List, Optional
+from enum import Enum
+from typing import Callable, Dict, List, Optional, Set
 import uuid
 from fastapi import Depends, Header, Request
 from sqlalchemy import select
@@ -24,9 +25,138 @@ from app.infrastructure.database.models.workspace import (
     WorkspaceMember,
     WorkspaceRole,
     WorkspaceStatus,
+    WorkspaceType,
 )
 from app.infrastructure.database.rls import set_tenant_context
 from app.infrastructure.database.session import get_db_session
+
+
+class Permission(str, Enum):
+    """Centralized, granular permissions across personal, family, and business workspaces."""
+
+    # Workspace Lifecycle & Settings
+    VIEW_WORKSPACE = "workspace:view"
+    UPDATE_WORKSPACE = "workspace:update"
+    ARCHIVE_WORKSPACE = "workspace:archive"
+    RESTORE_WORKSPACE = "workspace:restore"
+    DELETE_WORKSPACE = "workspace:delete"
+    TRANSFER_OWNERSHIP = "workspace:transfer_ownership"
+
+    # Membership & Invitations
+    VIEW_MEMBERS = "members:view"
+    INVITE_MEMBERS = "members:invite"
+    UPDATE_MEMBER_ROLE = "members:update_role"
+    REMOVE_MEMBERS = "members:remove"
+
+    # Business Profile
+    MANAGE_BUSINESS_PROFILE = "business:manage_profile"
+
+    # Financial Accounts
+    VIEW_ACCOUNTS = "accounts:view"
+    MANAGE_ACCOUNTS = "accounts:manage"
+
+    # Financial Transactions
+    VIEW_TRANSACTIONS = "transactions:view"
+    CREATE_TRANSACTIONS = "transactions:create"
+    UPDATE_TRANSACTIONS = "transactions:update"
+    DELETE_TRANSACTIONS = "transactions:delete"
+
+
+# Explicit Role-to-Permission Mapping Matrix per Workspace Type
+ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
+    # 1. Personal Workspace (Owner-only environment)
+    "personal": {
+        "owner": set(Permission),
+    },
+    # 2. Family Workspace (Collaborative household environment with privacy boundaries)
+    "family": {
+        "owner": set(Permission),
+        "admin": {
+            Permission.VIEW_WORKSPACE,
+            Permission.UPDATE_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.INVITE_MEMBERS,
+            Permission.UPDATE_MEMBER_ROLE,
+            Permission.REMOVE_MEMBERS,
+            Permission.VIEW_ACCOUNTS,
+            Permission.MANAGE_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+            Permission.CREATE_TRANSACTIONS,
+            Permission.UPDATE_TRANSACTIONS,
+        },
+        "member": {
+            Permission.VIEW_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.VIEW_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+            Permission.CREATE_TRANSACTIONS,
+        },
+        "viewer": {
+            Permission.VIEW_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.VIEW_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+        },
+    },
+    # 3. Business Workspace (Commercial environment with accounting & approval roles)
+    "business": {
+        "owner": set(Permission),
+        "admin": {
+            Permission.VIEW_WORKSPACE,
+            Permission.UPDATE_WORKSPACE,
+            Permission.ARCHIVE_WORKSPACE,
+            Permission.RESTORE_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.INVITE_MEMBERS,
+            Permission.UPDATE_MEMBER_ROLE,
+            Permission.REMOVE_MEMBERS,
+            Permission.MANAGE_BUSINESS_PROFILE,
+            Permission.VIEW_ACCOUNTS,
+            Permission.MANAGE_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+            Permission.CREATE_TRANSACTIONS,
+            Permission.UPDATE_TRANSACTIONS,
+            Permission.DELETE_TRANSACTIONS,
+        },
+        "accountant": {
+            Permission.VIEW_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.MANAGE_BUSINESS_PROFILE,
+            Permission.VIEW_ACCOUNTS,
+            Permission.MANAGE_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+            Permission.CREATE_TRANSACTIONS,
+            Permission.UPDATE_TRANSACTIONS,
+        },
+        "approver": {
+            Permission.VIEW_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.VIEW_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+            Permission.CREATE_TRANSACTIONS,
+        },
+        "staff": {
+            Permission.VIEW_WORKSPACE,
+            Permission.VIEW_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+            Permission.CREATE_TRANSACTIONS,
+        },
+        "viewer": {
+            Permission.VIEW_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.VIEW_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+        },
+    },
+}
+
+
+def has_permission(workspace_type: str, role: str, permission: Permission) -> bool:
+    """Evaluates whether a given workspace type and member role possesses the required permission."""
+    type_str = str(workspace_type).lower().strip()
+    role_str = str(role).lower().strip()
+    perms = ROLE_PERMISSIONS.get(type_str, {}).get(role_str, set())
+    return permission in perms
 
 
 @dataclass
@@ -36,6 +166,11 @@ class WorkspaceContext:
     membership: WorkspaceMember
     current_user: User
     role: WorkspaceRole
+
+    def can(self, permission: Permission) -> bool:
+        """Helper checking if current context user has the specified permission."""
+        role_str = self.role.value if hasattr(self.role, "value") else str(self.role)
+        return has_permission(self.workspace.type, role_str, permission)
 
 
 async def resolve_workspace_id(
@@ -78,8 +213,14 @@ async def get_workspace_context_resolver(
     ws_result = await session.execute(ws_stmt)
     workspace = ws_result.scalar_one_or_none()
 
-    if not workspace or workspace.status != WorkspaceStatus.ACTIVE:
-        raise NotFoundException(message="Workspace not found or is currently inactive.")
+    if not workspace or workspace.status == WorkspaceStatus.DELETED:
+        raise NotFoundException(message="Workspace not found.")
+
+    if workspace.status == WorkspaceStatus.SUSPENDED:
+        raise ForbiddenException(
+            message="Workspace is suspended. All operations and administration are blocked.",
+            code="WORKSPACE_SUSPENDED",
+        )
 
     # Query membership
     member_stmt = (

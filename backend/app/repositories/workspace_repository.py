@@ -84,3 +84,41 @@ class WorkspaceRepository(BaseRepository[Workspace]):
         )
         self.session.add(membership)
         return membership
+
+    async def get_personal_workspace(self, user_id: uuid.UUID) -> Optional[Workspace]:
+        """Looks up an active personal workspace owned by the user."""
+        stmt = select(Workspace).where(
+            Workspace.owner_id == user_id,
+            Workspace.type == "personal",
+            Workspace.status != WorkspaceStatus.DELETED,
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def get_member_by_id(
+        self,
+        workspace_id: uuid.UUID,
+        membership_id: uuid.UUID,
+    ) -> Optional[WorkspaceMember]:
+        """Looks up membership record by ID scoped to target workspace."""
+        stmt = select(WorkspaceMember).where(
+            WorkspaceMember.id == membership_id,
+            WorkspaceMember.workspace_id == workspace_id,
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
+    async def count_active_owners(self, workspace_id: uuid.UUID) -> int:
+        """Counts active members holding the OWNER role."""
+        from sqlalchemy import func
+        stmt = (
+            select(func.count())
+            .select_from(WorkspaceMember)
+            .where(
+                WorkspaceMember.workspace_id == workspace_id,
+                WorkspaceMember.role == "owner",
+                WorkspaceMember.status == "active",
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one()
