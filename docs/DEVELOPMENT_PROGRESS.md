@@ -10,19 +10,20 @@
 **Prompt 02 Commit Hash:** `ef5581177aa0dbe9042b03fbdf7d1fc0d1ca26ef`  
 **Prompt 03 Commit Hash:** `67717478061e86ae6be71e998db493be81a5e1cf`  
 **Prompt 04 Commit Hash:** `76b444fb113a34a5df0bf6dd65b0145f18222ac9`  
-**Prompt 05 Commit Hash:** `c7a00db2cbf8ee7b409c9103e5c94295e865ce35`  
-**Remote Push Verification:** Prompts 01, 02, 03, and 04 pushed and verified on `origin/main`  
+**Prompt 05 Commit Hash:** `1bb05cee39cb012a67bc6477e0c46b95b778263f`  
+**Prompt 06 Commit Hash:** `2ab11cdcfc1664cf51aafe7a1fae1c31278fce01`  
+**Remote Push Verification:** Prompts 01, 02, 03, 04, and 05 pushed and verified on `origin/main`  
 
 ---
 
 ## 1. PROGRAMME STATUS OVERVIEW
 
 - **Total Planned Prompts:** 30
-- **Current Stage:** Stage 1 — Engineering Baseline & Core Architecture (Prompts 01–05)
-- **Current Prompt:** Prompt 05 — Backend Architecture, API Foundation and Authentication
-- **Completed Prompts:** 5 of 30 (Stage 1 — Engineering Baseline, Architecture, Standards, Database, and Backend Foundation fully established)
-- **Prompt 05 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 06 — Background Task Engine (Redis + Celery) & Async Workers (Stage 2)
+- **Current Stage:** Stage 1 — Engineering Baseline & Core Architecture (Prompts 01–06)
+- **Current Prompt:** Prompt 06 — Core Domain Layer, API Contracts and Service Architecture
+- **Completed Prompts:** 6 of 30 (Stage 1 — Engineering Baseline, Architecture, Standards, Database, Backend, and Domain/Contracts Foundation fully established)
+- **Prompt 06 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 07 — Background Task Engine (Redis + Celery) & Async Workers (Stage 2)
 
 ---
 
@@ -34,9 +35,9 @@
 | **02** | Stage 1 | Project Structure and Engineering Foundation | **COMPLETED** | `ef55811` |
 | **03** | Stage 1 | Engineering Standards, Design System and Development Automation | **COMPLETED** | `6771747` |
 | **04** | Stage 1 | Database Architecture and PostgreSQL Foundation | **COMPLETED** | `76b444f` |
-| **05** | Stage 1 | Backend Architecture, API Foundation and Authentication | **COMPLETED** | `c7a00db` |
-| **06** | Stage 2 | Background Task Engine (Redis + Celery) & Async Workers | UPCOMING | - |
-| **07** | Stage 2 | Production Transaction Categorization Engine & Model Caching | UPCOMING | - |
+| **05** | Stage 1 | Backend Architecture, API Foundation and Authentication | **COMPLETED** | `1bb05ce` |
+| **06** | Stage 1 | Core Domain Layer, API Contracts and Service Architecture | **COMPLETED** | `2ab11cd` |
+| **07** | Stage 2 | Background Task Engine (Redis + Celery) & Async Workers | UPCOMING | - |
 | **08** | Stage 2 | Secure Document Storage (Supabase Signed URLs) & Robust OCR | UPCOMING | - |
 | **09** | Stage 2 | Indian UPI SMS Ingestion Engine with Idempotency & Regex Verification | UPCOMING | - |
 | **10** | Stage 2 | Core Financial Account Management (Bank, Credit Card, Cash, Wallets) | UPCOMING | - |
@@ -181,6 +182,38 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/BACKEND_TESTING.md`
   - `docs/API_CONTRACT_WORKFLOW.md`
   - `docs/openapi.json`
+
+---
+
+## 9. PROMPT 06 ACCEPTANCE & VERIFICATION RECORDS
+
+- [x] **Pure Domain Layer Architecture:** Implemented `backend/app/domain/` strictly decoupled from FastAPI, HTTP status codes, Celery, or external AI providers. Pure domain exceptions (`DomainError`, `DomainValidationError`, `CurrencyMismatchError`, `BusinessRuleViolationError`, `EntityNotFoundError`, `UnauthorizedDomainActionError`).
+- [x] **Exact Financial Money Value Object:** Built immutable `Money` dataclass (`backend/app/domain/money.py`) using `Decimal` arithmetic exclusively, Bankers Rounding (`ROUND_HALF_EVEN`), 4-decimal internal ledger quantization, ISO 4217 currency precisions, minor unit conversion (`paise` integer methods `to_minor_units` and `from_minor_units`), and strict `CurrencyMismatchError` enforcement.
+- [x] **Domain Events & Transactional Outbox Collector:** Implemented immutable `DomainEvent` dataclass with correlation and actor tracking, standard factory functions (`workspace.created`, `workspace.member_joined`, `account.created`, `transaction.created`, `accounting.journal_posted`), and `DomainEventCollector` for atomic outbox staging and rollback flushing.
+- [x] **Domain Invariants & Financial Rules:** Defined business rule validators (`backend/app/domain/rules.py`) enforcing non-identical transfer accounts, positive non-zero transfer amounts, refund limits, and AI prediction confidence score transparency ($0.0 \le \text{confidence} \le 1.0$).
+- [x] **Repository Pattern & Anti-IDOR Enforcement:**
+  - `BaseRepository[T]`: Generic CRUD persistence methods.
+  - `WorkspaceScopedRepository[T]`: Atomic `where(id == ..., workspace_id == ...)` anti-IDOR checks with zero resource existence leakage, and bounded pagination (`limit <= 100`).
+  - `WorkspaceRepository`: Workspace lookup and membership management.
+  - `AccountRepository`: Bank, cash, and card account persistence and filtering.
+  - `TransactionRepository`: Operational transaction persistence and `get_by_external_id` for idempotent deduplication.
+- [x] **Application Services Layer:**
+  - `AccountService`: Provisions accounts, validates currencies via `Money`, and emits `account.created` events.
+  - `TransactionService`: Intakes transactions, validates exact Money, enforces AI transparency rules, performs idempotent deduplication via `external_transaction_id`, and emits `transaction.created` events.
+- [x] **API Route Handlers & Monorepo Synchronization:**
+  - Registered `/api/v1/accounts/` and `/api/v1/transactions/` in `app/api/v1/router.py`.
+  - Exported OpenAPI 3.1.0 schema (`docs/openapi.json`) with 31 paths and 31 schema components.
+  - Synchronized TypeScript contracts (`packages/contracts/src/index.ts`) with `AccountCreateRequest`, `AccountResponse`, `TransactionCreateRequest`, `TransactionResponse`.
+  - Configured frontend Axios client (`apps/web/src/lib/axios.ts`) to inject `X-Request-ID` and `X-Workspace-ID` on all requests.
+- [x] **Comprehensive Test Suites:** 77 passing backend tests across 14 test files (including 11 Money value object tests, 3 domain event tests, 4 repository tests, 5 service tests, and 5 API integration tests). 24 passing web tests. Monorepo typecheck: 0 errors.
+- [x] **Documentation Delivered:**
+  - `docs/DOMAIN_ARCHITECTURE.md`
+  - `docs/DOMAIN_MODEL_CONVENTIONS.md`
+  - `docs/APPLICATION_SERVICE_GUIDELINES.md`
+  - `docs/REPOSITORY_PATTERN.md`
+  - `docs/API_CONTRACT_STANDARD.md`
+  - `docs/DOMAIN_EVENTS.md`
+
 
 
 

@@ -193,3 +193,72 @@ export interface OcrReceiptResponse {
 export interface ChatMessageResponse {
   reply: string;
 }
+
+// -------------------------------------------------------------------------
+// V1 Financial Account & Operational Transaction Contracts
+// -------------------------------------------------------------------------
+
+export type AccountType =
+  | 'cash'
+  | 'bank'
+  | 'savings'
+  | 'current'
+  | 'credit_card'
+  | 'loan'
+  | 'wallet'
+  | 'investment'
+  | 'other';
+
+export interface AccountCreateRequest {
+  name: string;
+  account_type: AccountType | string;
+  currency?: CurrencyCode;
+  institution_name?: string | null;
+  masked_identifier?: string | null;
+}
+
+export interface AccountResponse {
+  id: UUID;
+  workspace_id: UUID;
+  name: string;
+  account_type: AccountType | string;
+  currency: CurrencyCode;
+  institution_name?: string | null;
+  masked_identifier?: string | null;
+  status: string;
+  created_at: ISODateString;
+}
+
+export interface TransactionCreateRequest {
+  account_id: UUID;
+  amount: string;
+  currency?: CurrencyCode;
+  transaction_type: 'income' | 'expense' | 'transfer' | 'refund' | 'repayment' | 'adjustment';
+  transaction_date: string;
+  description: string;
+  merchant_name?: string | null;
+  category_id?: UUID | null;
+  external_transaction_id?: string | null;
+  is_ai_predicted?: boolean;
+  ai_confidence?: number | null;
+}
+
+export interface TransactionResponse {
+  id: UUID;
+  workspace_id: UUID;
+  account_id: UUID;
+  amount: string;
+  currency: CurrencyCode;
+  transaction_type: string;
+  transaction_date: string;
+  settlement_date?: string | null;
+  description: string;
+  merchant_name?: string | null;
+  category_id?: UUID | null;
+  status: string;
+  external_transaction_id?: string | null;
+  is_ai_predicted: boolean;
+  ai_confidence?: number | null;
+  created_at: ISODateString;
+}
+
