@@ -7,8 +7,10 @@
 **Current Branch:** `main`  
 **Starting Baseline Commit:** `6caa716456ec7cd9fff31ab16ee4a929b9f1d710`  
 **Prompt 01 Commit Hash:** `dc139f365dac20bcc3e08985ed0dc7af4df62fec`  
-**Prompt 02 Commit Hash:** PENDING_COMMIT  
-**Remote Push Verification:** Prompt 01 verified (`dc139f3`)  
+**Prompt 02 Commit Hash:** `ef5581177aa0dbe9042b03fbdf7d1fc0d1ca26ef`  
+**Prompt 03 Commit Hash:** `67717478061e86ae6be71e998db493be81a5e1cf`  
+**Prompt 04 Commit Hash:** `7c4667d643ad39b56f874e44f80874c7c34d3bb0`  
+**Remote Push Verification:** Prompts 01, 02, and 03 pushed and verified on `origin/main`  
 
 ---
 
@@ -16,10 +18,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 1 — Engineering Baseline & Core Architecture (Prompts 01–05)
-- **Current Prompt:** Prompt 02 — Project Structure and Engineering Foundation
-- **Completed Prompts:** 2 of 30 (Engineering foundation established)
-- **Prompt 02 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 03 — Multi-Workspace Domain Models & Double-Entry Accounting Ledger
+- **Current Prompt:** Prompt 04 — Database Architecture and PostgreSQL Foundation
+- **Completed Prompts:** 4 of 30 (Engineering baseline, monorepo foundation, design system, and database architecture established)
+- **Prompt 04 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 05 — Testing Infrastructure (Pytest + Vitest) & CI/CD Pipelines
 
 ---
 
@@ -29,8 +31,8 @@
 | :---: | :---: | :--- | :---: | :---: |
 | **01** | Stage 1 | Complete Repository Audit and Engineering Baseline | **COMPLETED** | `dc139f3` |
 | **02** | Stage 1 | Project Structure and Engineering Foundation | **COMPLETED** | `ef55811` |
-| **03** | Stage 1 | Engineering Standards, Design System and Development Automation | **COMPLETED** | `a707999` |
-| **04** | Stage 1 | Multi-Workspace Domain Models & Double-Entry Accounting Ledger | UPCOMING | - |
+| **03** | Stage 1 | Engineering Standards, Design System and Development Automation | **COMPLETED** | `6771747` |
+| **04** | Stage 1 | Database Architecture and PostgreSQL Foundation | **COMPLETED** | `7c4667d` |
 | **05** | Stage 1 | Testing Infrastructure (Pytest + Vitest) & CI/CD Pipelines | UPCOMING | - |
 | **06** | Stage 2 | Background Task Engine (Redis + Celery) & Async Workers | UPCOMING | - |
 | **07** | Stage 2 | Production Transaction Categorization Engine & Model Caching | UPCOMING | - |
@@ -122,4 +124,31 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
 - [x] Documentation created: `docs/DESIGN_SYSTEM.md`, `docs/COMPONENT_GUIDELINES.md`, `docs/ACCESSIBILITY_STANDARD.md`, `docs/TESTING_STRATEGY.md`, `docs/CI_CD_STANDARD.md`, and updated `docs/ENGINEERING_STANDARDS.md`.
 - [x] Verification commands: `typecheck:all` (0 errors), `lint:web` (0 warnings), `build:web` (passed in 4.8s), `test:web` (24 passed), `pytest` (10 passed).
 - [x] Existing application routes and pages preserved intact.
+
+---
+
+## 7. PROMPT 04 ACCEPTANCE & VERIFICATION RECORDS
+
+- [x] **PostgreSQL Authoritative Relational Database:** Configured PostgreSQL 15+ engine via SQLAlchemy 2.0 async engine and `asyncpg` driver on host port 5433 (`arthsavora` and `arthsavora_test`).
+- [x] **Domain Models Established (15 Tables across 8 Modules):**
+  - Identity & Profile: `users` (external auth UID, security stamp, soft delete) and `user_profiles` (currency, timezone, theme, notification preferences).
+  - Workspace Tenancy: `workspaces` (personal, family, business) and `workspace_members` (owner, admin, member, accountant, viewer with unique constraints).
+  - Financial Accounts: `accounts` (bank, savings, current, credit card, cash, wallet, loan with masked identifiers `XX4092`).
+  - Categories: `categories` (hierarchical parent-child, system default vs workspace-custom with unique slug per workspace).
+  - Operational Transactions: `transactions` with exact `NUMERIC(18, 4)` precision, transaction types, source tracing, AI prediction flags, and partial unique index `(workspace_id, external_transaction_id) WHERE external_transaction_id IS NOT NULL` for idempotent deduplication.
+  - Double-Entry General Ledger: `ledger_accounts` (chart of accounts with debit/credit normal balance), `journal_entries` (entry number, posting date, draft/posted/reversed status, reversal reference), and `journal_lines` (entry type, exact `NUMERIC(18, 4)` amount with `CHECK (amount > 0)`).
+  - Ingestion & Consent: `data_sources`, `consent_records` (expiry and revocation audit), `import_jobs` (counters for total/success/failed), and `import_files` (SHA-256 deduplication hash).
+  - Immutable Audit: `audit_logs` (actor, action, entity, correlation ID `X-Request-ID`, before/after JSONB state snapshots).
+- [x] **Double-Entry Ledger Domain Service:** Built `backend/app/infrastructure/database/ledger.py` with strict balance validation ($\sum \text{Debits} = \sum \text{Credits}$), posting immutability enforcement, and reversible journal entries with inverted line items.
+- [x] **Multi-Tenant Row-Level Security (RLS):** Implemented transaction-local tenant context isolation via `set_tenant_context` (`SET LOCAL app.current_workspace_id = '...'`) and generated PostgreSQL RLS policies ensuring zero connection pool state leakage.
+- [x] **Alembic Async Migrations:** Initialized `alembic.ini` and `backend/migrations/env.py`, generated migration `a0735f358f00_initial_schema_postgresql_foundation.py`. Verified `alembic upgrade head`, `alembic downgrade base`, and re-upgrade `alembic upgrade head` with 100% schema fidelity.
+- [x] **Automated Database Test Suite:** Implemented 8 real PostgreSQL tests in `backend/tests/test_database.py` covering workspace isolation, exact numeric precision, partial index idempotency, double-entry balancing and rejection, posted entry immutability and reversal, audit log preservation across member revocation, and RLS tenant context scoping.
+- [x] **All Tests Passing:** Total backend test suite: 18 passed in 1.24s. Web test suite: 24 passed in 2.2s.
+- [x] **Documentation Delivered:**
+  - `docs/DATABASE_ARCHITECTURE.md`
+  - `docs/DATABASE_SCHEMA_REFERENCE.md`
+  - `docs/DATABASE_MIGRATION_GUIDE.md`
+  - `docs/DATABASE_SECURITY.md`
+  - `docs/DATABASE_BACKUP_RECOVERY.md`
+
 
