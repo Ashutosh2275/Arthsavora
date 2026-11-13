@@ -9,8 +9,9 @@
 **Prompt 01 Commit Hash:** `dc139f365dac20bcc3e08985ed0dc7af4df62fec`  
 **Prompt 02 Commit Hash:** `ef5581177aa0dbe9042b03fbdf7d1fc0d1ca26ef`  
 **Prompt 03 Commit Hash:** `67717478061e86ae6be71e998db493be81a5e1cf`  
-**Prompt 04 Commit Hash:** `7c4667d643ad39b56f874e44f80874c7c34d3bb0`  
-**Remote Push Verification:** Prompts 01, 02, and 03 pushed and verified on `origin/main`  
+**Prompt 04 Commit Hash:** `76b444fb113a34a5df0bf6dd65b0145f18222ac9`  
+**Prompt 05 Commit Hash:** `c7a00db2cbf8ee7b409c9103e5c94295e865ce35`  
+**Remote Push Verification:** Prompts 01, 02, 03, and 04 pushed and verified on `origin/main`  
 
 ---
 
@@ -18,10 +19,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 1 — Engineering Baseline & Core Architecture (Prompts 01–05)
-- **Current Prompt:** Prompt 04 — Database Architecture and PostgreSQL Foundation
-- **Completed Prompts:** 4 of 30 (Engineering baseline, monorepo foundation, design system, and database architecture established)
-- **Prompt 04 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 05 — Testing Infrastructure (Pytest + Vitest) & CI/CD Pipelines
+- **Current Prompt:** Prompt 05 — Backend Architecture, API Foundation and Authentication
+- **Completed Prompts:** 5 of 30 (Stage 1 — Engineering Baseline, Architecture, Standards, Database, and Backend Foundation fully established)
+- **Prompt 05 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 06 — Background Task Engine (Redis + Celery) & Async Workers (Stage 2)
 
 ---
 
@@ -32,8 +33,8 @@
 | **01** | Stage 1 | Complete Repository Audit and Engineering Baseline | **COMPLETED** | `dc139f3` |
 | **02** | Stage 1 | Project Structure and Engineering Foundation | **COMPLETED** | `ef55811` |
 | **03** | Stage 1 | Engineering Standards, Design System and Development Automation | **COMPLETED** | `6771747` |
-| **04** | Stage 1 | Database Architecture and PostgreSQL Foundation | **COMPLETED** | `7c4667d` |
-| **05** | Stage 1 | Testing Infrastructure (Pytest + Vitest) & CI/CD Pipelines | UPCOMING | - |
+| **04** | Stage 1 | Database Architecture and PostgreSQL Foundation | **COMPLETED** | `76b444f` |
+| **05** | Stage 1 | Backend Architecture, API Foundation and Authentication | **COMPLETED** | `c7a00db` |
 | **06** | Stage 2 | Background Task Engine (Redis + Celery) & Async Workers | UPCOMING | - |
 | **07** | Stage 2 | Production Transaction Categorization Engine & Model Caching | UPCOMING | - |
 | **08** | Stage 2 | Secure Document Storage (Supabase Signed URLs) & Robust OCR | UPCOMING | - |
@@ -150,5 +151,36 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/DATABASE_MIGRATION_GUIDE.md`
   - `docs/DATABASE_SECURITY.md`
   - `docs/DATABASE_BACKUP_RECOVERY.md`
+
+---
+
+## 8. PROMPT 05 ACCEPTANCE & VERIFICATION RECORDS
+
+- [x] **Modular Monolith Backend Architecture:** Strict separation between Routing (`api/v1/`), Request/Response Schemas (`schemas/`), Application Services (`services/`), Domain Logic (`ledger.py`, `models/`), Persistence (`infrastructure/database/`), and Security/Authorization (`core/`).
+- [x] **FastAPI Application Lifecycle & Factory:** Created `create_app()` factory with async lifespan verifying PostgreSQL connection pool health, environment safety assertions, and clean connection pool disposal without automatic table creation or unreviewed migrations.
+- [x] **Authentication Engine:** Built `AuthService` handling PostgreSQL-backed registration, bcrypt password hashing, automatic personal workspace and profile bootstrapping, credential validation, 24-hour access tokens, 30-day refresh tokens, and suspended/soft-deleted account rejection.
+- [x] **Cryptographic Token Verification:** Implemented `decode_token()` in `app.core.security` with strict signature integrity, expiration checking, token-type isolation (`access` vs `refresh`), and dual verification support for internal and Supabase-issued JWTs.
+- [x] **Server-Side Authorization & Anti-IDOR:** Implemented `get_workspace_context_resolver` and `require_role()` supporting Personal, Family, and Business workspace role matrices (`owner`, `admin`, `member`, `accountant`, `viewer`). Enforced anti-IDOR cloaking (returns 404 on unauthorized workspace access) and injected transaction-local `SET LOCAL app.current_workspace_id` for PostgreSQL RLS.
+- [x] **API Design Standards & Foundation Endpoints:**
+  - Standard error format with `code`, `message`, `request_id`, and `details`.
+  - Canonical V1 route hierarchy mounted at `/api/v1/*` (`health/live`, `health/ready`, `auth/register`, `auth/login`, `auth/me`, `auth/refresh`, `auth/logout`, `workspaces/`, `workspaces/{id}`, `workspaces/{id}/members`).
+  - Standard pagination schema with 1-indexed page, max 100 page size, and offset calculation.
+  - Correlation ID tracking: `X-Request-ID` extracted or generated, injected into responses and logs.
+- [x] **Abuse Protection, Security Headers & Idempotency:**
+  - SlowAPI rate limiter: 5 req/min on login, 120 req/min general, 300 req/min health probes.
+  - Security headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 0`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Cache-Control: no-store` on API responses.
+  - Request idempotency engine (`app.core.idempotency`) with in-flight lock detection (409 Conflict) and SHA-256 fingerprint matching.
+  - Masking of passwords, tokens, and authorization credentials in access logs.
+- [x] **OpenAPI Specification Generator:** Created reproducible offline generator `backend/scripts/generate_openapi.py` producing `docs/openapi.json` (29 paths, 26 schema components, OpenAPI 3.1.0).
+- [x] **Comprehensive Test Suite:** 49 automated backend tests passing in 8.29s across 10 test modules (including 11 auth tests, 7 authorization tests, 7 API standards tests, 8 PostgreSQL integration tests, 3 health/readiness tests, 3 idempotency tests). Web test suite: 24 passed in 8.4s. Monorepo typecheck: 0 errors.
+- [x] **Documentation Delivered:**
+  - `docs/BACKEND_ARCHITECTURE.md`
+  - `docs/API_DESIGN_STANDARD.md`
+  - `docs/AUTHENTICATION_AUTHORIZATION.md`
+  - `docs/SECURITY_IMPLEMENTATION.md`
+  - `docs/BACKEND_TESTING.md`
+  - `docs/API_CONTRACT_WORKFLOW.md`
+  - `docs/openapi.json`
+
 
 

@@ -1,10 +1,11 @@
 """
 Arthsavora Core Application Exceptions
 Standardized error structures across all domain modules.
+Includes specialized security, authentication, and tenant isolation exceptions.
 """
 
 from typing import Any, Dict, List, Optional
-from fastapi import HTTPException, status
+from fastapi import status
 
 
 class ArthsavoraException(Exception):
@@ -38,11 +39,50 @@ class UnauthorizedException(ArthsavoraException):
         super().__init__(message, code=code, status_code=status.HTTP_401_UNAUTHORIZED)
 
 
+class TokenExpiredException(UnauthorizedException):
+    """Raised specifically when a JWT has expired."""
+
+    def __init__(self, message: str = "Authentication token has expired", code: str = "TOKEN_EXPIRED"):
+        super().__init__(message, code=code)
+
+
+class InvalidTokenException(UnauthorizedException):
+    """Raised when a JWT signature, format, or claims validation fails."""
+
+    def __init__(self, message: str = "Invalid authentication token", code: str = "INVALID_TOKEN"):
+        super().__init__(message, code=code)
+
+
+class AccountDisabledException(UnauthorizedException):
+    """Raised when a user account is inactive, locked, or suspended."""
+
+    def __init__(self, message: str = "User account is suspended or disabled", code: str = "ACCOUNT_DISABLED"):
+        super().__init__(message, code=code)
+
+
+class AccountDeletedException(UnauthorizedException):
+    """Raised when a user account has been soft-deleted."""
+
+    def __init__(self, message: str = "User account has been deleted", code: str = "ACCOUNT_DELETED"):
+        super().__init__(message, code=code)
+
+
 class ForbiddenException(ArthsavoraException):
     """Raised when the user does not have permission to access the resource."""
 
     def __init__(self, message: str = "Forbidden", code: str = "FORBIDDEN"):
         super().__init__(message, code=code, status_code=status.HTTP_403_FORBIDDEN)
+
+
+class InsufficientPermissionsException(ForbiddenException):
+    """Raised when a user's workspace role lacks required privileges."""
+
+    def __init__(
+        self,
+        message: str = "You do not have sufficient permissions to perform this action",
+        code: str = "INSUFFICIENT_PERMISSIONS",
+    ):
+        super().__init__(message, code=code)
 
 
 class ValidationException(ArthsavoraException):
@@ -72,5 +112,12 @@ class ConflictException(ArthsavoraException):
 class RateLimitExceededException(ArthsavoraException):
     """Raised when rate limits are exceeded."""
 
-    def __init__(self, message: str = "Too many requests", code: str = "RATE_LIMIT_EXCEEDED"):
+    def __init__(self, message: str = "Too many requests. Please slow down.", code: str = "RATE_LIMIT_EXCEEDED"):
         super().__init__(message, code=code, status_code=status.HTTP_429_TOO_MANY_REQUESTS)
+
+
+class DatabaseUnavailableException(ArthsavoraException):
+    """Raised when the database connection or health check fails."""
+
+    def __init__(self, message: str = "Database service is temporarily unavailable", code: str = "DATABASE_UNAVAILABLE"):
+        super().__init__(message, code=code, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)

@@ -4,11 +4,37 @@ PostgreSQL source of truth for workspace isolation, ownership, and role-based me
 """
 
 from datetime import datetime, timezone
+from enum import Enum
 import uuid
 from sqlalchemy import String, DateTime, ForeignKey, UniqueConstraint, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID, JSONB
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, synonym
 from app.infrastructure.database.base import Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin
+
+
+class WorkspaceType(str, Enum):
+    PERSONAL = "personal"
+    FAMILY = "family"
+    BUSINESS = "business"
+
+
+class WorkspaceStatus(str, Enum):
+    CREATING = "creating"
+    ACTIVE = "active"
+    SUSPENDED = "suspended"
+    ARCHIVED = "archived"
+    DELETION_PENDING = "deletion_pending"
+    DELETED = "deleted"
+
+
+class WorkspaceRole(str, Enum):
+    OWNER = "owner"
+    ADMIN = "admin"
+    MEMBER = "member"
+    VIEWER = "viewer"
+    ACCOUNTANT = "accountant"
+    APPROVER = "approver"
+    STAFF = "staff"
 
 
 class Workspace(Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin):
@@ -25,6 +51,7 @@ class Workspace(Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin):
         index=True,
     )
     default_currency: Mapped[str] = mapped_column(String(3), default="INR", nullable=False)
+    currency = synonym("default_currency")
     timezone: Mapped[str] = mapped_column(String(50), default="Asia/Kolkata", nullable=False)
     status: Mapped[str] = mapped_column(
         String(30),

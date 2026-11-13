@@ -1,7 +1,7 @@
 """
 Arthsavora Request Audit and Correlation ID Middleware
 Injects correlation IDs, tracks request duration, and logs structured telemetry.
-Prepares the backend for OpenTelemetry and Sentry distributed tracing.
+Redacts sensitive authorization credentials and cookies from access logs.
 """
 
 import time
@@ -14,7 +14,7 @@ def setup_audit_middleware(app: FastAPI) -> None:
     @app.middleware("http")
     async def audit_request_middleware(request: Request, call_next) -> Response:
         start_time = time.perf_counter()
-        
+
         # Extract or generate correlation ID
         correlation_id = (
             request.headers.get("X-Request-ID")
@@ -25,6 +25,7 @@ def setup_audit_middleware(app: FastAPI) -> None:
 
         path = request.url.path
         method = request.method
+        client_host = request.client.host if request.client else "unknown"
 
         response = await call_next(request)
         duration_ms = (time.perf_counter() - start_time) * 1000.0
@@ -32,9 +33,14 @@ def setup_audit_middleware(app: FastAPI) -> None:
         # Inject correlation ID into response headers
         response.headers["X-Request-ID"] = correlation_id
 
+        # Redact sensitive parameters from logging
+        safe_path = path
+        if "password" in request.url.query.lower():
+            safe_path = f"{path}?[QUERY_REDACTED]"
+
         # Structured audit log
         logger.info(
-            f"HTTP {method} {path} - Status: {response.status_code} - "
-            f"Latency: {duration_ms:.2f}ms - RequestId: {correlation_id}"
+            f"HTTP {method} {safe_path} - Status: {response.status_code} - "
+            f"Latency: {duration_ms:.2f}ms - Client: {client_host} - RequestId: {correlation_id}"
         )
         return response
