@@ -26,18 +26,19 @@
 **Prompt 18 Commit Hash:** `ee37b4e`  
 **Prompt 19 Commit Hash:** `c926e59`  
 **Prompt 20 Commit Hash:** `bf2fe0d`  
-**Remote Push Verification:** Prompts 01–20 pushed and verified on `origin/main`  
+**Prompt 21 Commit Hash:** `9c2cbb1`  
+**Remote Push Verification:** Prompts 01–21 verified on `origin/main`  
 
 ---
 
 ## 1. PROGRAMME STATUS OVERVIEW
 
 - **Total Planned Prompts:** 30
-- **Current Stage:** Stage 4 — Advanced Analytics & Forecasting (Prompts 16–20)
-- **Current Prompt:** Prompt 20 — Unified Notifications, Financial Alerts and User Communication System [20]
-- **Completed Prompts:** 20 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, Financial Forecasting, Financial Anomaly Detection, AI Financial Assistant, Receipt Intelligence / OCR, and Unified Notifications & Financial Alerts established)
-- **Prompt 20 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 21 — Multi-Currency Support & Automated FX Rate Ingestion [21]
+- **Current Stage:** Stage 5 — Multi-Entity, Collaboration & Advanced Reporting (Prompts 21–25)
+- **Current Prompt:** Prompt 21 — Family Finance Management and Collaborative Household Budgeting [21]
+- **Completed Prompts:** 21 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, Financial Forecasting, Financial Anomaly Detection, AI Financial Assistant, Receipt Intelligence / OCR, Unified Notifications & Financial Alerts, and Family Finance Management established)
+- **Prompt 21 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 22 — Financial Statement & Export Engine (CA-Ready PDF & Excel Reports) [22]
 
 ---
 
@@ -65,7 +66,7 @@
 | **18** | Stage 4 | AI Financial Assistant, Natural-Language Intelligence and Tool Orchestration | **COMPLETED** | `ee37b4e` |
 | **19** | Stage 4 | Receipt Intelligence, OCR and Document-Based Financial Extraction | **COMPLETED** | `c926e59` |
 | **20** | Stage 4 | Unified Notifications, Financial Alerts and User Communication System | **COMPLETED** | `bf2fe0d` |
-| **21** | Stage 5 | AI Financial Assistant (Official `google-genai` SDK + RAG Pipeline) | UPCOMING | - |
+| **21** | Stage 5 | Family Finance Management and Collaborative Household Budgeting | **COMPLETED** | `9c2cbb1` |
 | **22** | Stage 5 | Financial Statement & Export Engine (CA-Ready PDF & Excel Reports) | UPCOMING | - |
 | **23** | Stage 5 | Bank Statement Ingestion (PDF & CSV Parsers with Reconciliation) | UPCOMING | - |
 | **24** | Stage 5 | Debt, Loan & EMI Amortization Schedule Engine | UPCOMING | - |
@@ -915,6 +916,85 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/NOTIFICATION_SECURITY.md`
   - `docs/NOTIFICATION_RETENTION_POLICY.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+## 23. PROMPT 21 IMPLEMENTATION SUMMARY
+
+### Family Finance Management and Collaborative Household Budgeting [21]
+- **Date Completed:** 2026-11-14
+- **Branch:** `main`
+- **Core Principle & Privacy Invariant:** A family workspace is a collaboration boundary, never an automatic authorization to access every member's private financial records. Personal accounts, transactions, and budgets remain strictly private by default.
+- **RBAC & Granular Permissions:**
+  - Extended `WorkspaceRole` enum with `RESTRICTED = "restricted"` (tailored for children, teenagers, domestic staff, and dependents with read-only, non-mutative privileges).
+  - Defined 5 dedicated application permissions: `VIEW_FAMILY_FINANCE`, `MANAGE_FAMILY_FINANCE`, `MANAGE_FAMILY_ALLOCATIONS`, `MANAGE_FAMILY_CONTRIBUTIONS`, `MANAGE_FAMILY_SETTINGS`.
+  - Mapped role permissions across `owner`, `admin`, `member`, `restricted`, and `viewer` in `app/core/permissions.py`.
+- **Pure Domain Layer (`app/domain/family.py`):**
+  - Enums: `FamilyRole`, `AllocationMethod`, `AllocationStatus`, `SettlementStatus`, `ContributionType`, `ContributionStatus`, `AccountShareScope`, `FamilyActivityType`.
+  - Value Objects: `AllocationItemVO`, `MemberSettlementVO`, `SettlementRecommendationVO`.
+  - Deterministic Exact-Paise Allocation Algorithms: `calculate_equal_allocation`, `calculate_percentage_allocation`, `calculate_fixed_allocation`, `calculate_custom_allocation`. Indivisible remainders ($R = T \pmod N$) are deterministically assigned to the primary payer/first members, guaranteeing $\sum \text{allocated\_paise} \equiv \text{total\_paise}$ with zero float drift.
+  - Greedy Minimal Netting Algorithm (`compute_settlement_recommendations`): Solves bilateral debts into at most $N-1$ peer transfers:
+    $$\text{Net Position}_i = (E_{\text{paid}, i} + C_{\text{paid}, i}) - S_{\text{allocated}, i}$$
+  - Privacy Boundary Guard: `is_resource_accessible_in_family` enforces zero personal transaction leakage.
+- **Database Architecture & Migration:**
+  - Database Models (`app/infrastructure/database/models/family.py`):
+    - `FamilyProfile`: Household name, default currency, timezone, allocation method defaults, settlement cadence, and `allow_restricted_view_budgets` flag.
+    - `FamilyExpenseAllocation`: Expense distribution header with status, payer attribution, and version tracking.
+    - `FamilyExpenseAllocationItem`: Scoped member share with exact non-negative integer paise checks.
+    - `FamilyMemberContribution`: Pool contributions tracking expected vs. paid amounts.
+    - `FamilyAccountShare`: Privacy bridge for selectively sharing personal accounts (`BALANCE_ONLY`, `READ_ONLY`, `FULL_VISIBILITY`).
+    - `FamilyActivity`: Chronological immutable audit trail of household events.
+  - Alembic Migration: Generated and applied migration revision `20c2da493de3_add_family_finance_management_and_.py` against PostgreSQL 18.
+- **Repository & Service Layer:**
+  - `FamilyRepository` (`app/repositories/family_repository.py`): Scoped tenant queries, profile CRUD, allocation revisions, contribution tracking, shared account bridge queries, and `get_settlement_aggregation`.
+  - `FamilyService` (`app/services/family_service.py`): Business orchestration for profile management, expense allocations, allocation revisions, contributions, settlement netting, personal account sharing, dashboard overview KPIs, timeline logging, and Prompt 20 notification dispatch.
+- **FastAPI Endpoints (`app/api/v1/family_routes.py`):**
+  - Mounted 18 endpoints at `/family` and `/workspaces/{workspace_id}/family`:
+    - `GET /overview`: High-level household dashboard KPIs, active members, shared accounts.
+    - `GET /profile` & `PUT /profile`: Household profile and privacy configuration.
+    - `GET /members`: List family members with roles and joined dates.
+    - `POST /members/invite`: Issue cryptographically hashed invitations with role assignment.
+    - `GET /allocations`: List expense allocations with status and member filters.
+    - `POST /allocations`: Create new expense allocation across household members.
+    - `GET /allocations/{id}`: Detailed allocation retrieval with itemized member shares.
+    - `PUT /allocations/{id}`: Revise allocation items with automatic version increment.
+    - `POST /allocations/{id}/cancel`: Cancel active allocation.
+    - `GET /contributions`: List pool contributions with period filtering.
+    - `POST /contributions`: Record expected or voluntary contribution.
+    - `POST /contributions/{id}/pay`: Record confirmed contribution deposit.
+    - `GET /settlements`: Retrieve member net positions and greedy minimal peer recommendations.
+    - `POST /settlements/mark-settled`: Mark peer settlement recommendation as settled.
+    - `GET /shared-accounts`: List bridged personal accounts visible in family workspace.
+    - `POST /shared-accounts`: Create personal account sharing bridge.
+    - `DELETE /shared-accounts/{id}`: Revoke personal account sharing bridge.
+    - `GET /activity`: Chronological timeline of household financial activities.
+- **AI Assistant Tool Orchestration (`app/services/assistant/`):**
+  - Registered 3 tools in `tool_registry.py`: `get_family_overview`, `get_family_settlement_summary`, `get_family_commitments`.
+  - Implemented execution handlers in `tool_executor.py` with multi-tier tenant validation: active workspace must be family type, user must be active member with `family:view` permission, and private personal accounts remain masked.
+- **Frontend State & Web Experience:**
+  - TypeScript Contracts: Exported DTOs, interfaces, and enums in `packages/contracts/src/index.ts`.
+  - Zustand Store: `apps/web/src/store/useFamilyStore.ts` with complete state management for overview, profile, members, allocations, contributions, settlements, and activities.
+  - Page Component: `apps/web/src/pages/Family.tsx` with 6 interactive tabs (Overview, Members & Privacy, Allocations, Settlements, Contributions, Activity) and 4 interactive dialog modals (Invite Member, New Allocation, Record Contribution, Bridge Personal Account).
+  - Navigation: Added Family workspace navigation item with `Users` icon in `apps/web/src/components/layout/AppLayout.tsx`.
+  - Route: Registered `/family` in `apps/web/src/App.tsx`.
+- **Comprehensive Verification:**
+  - **272 passed backend tests** in `backend/tests/` (100% pass across all 272 tests, including 13 tests in `test_family_finance.py`).
+  - **99 passed web tests** in `apps/web/` across 22 test suites (including 6 tests in `Family.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- **Technical Documentation Delivered (10 Documents):**
+  - `docs/FAMILY_FINANCE_ARCHITECTURE.md`
+  - `docs/FAMILY_FINANCIAL_OWNERSHIP.md`
+  - `docs/FAMILY_EXPENSE_ALLOCATION.md`
+  - `docs/FAMILY_CONTRIBUTION_MODEL.md`
+  - `docs/FAMILY_BUDGETING.md`
+  - `docs/FAMILY_GOALS.md`
+  - `docs/FAMILY_COMMITMENTS.md`
+  - `docs/FAMILY_ANALYTICS.md`
+  - `docs/FAMILY_PRIVACY_AND_AUTHORIZATION.md`
+  - `docs/FAMILY_AI_INTEGRATION.md`
+  - Updated `docs/ROLE_PERMISSION_MATRIX.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

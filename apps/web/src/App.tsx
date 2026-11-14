@@ -16,6 +16,7 @@ import { Anomalies } from '@/pages/Anomalies';
 import { Assistant } from '@/pages/Assistant';
 import { Documents } from '@/pages/Documents';
 import { Notifications } from '@/pages/Notifications';
+import { Family } from '@/pages/Family';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
@@ -241,6 +242,16 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Notifications />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/family"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Family />
               </AppLayout>
             </ProtectedRoute>
           }

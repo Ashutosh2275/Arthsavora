@@ -331,6 +331,41 @@ FINANCIAL_TOOLS: Dict[str, FinancialToolDefinitionVO] = {
         sensitivity=DataSensitivityEnum.CONFIDENTIAL,
         timeout_seconds=10,
     ),
+    "get_family_overview": FinancialToolDefinitionVO(
+        name="get_family_overview",
+        description="Retrieves consolidated household financial overview for family workspace (income, expenses, shared balances, budget progress).",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_FAMILY_FINANCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_family_settlement_summary": FinancialToolDefinitionVO(
+        name="get_family_settlement_summary",
+        description="Calculates member contribution totals, shared expenses paid, allocated shares, and net household settlement positions.",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "period": {"type": "string", "description": "Optional period in YYYY-MM format"},
+            },
+        },
+        required_permission=Permission.VIEW_FAMILY_FINANCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_family_commitments": FinancialToolDefinitionVO(
+        name="get_family_commitments",
+        description="Lists upcoming household recurring commitments, bills, and responsible members for family workspace.",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_FAMILY_FINANCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
 }
 
 

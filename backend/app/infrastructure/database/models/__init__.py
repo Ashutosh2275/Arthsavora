@@ -84,6 +84,14 @@ from app.infrastructure.database.models.notification import (
     NotificationTemplate,
     PushSubscription,
 )
+from app.infrastructure.database.models.family import (
+    FamilyProfile,
+    FamilyExpenseAllocation,
+    FamilyExpenseAllocationItem,
+    FamilyMemberContribution,
+    FamilyAccountShare,
+    FamilyActivity,
+)
 
 __all__ = [
     "User",
@@ -146,4 +154,10 @@ __all__ = [
     "NotificationPreference",
     "NotificationTemplate",
     "PushSubscription",
+    "FamilyProfile",
+    "FamilyExpenseAllocation",
+    "FamilyExpenseAllocationItem",
+    "FamilyMemberContribution",
+    "FamilyAccountShare",
+    "FamilyActivity",
 ]

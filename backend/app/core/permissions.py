@@ -115,6 +115,13 @@ class Permission(str, Enum):
     VIEW_NOTIFICATIONS = "notifications:view"
     MANAGE_NOTIFICATIONS = "notifications:manage"
 
+    # Family Finance Management & Collaborative Household Budgeting
+    VIEW_FAMILY_FINANCE = "family:view_finance"
+    MANAGE_FAMILY_FINANCE = "family:manage_finance"
+    MANAGE_FAMILY_ALLOCATIONS = "family:manage_allocations"
+    MANAGE_FAMILY_CONTRIBUTIONS = "family:manage_contributions"
+    MANAGE_FAMILY_SETTINGS = "family:manage_settings"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -167,6 +174,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_FAMILY_FINANCE,
+            Permission.MANAGE_FAMILY_FINANCE,
+            Permission.MANAGE_FAMILY_ALLOCATIONS,
+            Permission.MANAGE_FAMILY_CONTRIBUTIONS,
+            Permission.MANAGE_FAMILY_SETTINGS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -198,6 +210,21 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_FAMILY_FINANCE,
+            Permission.MANAGE_FAMILY_FINANCE,
+            Permission.MANAGE_FAMILY_ALLOCATIONS,
+            Permission.MANAGE_FAMILY_CONTRIBUTIONS,
+        },
+        "restricted": {
+            Permission.VIEW_WORKSPACE,
+            Permission.VIEW_MEMBERS,
+            Permission.VIEW_FAMILY_FINANCE,
+            Permission.VIEW_ACCOUNTS,
+            Permission.VIEW_TRANSACTIONS,
+            Permission.VIEW_BUDGETS,
+            Permission.VIEW_GOALS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.USE_ASSISTANT,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -218,7 +245,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.USE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
-            Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_FAMILY_FINANCE,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)

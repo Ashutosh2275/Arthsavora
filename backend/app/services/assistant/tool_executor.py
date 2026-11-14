@@ -21,6 +21,8 @@ from app.infrastructure.database.models.budget import Budget, BudgetAllocation
 from app.infrastructure.database.models.goal import FinancialGoal
 from app.infrastructure.database.models.recurring import RecurringDefinition, Subscription
 from app.infrastructure.database.models.transaction import Transaction
+from app.infrastructure.database.models.user import User
+from app.infrastructure.database.models.workspace import Workspace, WorkspaceMember
 from app.repositories.anomaly_repository import AnomalyRepository
 from app.repositories.document_repository import DocumentRepository
 from app.services.analytics.analytics_service import AnalyticsService
@@ -38,6 +40,7 @@ class ToolExecutor:
         tool_call: ToolCallVO,
         workspace_id: uuid.UUID,
         user_permissions: Set[str],
+        user_id: Optional[uuid.UUID] = None,
     ) -> ToolResultVO:
         """
         Executes a single requested tool call with permission enforcement and error normalization.
@@ -130,6 +133,18 @@ class ToolExecutor:
             # 17. Unread Notifications
             elif tool_call.tool_name == "get_unread_notifications":
                 return await self._exec_unread_notifications(tool_call, user_id, workspace_id, args)
+
+            # 18. Family Overview
+            elif tool_call.tool_name == "get_family_overview":
+                return await self._exec_family_overview(tool_call, user_id, workspace_id, args)
+
+            # 19. Family Settlement Summary
+            elif tool_call.tool_name == "get_family_settlement_summary":
+                return await self._exec_family_settlement_summary(tool_call, user_id, workspace_id, args)
+
+            # 20. Family Commitments
+            elif tool_call.tool_name == "get_family_commitments":
+                return await self._exec_family_commitments(tool_call, user_id, workspace_id, args)
 
             # 17-20. Action Proposal Drafts
             elif tool_call.tool_name in (
@@ -612,4 +627,136 @@ class ToolExecutor:
             tool_name=tc.tool_name,
             success=True,
             data={"unread_count": total, "notifications": notif_summaries},
+        )
+
+    async def _exec_family_overview(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.infrastructure.database.models.workspace import Workspace
+        from app.services.family_service import FamilyService
+        from app.core.permissions import WorkspaceContext
+
+        stmt = select(Workspace).where(Workspace.id == ws_id)
+        ws = (await self.db.execute(stmt)).scalar_one_or_none()
+        if not ws or ws.type != "family":
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="Active workspace is not a family workspace.",
+            )
+
+        user_stmt = select(User).where(User.id == user_id)
+        user = (await self.db.execute(user_stmt)).scalar_one()
+
+        member_stmt = select(WorkspaceMember).where(
+            WorkspaceMember.workspace_id == ws_id,
+            WorkspaceMember.user_id == user_id,
+        )
+        membership = (await self.db.execute(member_stmt)).scalar_one_or_none()
+        if not membership:
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="User is not a member of this family workspace.",
+            )
+
+        context = WorkspaceContext(
+            workspace=ws,
+            membership=membership,
+            current_user=user,
+            role=membership.role,
+        )
+        service = FamilyService(self.db)
+        overview = await service.get_family_overview(context)
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data=overview.model_dump(),
+        )
+
+    async def _exec_family_settlement_summary(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.infrastructure.database.models.workspace import Workspace
+        from app.services.family_service import FamilyService
+        from app.core.permissions import WorkspaceContext
+
+        stmt = select(Workspace).where(Workspace.id == ws_id)
+        ws = (await self.db.execute(stmt)).scalar_one_or_none()
+        if not ws or ws.type != "family":
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="Active workspace is not a family workspace.",
+            )
+
+        user_stmt = select(User).where(User.id == user_id)
+        user = (await self.db.execute(user_stmt)).scalar_one()
+
+        member_stmt = select(WorkspaceMember).where(
+            WorkspaceMember.workspace_id == ws_id,
+            WorkspaceMember.user_id == user_id,
+        )
+        membership = (await self.db.execute(member_stmt)).scalar_one_or_none()
+        if not membership:
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="User is not a member of this family workspace.",
+            )
+
+        context = WorkspaceContext(
+            workspace=ws,
+            membership=membership,
+            current_user=user,
+            role=membership.role,
+        )
+        period = args.get("period")
+        service = FamilyService(self.db)
+        summary = await service.get_settlement_summary(context, period)
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data=summary.model_dump(),
+        )
+
+    async def _exec_family_commitments(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.infrastructure.database.models.recurring import RecurringDefinition
+
+        stmt = (
+            select(RecurringDefinition)
+            .where(
+                RecurringDefinition.workspace_id == ws_id,
+                RecurringDefinition.status == "active",
+            )
+            .order_by(RecurringDefinition.next_expected_date.asc())
+            .limit(10)
+        )
+        res = await self.db.execute(stmt)
+        defs = res.scalars().all()
+        commitments = [
+            {
+                "id": str(d.id),
+                "name": d.name,
+                "amount": float(d.expected_amount),
+                "currency": d.currency,
+                "next_expected_date": str(d.next_expected_date) if d.next_expected_date else None,
+                "interval": d.interval,
+                "category": d.category.name if d.category else None,
+            }
+            for d in defs
+        ]
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={"commitments_count": len(commitments), "commitments": commitments},
         )

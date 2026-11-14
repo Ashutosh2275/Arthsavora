@@ -31,6 +31,7 @@ class WorkspaceRole(str, Enum):
     OWNER = "owner"
     ADMIN = "admin"
     MEMBER = "member"
+    RESTRICTED = "restricted"
     VIEWER = "viewer"
     ACCOUNTANT = "accountant"
     APPROVER = "approver"

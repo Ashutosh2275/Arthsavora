@@ -31,6 +31,11 @@ Arthsavora defines 16 granular application-level permissions:
 | `CREATE_TRANSACTIONS`| `transactions:create`| Record expenses, income, transfers, and journal entries |
 | `UPDATE_TRANSACTIONS`| `transactions:update`| Edit categorizations, notes, tags, and attachments |
 | `MANAGE_BUSINESS_PROFILE` | `business:manage_profile` | Modify GSTIN, PAN, FY dates, and statutory metadata |
+| `VIEW_FAMILY_FINANCE` | `family:view` | View family overview, shared budgets, and settlement recommendations |
+| `MANAGE_FAMILY_FINANCE` | `family:manage` | Configure household settings, currency, and settlement cadence |
+| `MANAGE_FAMILY_ALLOCATIONS` | `family:allocations:manage` | Create, revise, or cancel shared expense allocations |
+| `MANAGE_FAMILY_CONTRIBUTIONS` | `family:contributions:manage` | Record, confirm, or waive pool contributions |
+| `MANAGE_FAMILY_SETTINGS` | `family:settings:manage` | Modify family profile and restricted member view policies |
 
 ---
 
@@ -59,23 +64,28 @@ In a Personal Workspace, the user is the sole owner. No sub-roles exist.
 ### 3.2 Family Workspace
 Family workspaces coordinate household finances while protecting dependent members and sensitive accounts.
 
-| Permission | Owner | Admin | Member | Viewer |
-| :--- | :---: | :---: | :---: | :---: |
-| `VIEW_WORKSPACE` | Yes | Yes | Yes | Yes |
-| `UPDATE_WORKSPACE` | Yes | Yes | No | No |
-| `ARCHIVE_WORKSPACE` | Yes | Yes | No | No |
-| `RESTORE_WORKSPACE` | Yes | Yes | No | No |
-| `DELETE_WORKSPACE` | Yes | No | No | No |
-| `TRANSFER_OWNERSHIP` | Yes | No | No | No |
-| `VIEW_MEMBERS` | Yes | Yes | Yes | Yes |
-| `INVITE_MEMBERS` | Yes | Yes | No | No |
-| `UPDATE_MEMBER_ROLE` | Yes | Yes | No | No |
-| `REMOVE_MEMBERS` | Yes | Yes | No | No |
-| `VIEW_ACCOUNTS` | Yes | Yes | Yes | Yes |
-| `MANAGE_ACCOUNTS` | Yes | Yes | No | No |
-| `VIEW_TRANSACTIONS` | Yes | Yes | Yes | Yes |
-| `CREATE_TRANSACTIONS` | Yes | Yes | Yes | No |
-| `UPDATE_TRANSACTIONS` | Yes | Yes | No | No |
+| Permission | Owner | Admin | Member | Restricted | Viewer |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| `VIEW_WORKSPACE` | Yes | Yes | Yes | Yes | Yes |
+| `UPDATE_WORKSPACE` | Yes | Yes | No | No | No |
+| `ARCHIVE_WORKSPACE` | Yes | Yes | No | No | No |
+| `RESTORE_WORKSPACE` | Yes | Yes | No | No | No |
+| `DELETE_WORKSPACE` | Yes | No | No | No | No |
+| `TRANSFER_OWNERSHIP` | Yes | No | No | No | No |
+| `VIEW_MEMBERS` | Yes | Yes | Yes | Yes | Yes |
+| `INVITE_MEMBERS` | Yes | Yes | No | No | No |
+| `UPDATE_MEMBER_ROLE` | Yes | Yes | No | No | No |
+| `REMOVE_MEMBERS` | Yes | Yes | No | No | No |
+| `VIEW_ACCOUNTS` | Yes | Yes | Yes | No | Yes |
+| `MANAGE_ACCOUNTS` | Yes | Yes | No | No | No |
+| `VIEW_TRANSACTIONS` | Yes | Yes | Yes | No | Yes |
+| `CREATE_TRANSACTIONS` | Yes | Yes | Yes | No | No |
+| `UPDATE_TRANSACTIONS` | Yes | Yes | No | No | No |
+| `VIEW_FAMILY_FINANCE` | Yes | Yes | Yes | Yes | Yes |
+| `MANAGE_FAMILY_FINANCE` | Yes | Yes | No | No | No |
+| `MANAGE_FAMILY_ALLOCATIONS` | Yes | Yes | Yes | No | No |
+| `MANAGE_FAMILY_CONTRIBUTIONS` | Yes | Yes | Self Only | No | No |
+| `MANAGE_FAMILY_SETTINGS` | Yes | Yes | No | No | No |
 
 ---
 

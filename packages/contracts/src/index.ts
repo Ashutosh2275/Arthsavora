@@ -2682,6 +2682,226 @@ export interface PushSubscriptionCreateRequest {
   user_agent?: string | null;
 }
 
+// -----------------------------------------------------------------------------
+// Family Finance Management & Collaborative Household Budgeting (Prompt 21)
+// -----------------------------------------------------------------------------
+
+export type FamilyRole = 'owner' | 'admin' | 'member' | 'restricted' | 'viewer';
+export type AllocationMethod = 'equal' | 'fixed' | 'percentage' | 'custom';
+export type AllocationStatus = 'active' | 'revised' | 'cancelled';
+export type SettlementStatus = 'pending' | 'settled' | 'waived';
+export type ContributionType = 'monthly' | 'fixed' | 'percentage' | 'one_time' | 'voluntary';
+export type ContributionStatus = 'expected' | 'partially_paid' | 'paid' | 'overdue' | 'waived' | 'cancelled';
+export type AccountShareScope = 'balance_only' | 'summary_only' | 'full_visibility';
+
+export interface FamilyProfileDTO {
+  id: UUID;
+  workspace_id: UUID;
+  household_name: string;
+  household_currency: string;
+  household_timezone: string;
+  monthly_budget_start_day: number;
+  default_allocation_method: AllocationMethod | string;
+  contribution_reminder_day: number;
+  enable_shared_budget_alerts: boolean;
+  enable_contribution_reminders: boolean;
+  settings: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpdateFamilyProfileDTO {
+  household_name?: string;
+  household_currency?: string;
+  household_timezone?: string;
+  monthly_budget_start_day?: number;
+  default_allocation_method?: string;
+  contribution_reminder_day?: number;
+  enable_shared_budget_alerts?: boolean;
+  enable_contribution_reminders?: boolean;
+  settings?: Record<string, unknown>;
+}
+
+export interface FamilyMemberDTO {
+  id: UUID;
+  workspace_id: UUID;
+  user_id: UUID;
+  email: string;
+  full_name: string;
+  role: FamilyRole | string;
+  status: string;
+  joined_at: string;
+}
+
+export interface AllocationItemDTO {
+  id: UUID;
+  member_user_id: UUID;
+  member_name?: string | null;
+  assigned_share_paise: number;
+  assigned_share_decimal: number;
+  percentage?: number | null;
+  is_paid_by: boolean;
+  settlement_status: SettlementStatus | string;
+  notes?: string | null;
+}
+
+export interface FamilyAllocationDTO {
+  id: UUID;
+  workspace_id: UUID;
+  transaction_id: UUID;
+  transaction_description?: string | null;
+  allocation_method: AllocationMethod | string;
+  total_amount_paise: number;
+  total_amount_decimal: number;
+  currency: string;
+  status: AllocationStatus | string;
+  version: number;
+  notes?: string | null;
+  items: AllocationItemDTO[];
+  created_at: string;
+}
+
+export interface CreateAllocationDTO {
+  transaction_id: UUID;
+  allocation_method: AllocationMethod | string;
+  member_user_ids?: UUID[];
+  member_shares_paise?: Record<string, number>;
+  member_percentages?: Record<string, number>;
+  payer_user_id?: UUID | null;
+  notes?: string | null;
+}
+
+export interface FamilyContributionDTO {
+  id: UUID;
+  workspace_id: UUID;
+  member_user_id: UUID;
+  member_name?: string | null;
+  period: string;
+  contribution_type: ContributionType | string;
+  expected_amount_paise: number;
+  expected_amount_decimal: number;
+  paid_amount_paise: number;
+  paid_amount_decimal: number;
+  currency: string;
+  due_date?: string | null;
+  status: ContributionStatus | string;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface RecordContributionDTO {
+  member_user_id: UUID;
+  period: string;
+  contribution_type?: ContributionType | string;
+  expected_amount_paise?: number;
+  paid_amount_paise?: number;
+  due_date?: string | null;
+  recorded_transaction_id?: UUID | null;
+  notes?: string | null;
+}
+
+export interface MemberSettlementDTO {
+  member_user_id: UUID;
+  full_name: string;
+  email: string;
+  role: string;
+  total_expenses_paid_paise: number;
+  total_expenses_paid_decimal: number;
+  total_contributions_paid_paise: number;
+  total_contributions_paid_decimal: number;
+  total_allocated_share_paise: number;
+  total_allocated_share_decimal: number;
+  net_position_paise: number;
+  net_position_decimal: number;
+  currency: string;
+  status: 'surplus' | 'deficit' | 'settled';
+}
+
+export interface SettlementRecommendationDTO {
+  from_member_id: UUID;
+  from_member_name: string;
+  to_member_id: UUID;
+  to_member_name: string;
+  amount_paise: number;
+  amount_decimal: number;
+  currency: string;
+  note: string;
+}
+
+export interface FamilySettlementSummaryDTO {
+  workspace_id: UUID;
+  period?: string | null;
+  currency: string;
+  total_shared_expenses_paise: number;
+  total_shared_expenses_decimal: number;
+  total_contributions_paid_paise: number;
+  total_contributions_paid_decimal: number;
+  total_allocated_paise: number;
+  total_allocated_decimal: number;
+  member_settlements: MemberSettlementDTO[];
+  recommendations: SettlementRecommendationDTO[];
+}
+
+export interface SharedAccountDTO {
+  id: UUID;
+  family_workspace_id: UUID;
+  account_id: UUID;
+  account_name: string;
+  account_type: string;
+  masked_identifier?: string | null;
+  shared_by_user_id: UUID;
+  shared_by_name?: string | null;
+  share_scope: AccountShareScope | string;
+  current_balance_paise: number;
+  current_balance_decimal: number;
+  currency: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface FamilyActivityDTO {
+  id: UUID;
+  workspace_id: UUID;
+  actor_user_id?: UUID | null;
+  actor_name?: string | null;
+  activity_type: string;
+  resource_type: string;
+  resource_id: string;
+  title: string;
+  description: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface FamilyOverviewDTO {
+  profile: FamilyProfileDTO;
+  member_count: number;
+  total_household_income_paise: number;
+  total_household_income_decimal: number;
+  total_household_expense_paise: number;
+  total_household_expense_decimal: number;
+  net_household_savings_paise: number;
+  net_household_savings_decimal: number;
+  shared_account_balances_paise: number;
+  shared_account_balances_decimal: number;
+  budget_utilization_pct: number;
+  active_budgets_count: number;
+  active_goals_count: number;
+  upcoming_commitments_count: number;
+  top_expense_categories: Array<{ category: string; amount_paise: number; amount_decimal: number }>;
+  recent_shared_transactions: Array<{
+    id: string;
+    description: string;
+    amount_paise: number;
+    amount_decimal: number;
+    currency: string;
+    direction: string;
+    transaction_date: string;
+    paid_by: string;
+  }>;
+}
+
+
 
 
 

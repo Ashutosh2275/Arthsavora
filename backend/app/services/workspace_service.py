@@ -442,7 +442,7 @@ class WorkspaceService:
         # Validate allowed roles per workspace type
         allowed_roles_per_type = {
             "personal": {"owner"},
-            "family": {"admin", "member", "viewer"},
+            "family": {"admin", "member", "restricted", "viewer"},
             "business": {"admin", "accountant", "approver", "staff", "viewer"},
         }
         allowed = allowed_roles_per_type.get(context.workspace.type, set())

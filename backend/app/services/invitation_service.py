@@ -61,7 +61,7 @@ class InvitationService:
         # Check role validity for workspace type
         allowed_roles = {
             "personal": set(),  # Personal workspaces do not permit invites
-            "family": {"admin", "member", "viewer"},
+            "family": {"admin", "member", "restricted", "viewer"},
             "business": {"admin", "accountant", "approver", "staff", "viewer"},
         }
         valid_roles = allowed_roles.get(context.workspace.type, set())
