@@ -21,18 +21,19 @@
 **Prompt 13 Commit Hash:** `b83724a`  
 **Prompt 14 Commit Hash:** `ddfa119`  
 **Prompt 15 Commit Hash:** `6a7d981`  
-**Remote Push Verification:** Prompts 01–15 pushed and verified on `origin/main`  
+**Prompt 16 Commit Hash:** `3695228`  
+**Remote Push Verification:** Prompts 01–16 pushed and verified on `origin/main`  
 
 ---
 
 ## 1. PROGRAMME STATUS OVERVIEW
 
 - **Total Planned Prompts:** 30
-- **Current Stage:** Stage 3 — Financial Intelligence & Categorization (Prompts 11–15)
-- **Current Prompt:** Prompt 15 — Recurring Transactions, Subscription Management and Cash-Flow Commitments [15]
-- **Completed Prompts:** 15 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, and Recurring Transactions/Subscriptions established)
-- **Prompt 15 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 16 — Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence [16]
+- **Current Stage:** Stage 4 — Advanced Analytics & Forecasting (Prompts 16–20)
+- **Current Prompt:** Prompt 16 — Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence [16]
+- **Completed Prompts:** 16 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, and Financial Forecasting established)
+- **Prompt 16 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 17 — Business Expense Categorization & Vendor Management [17]
 
 ---
 
@@ -55,7 +56,7 @@
 | **13** | Stage 3 | Milestone Goals & Real Ledger-Backed Savings Velocity Engine | UPCOMING | - |
 | **14** | Stage 3 | Personal Budgeting, Financial Goals and Spending Controls | **COMPLETED** | `ddfa119` |
 | **15** | Stage 3 | Recurring Transactions, Subscription Management and Cash-Flow Commitments | **COMPLETED** | `6a7d981` |
-| **16** | Stage 4 | Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence | UPCOMING | - |
+| **16** | Stage 4 | Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence | **COMPLETED** | `3695228` |
 | **17** | Stage 4 | Business Expense Categorization & Vendor Management | UPCOMING | - |
 | **18** | Stage 4 | Cross-Platform Mobile Application Setup (React Native + Expo) | UPCOMING | - |
 | **19** | Stage 4 | Mobile Native Financial Features (On-Device SMS Sync & Biometrics) | UPCOMING | - |
@@ -627,6 +628,54 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/COMMITMENT_ANALYTICS.md`
   - `docs/RECURRING_NOTIFICATION_POLICY.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+### Prompt 16: Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence [16]
+- **Status:** COMPLETED & VERIFIED
+- **Core Domain & Principles:**
+  - Institutional financial forecasting engine providing probabilistic cash flow, income, expense, and balance trajectories.
+  - Strict financial correctness: Forecasts are informational estimates, not guaranteed outcomes. Zero ledger or account balance mutations.
+  - Exact monetary precision: 64-bit integer minor units (`paise`) and fixed-point `NUMERIC(18, 4)`. Floating point strictly prohibited.
+  - Decoupling commitments from discretionary projections: Scheduled recurring commitments (Prompt 15) incorporated on exact dates, while discretionary spend is modeled without double counting.
+  - Data eligibility and non-fabrication rule: If history is sparse (< 7 active days), engine flags `"insufficient_data"` and transparently uses historical mean fallback without synthesizing artificial records.
+  - Candidate models suite: Historical Mean, Moving Average (7/14-day), Simple Exponential Smoothing ($\alpha=0.3$), Additive Holt-Winters (level, trend, weekly seasonality), and Damped Linear Trend.
+  - Walk-forward rolling-origin cross-validation: MAE, RMSE, WAPE ($\sum |y - \hat{y}| / \sum y$), Bias, Interval Coverage probability. Automated model selector chooses lowest WAPE, requiring a 2% hurdle over baseline.
+  - Confidence intervals: Calibrated 80% ($z=1.28$) and 95% ($z=1.96$) bounds expanding over horizon time steps ($\sqrt{1 + k/\lambda}$).
+  - Budget exhaustion engine: Daily burn rate, remaining capacity, utilization %, and exhaustion dates across active Prompt 14 budgets.
+  - Savings goal trajectory engine: Historical contribution pace and projected completion dates for Prompt 14 financial goals.
+  - Deterministic scenario sandbox: Baseline, Optimistic, Conservative, and Custom simulations with multipliers and one-time items.
+- **Database Schema & Models:**
+  - Migration `878257d2f03d_add_financial_forecasting_and_scenarios.py` applied cleanly to PostgreSQL 18.
+  - Relational models: `ForecastRun`, `ForecastPoint`, `FinancialScenario`, `ForecastEvaluation`.
+- **Backend Architecture & Routes:**
+  - `app/domain/forecasting.py`: Pure domain models, walk-forward cross-validation, models suite, cash-flow balance equation, budget exhaustion, goal velocity, and scenario simulations.
+  - `app/repositories/forecast_repository.py`: Multi-tenant workspace-isolated CRUD and queries.
+  - `app/services/forecasting/`: `DataPreparationService`, `ForecastingService`, `ScenarioService`, `BudgetExhaustionService`, `GoalProjectionService`.
+  - `app/schemas/forecast_schema.py`: Pydantic request/response schemas with exact decimal/paise validation.
+  - `app/api/v1/forecast_routes.py`: 13 REST endpoints mounted at `/forecasts` and `/workspaces/{workspace_id}/forecasts`. App route count: 314 routes.
+  - OpenAPI exported to `docs/openapi.json`.
+- **Frontend State & Interactive UI:**
+  - TypeScript contracts added to `packages/contracts/src/index.ts`.
+  - Zustand store: `apps/web/src/store/useForecastStore.ts`.
+  - Page: `apps/web/src/pages/Forecast.tsx` (Cash Flow Timeline, Income & Category Breakdown, Budget Exhaustion & Goals, What-If Scenarios).
+  - Navigation wired in `apps/web/src/App.tsx` and `apps/web/src/components/layout/AppLayout.tsx`.
+- **Comprehensive Verification:**
+  - **206 passed backend tests** in `backend/tests/` (100% pass across all 206 tests, including 13 tests in `test_financial_forecasting.py`).
+  - **71 passed web tests** in `apps/web/` across 17 test suites (including 5 tests in `Forecast.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- **Technical Documentation Delivered (10 Documents):**
+  - `docs/FORECASTING_ARCHITECTURE.md`
+  - `docs/FINANCIAL_DATA_PREPARATION.md`
+  - `docs/INCOME_EXPENSE_FORECASTING.md`
+  - `docs/CASH_FLOW_FORECASTING.md`
+  - `docs/FORECAST_MODEL_EVALUATION.md`
+  - `docs/FORECAST_UNCERTAINTY.md`
+  - `docs/FINANCIAL_SCENARIO_ENGINE.md`
+  - `docs/FORECAST_MODEL_LIFECYCLE.md`
+  - `docs/FORECAST_PRIVACY_SECURITY.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

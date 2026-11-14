@@ -19303,6 +19303,1706 @@
         }
       }
     },
+    "/api/v1/forecasts/generate": {
+      "post": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Generate Financial Forecast",
+        "description": "Executes a new forecasting run, evaluating out-of-sample models and integrating recurring commitments.",
+        "operationId": "generate_forecast_api_v1_forecasts_generate_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForecastGenerateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/latest": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Latest Forecast Overview",
+        "description": "Retrieves the most recent completed cash-flow forecast, or generates one if none exists.",
+        "operationId": "get_latest_forecast_api_v1_forecasts_latest_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/cash-flow": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Cash-Flow Projections",
+        "description": "Returns forward-looking cash flow and ending balance trajectory with confidence intervals.",
+        "operationId": "get_cash_flow_forecast_api_v1_forecasts_cash_flow_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/income": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Income Forecast",
+        "description": "Returns expected income breakdown separating scheduled commitments from statistical estimates.",
+        "operationId": "get_income_forecast_api_v1_forecasts_income_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_IncomeForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/expenses": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Expense Forecast",
+        "description": "Returns expected expense breakdown separating scheduled commitments from discretionary spending.",
+        "operationId": "get_expense_forecast_api_v1_forecasts_expenses_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ExpenseForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/categories": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Category Spending Forecasts",
+        "description": "Returns forward spending estimates by category with trend directions.",
+        "operationId": "get_category_forecasts_api_v1_forecasts_categories_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CategoryForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/budget-exhaustion": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Budget Exhaustion Estimates",
+        "description": "Calculates current spending burn rate and projects budget exhaustion dates.",
+        "operationId": "get_budget_exhaustion_api_v1_forecasts_budget_exhaustion_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_BudgetExhaustionResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/goals": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Goal Completion Trajectories",
+        "description": "Projects goal completion milestones based on current balance and monthly savings velocity.",
+        "operationId": "get_goal_trajectories_api_v1_forecasts_goals_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_GoalTrajectoryResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/scenarios": {
+      "post": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Create & Evaluate Financial Scenario",
+        "description": "Executes a deterministic what-if scenario adjusting income, expenses, and one-time items without mutating actual records.",
+        "operationId": "create_scenario_api_v1_forecasts_scenarios_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ScenarioResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "List Financial Scenarios",
+        "description": "Lists all saved what-if financial scenarios for the workspace.",
+        "operationId": "list_scenarios_api_v1_forecasts_scenarios_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_ScenarioResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/scenarios/{scenario_id}": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Financial Scenario Details",
+        "description": "Retrieves assumptions and simulated timeline results for a specific scenario.",
+        "operationId": "get_scenario_api_v1_forecasts_scenarios__scenario_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ScenarioResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Delete Financial Scenario",
+        "description": "Deletes a hypothetical scenario from the workspace.",
+        "operationId": "delete_scenario_api_v1_forecasts_scenarios__scenario_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_bool_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecasts/evaluations": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "List Forecast Model Evaluations",
+        "description": "Returns time-series empirical accuracy metrics (MAE, RMSE, WAPE, Bias, Interval Coverage).",
+        "operationId": "list_evaluations_api_v1_forecasts_evaluations_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "metric_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metric Type"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_EvaluationResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/generate": {
+      "post": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Generate Financial Forecast",
+        "description": "Executes a new forecasting run, evaluating out-of-sample models and integrating recurring commitments.",
+        "operationId": "generate_forecast_api_v1_workspaces__workspace_id__forecasts_generate_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForecastGenerateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/latest": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Latest Forecast Overview",
+        "description": "Retrieves the most recent completed cash-flow forecast, or generates one if none exists.",
+        "operationId": "get_latest_forecast_api_v1_workspaces__workspace_id__forecasts_latest_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/cash-flow": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Cash-Flow Projections",
+        "description": "Returns forward-looking cash flow and ending balance trajectory with confidence intervals.",
+        "operationId": "get_cash_flow_forecast_api_v1_workspaces__workspace_id__forecasts_cash_flow_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/income": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Income Forecast",
+        "description": "Returns expected income breakdown separating scheduled commitments from statistical estimates.",
+        "operationId": "get_income_forecast_api_v1_workspaces__workspace_id__forecasts_income_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_IncomeForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/expenses": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Expense Forecast",
+        "description": "Returns expected expense breakdown separating scheduled commitments from discretionary spending.",
+        "operationId": "get_expense_forecast_api_v1_workspaces__workspace_id__forecasts_expenses_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ExpenseForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/categories": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Category Spending Forecasts",
+        "description": "Returns forward spending estimates by category with trend directions.",
+        "operationId": "get_category_forecasts_api_v1_workspaces__workspace_id__forecasts_categories_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 365,
+              "minimum": 7,
+              "default": 30,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CategoryForecastResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/budget-exhaustion": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Budget Exhaustion Estimates",
+        "description": "Calculates current spending burn rate and projects budget exhaustion dates.",
+        "operationId": "get_budget_exhaustion_api_v1_workspaces__workspace_id__forecasts_budget_exhaustion_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_BudgetExhaustionResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/goals": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Goal Completion Trajectories",
+        "description": "Projects goal completion milestones based on current balance and monthly savings velocity.",
+        "operationId": "get_goal_trajectories_api_v1_workspaces__workspace_id__forecasts_goals_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_GoalTrajectoryResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/scenarios": {
+      "post": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Create & Evaluate Financial Scenario",
+        "description": "Executes a deterministic what-if scenario adjusting income, expenses, and one-time items without mutating actual records.",
+        "operationId": "create_scenario_api_v1_workspaces__workspace_id__forecasts_scenarios_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ScenarioResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "List Financial Scenarios",
+        "description": "Lists all saved what-if financial scenarios for the workspace.",
+        "operationId": "list_scenarios_api_v1_workspaces__workspace_id__forecasts_scenarios_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Skip"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_ScenarioResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/scenarios/{scenario_id}": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Get Financial Scenario Details",
+        "description": "Retrieves assumptions and simulated timeline results for a specific scenario.",
+        "operationId": "get_scenario_api_v1_workspaces__workspace_id__forecasts_scenarios__scenario_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ScenarioResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "Delete Financial Scenario",
+        "description": "Deletes a hypothetical scenario from the workspace.",
+        "operationId": "delete_scenario_api_v1_workspaces__workspace_id__forecasts_scenarios__scenario_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_bool_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/forecasts/evaluations": {
+      "get": {
+        "tags": [
+          "Financial Forecasting, Cash-Flow Prediction & Scenarios"
+        ],
+        "summary": "List Forecast Model Evaluations",
+        "description": "Returns time-series empirical accuracy metrics (MAE, RMSE, WAPE, Bias, Interval Coverage).",
+        "operationId": "list_evaluations_api_v1_workspaces__workspace_id__forecasts_evaluations_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "metric_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Metric Type"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_EvaluationResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/signup": {
       "post": {
         "tags": [
@@ -21355,6 +23055,37 @@
         ],
         "title": "ApiResponse[BudgetDetailResponse]"
       },
+      "ApiResponse_BudgetExhaustionResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/BudgetExhaustionResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[BudgetExhaustionResponse]"
+      },
       "ApiResponse_BudgetProgressResponse_": {
         "properties": {
           "status": {
@@ -21417,6 +23148,37 @@
         ],
         "title": "ApiResponse[CashFlowCommitmentsResponse]"
       },
+      "ApiResponse_CashFlowForecastResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CashFlowForecastResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[CashFlowForecastResponse]"
+      },
       "ApiResponse_CashFlowTrendsResponse_": {
         "properties": {
           "status": {
@@ -21447,6 +23209,37 @@
           "data"
         ],
         "title": "ApiResponse[CashFlowTrendsResponse]"
+      },
+      "ApiResponse_CategoryForecastResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CategoryForecastResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[CategoryForecastResponse]"
       },
       "ApiResponse_CategoryResponse_": {
         "properties": {
@@ -21573,6 +23366,37 @@
           "data"
         ],
         "title": "ApiResponse[Dict[str, Any]]"
+      },
+      "ApiResponse_ExpenseForecastResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ExpenseForecastResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[ExpenseForecastResponse]"
       },
       "ApiResponse_FeedbackResponse_": {
         "properties": {
@@ -21728,6 +23552,68 @@
           "data"
         ],
         "title": "ApiResponse[GoalResponse]"
+      },
+      "ApiResponse_GoalTrajectoryResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/GoalTrajectoryResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[GoalTrajectoryResponse]"
+      },
+      "ApiResponse_IncomeForecastResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/IncomeForecastResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[IncomeForecastResponse]"
       },
       "ApiResponse_List_BudgetAlertResponse__": {
         "properties": {
@@ -21939,6 +23825,41 @@
           "data"
         ],
         "title": "ApiResponse[List[Dict[str, Any]]]"
+      },
+      "ApiResponse_List_EvaluationResponse__": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationResponse"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[List[EvaluationResponse]]"
       },
       "ApiResponse_List_GoalActivityResponse__": {
         "properties": {
@@ -22184,6 +24105,41 @@
           "data"
         ],
         "title": "ApiResponse[List[RuleResponse]]"
+      },
+      "ApiResponse_List_ScenarioResponse__": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioResponse"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[List[ScenarioResponse]]"
       },
       "ApiResponse_List_SubscriptionResponse__": {
         "properties": {
@@ -22468,6 +24424,37 @@
         ],
         "title": "ApiResponse[RuleResponse]"
       },
+      "ApiResponse_ScenarioResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ScenarioResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[ScenarioResponse]"
+      },
       "ApiResponse_SubscriptionResponse_": {
         "properties": {
           "status": {
@@ -22536,6 +24523,38 @@
           "data"
         ],
         "title": "ApiResponse[Union[ClassificationResponse, NoneType]]"
+      },
+      "ApiResponse_bool_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "type": "boolean",
+            "title": "Data",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[bool]"
       },
       "ApiResponse_dict_": {
         "properties": {
@@ -23748,6 +25767,36 @@
         "title": "BudgetDetailResponse",
         "description": "Detailed representation of a budget including all allocations."
       },
+      "BudgetExhaustionResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "as_of_date": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of Date"
+          },
+          "estimates": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Estimates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "as_of_date",
+          "estimates"
+        ],
+        "title": "BudgetExhaustionResponse",
+        "description": "Budget exhaustion estimates."
+      },
       "BudgetLinearProjectionResponse": {
         "properties": {
           "days_in_period": {
@@ -24608,6 +26657,132 @@
         ],
         "title": "CashFlowCommitmentsResponse"
       },
+      "CashFlowForecastResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "forecast_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Forecast Run Id"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "resolution": {
+            "type": "string",
+            "title": "Resolution"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "starting_balance_paise": {
+            "type": "integer",
+            "title": "Starting Balance Paise"
+          },
+          "starting_balance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Starting Balance"
+          },
+          "projected_ending_balance_paise": {
+            "type": "integer",
+            "title": "Projected Ending Balance Paise"
+          },
+          "projected_ending_balance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Projected Ending Balance"
+          },
+          "total_projected_inflow_paise": {
+            "type": "integer",
+            "title": "Total Projected Inflow Paise"
+          },
+          "total_projected_inflow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Projected Inflow"
+          },
+          "total_projected_outflow_paise": {
+            "type": "integer",
+            "title": "Total Projected Outflow Paise"
+          },
+          "total_projected_outflow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Projected Outflow"
+          },
+          "net_cash_flow_paise": {
+            "type": "integer",
+            "title": "Net Cash Flow Paise"
+          },
+          "net_cash_flow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Cash Flow"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "data_quality_score": {
+            "type": "number",
+            "title": "Data Quality Score"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "timeline": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Timeline"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "forecast_run_id",
+          "horizon_days",
+          "resolution",
+          "currency",
+          "starting_balance_paise",
+          "starting_balance",
+          "projected_ending_balance_paise",
+          "projected_ending_balance",
+          "total_projected_inflow_paise",
+          "total_projected_inflow",
+          "total_projected_outflow_paise",
+          "total_projected_outflow",
+          "net_cash_flow_paise",
+          "net_cash_flow",
+          "model_name",
+          "model_version",
+          "data_quality_score",
+          "status",
+          "timeline",
+          "created_at"
+        ],
+        "title": "CashFlowForecastResponse",
+        "description": "Complete cash-flow forward projection."
+      },
       "CashFlowTrendPoint": {
         "properties": {
           "period_start": {
@@ -24807,6 +26982,115 @@
           "category_type"
         ],
         "title": "CategoryCreateRequest"
+      },
+      "CategoryForecastItem": {
+        "properties": {
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "category_name": {
+            "type": "string",
+            "title": "Category Name"
+          },
+          "projected_amount_paise": {
+            "type": "integer",
+            "title": "Projected Amount Paise"
+          },
+          "projected_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Projected Amount"
+          },
+          "lower_amount_paise": {
+            "type": "integer",
+            "title": "Lower Amount Paise"
+          },
+          "lower_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Lower Amount"
+          },
+          "upper_amount_paise": {
+            "type": "integer",
+            "title": "Upper Amount Paise"
+          },
+          "upper_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Upper Amount"
+          },
+          "historical_monthly_average_paise": {
+            "type": "integer",
+            "title": "Historical Monthly Average Paise"
+          },
+          "historical_monthly_average": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Historical Monthly Average"
+          },
+          "trend_direction": {
+            "type": "string",
+            "title": "Trend Direction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category_name",
+          "projected_amount_paise",
+          "projected_amount",
+          "lower_amount_paise",
+          "lower_amount",
+          "upper_amount_paise",
+          "upper_amount",
+          "historical_monthly_average_paise",
+          "historical_monthly_average",
+          "trend_direction"
+        ],
+        "title": "CategoryForecastItem",
+        "description": "Category-wise forward expenditure."
+      },
+      "CategoryForecastResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "forecast_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Forecast Run Id"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryForecastItem"
+            },
+            "type": "array",
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "forecast_run_id",
+          "horizon_days",
+          "categories"
+        ],
+        "title": "CategoryForecastResponse",
+        "description": "Category spending projections."
       },
       "CategoryResponse": {
         "properties": {
@@ -25501,6 +27785,107 @@
         ],
         "title": "EndOfMonthPolicy"
       },
+      "EvaluationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "metric_type": {
+            "type": "string",
+            "title": "Metric Type"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "mae_paise": {
+            "type": "integer",
+            "title": "Mae Paise"
+          },
+          "mae": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Mae"
+          },
+          "rmse_paise": {
+            "type": "integer",
+            "title": "Rmse Paise"
+          },
+          "rmse": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Rmse"
+          },
+          "wape": {
+            "type": "number",
+            "title": "Wape"
+          },
+          "bias_paise": {
+            "type": "integer",
+            "title": "Bias Paise"
+          },
+          "bias": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Bias"
+          },
+          "interval_coverage": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval Coverage"
+          },
+          "sample_size": {
+            "type": "integer",
+            "title": "Sample Size"
+          },
+          "is_best_model": {
+            "type": "boolean",
+            "title": "Is Best Model"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "workspace_id",
+          "model_name",
+          "metric_type",
+          "horizon_days",
+          "mae_paise",
+          "mae",
+          "rmse_paise",
+          "rmse",
+          "wape",
+          "bias_paise",
+          "bias",
+          "sample_size",
+          "is_best_model",
+          "created_at"
+        ],
+        "title": "EvaluationResponse",
+        "description": "Empirical time-series model evaluation."
+      },
       "ExpenseCreate": {
         "properties": {
           "amount": {
@@ -25533,6 +27918,78 @@
           "description"
         ],
         "title": "ExpenseCreate"
+      },
+      "ExpenseForecastResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "forecast_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Forecast Run Id"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "total_expected_expense_paise": {
+            "type": "integer",
+            "title": "Total Expected Expense Paise"
+          },
+          "total_expected_expense": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Expected Expense"
+          },
+          "scheduled_commitments_paise": {
+            "type": "integer",
+            "title": "Scheduled Commitments Paise"
+          },
+          "scheduled_commitments": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Scheduled Commitments"
+          },
+          "discretionary_expense_paise": {
+            "type": "integer",
+            "title": "Discretionary Expense Paise"
+          },
+          "discretionary_expense": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Discretionary Expense"
+          },
+          "model_used": {
+            "type": "string",
+            "title": "Model Used"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastPointResponse"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "forecast_run_id",
+          "horizon_days",
+          "total_expected_expense_paise",
+          "total_expected_expense",
+          "scheduled_commitments_paise",
+          "scheduled_commitments",
+          "discretionary_expense_paise",
+          "discretionary_expense",
+          "model_used",
+          "points"
+        ],
+        "title": "ExpenseForecastResponse",
+        "description": "Expense projection breakdown."
       },
       "ExpenseOut": {
         "properties": {
@@ -25822,6 +28279,156 @@
         ],
         "title": "FinancialOverviewResponse",
         "description": "Authoritative high-level financial summary KPIs."
+      },
+      "ForecastGenerateRequest": {
+        "properties": {
+          "horizon_days": {
+            "type": "integer",
+            "maximum": 365.0,
+            "minimum": 7.0,
+            "title": "Horizon Days",
+            "description": "Forecast window (7, 30, 90, 180, 365 days)",
+            "default": 30
+          },
+          "resolution": {
+            "type": "string",
+            "title": "Resolution",
+            "description": "Aggregation resolution: daily, weekly, or monthly",
+            "default": "daily"
+          },
+          "preferred_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Model",
+            "description": "Optional forced model identifier or None for auto-selection"
+          },
+          "include_recurring": {
+            "type": "boolean",
+            "title": "Include Recurring",
+            "description": "Whether to include confirmed recurring commitments from Prompt 15",
+            "default": true
+          },
+          "confidence_level": {
+            "type": "number",
+            "maximum": 0.99,
+            "minimum": 0.5,
+            "title": "Confidence Level",
+            "description": "Confidence interval width (default 80%)",
+            "default": 0.8
+          }
+        },
+        "type": "object",
+        "title": "ForecastGenerateRequest",
+        "description": "Request payload to trigger a financial forecasting run."
+      },
+      "ForecastPointResponse": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "forecast_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Forecast Date"
+          },
+          "metric_type": {
+            "type": "string",
+            "title": "Metric Type"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "category_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Name"
+          },
+          "point_estimate_paise": {
+            "type": "integer",
+            "title": "Point Estimate Paise"
+          },
+          "point_estimate": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Point Estimate"
+          },
+          "lower_estimate_paise": {
+            "type": "integer",
+            "title": "Lower Estimate Paise"
+          },
+          "lower_estimate": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Lower Estimate"
+          },
+          "upper_estimate_paise": {
+            "type": "integer",
+            "title": "Upper Estimate Paise"
+          },
+          "upper_estimate": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Upper Estimate"
+          },
+          "confidence_level": {
+            "type": "number",
+            "title": "Confidence Level"
+          },
+          "is_recurring_commitment": {
+            "type": "boolean",
+            "title": "Is Recurring Commitment",
+            "default": false
+          },
+          "breakdown_metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Breakdown Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "forecast_date",
+          "metric_type",
+          "point_estimate_paise",
+          "point_estimate",
+          "lower_estimate_paise",
+          "lower_estimate",
+          "upper_estimate_paise",
+          "upper_estimate",
+          "confidence_level"
+        ],
+        "title": "ForecastPointResponse",
+        "description": "Projected time-series point."
       },
       "GoalActivityRequest": {
         "properties": {
@@ -26497,6 +29104,36 @@
         ],
         "title": "GoalResponse",
         "description": "Representation of a financial goal."
+      },
+      "GoalTrajectoryResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "as_of_date": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of Date"
+          },
+          "goals": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Goals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "as_of_date",
+          "goals"
+        ],
+        "title": "GoalTrajectoryResponse",
+        "description": "Savings goal trajectory estimates."
       },
       "GoalUpdateRequest": {
         "properties": {
@@ -27287,6 +29924,78 @@
         ],
         "title": "ImportUploadResponse",
         "description": "Response returned upon successful file upload and parsing."
+      },
+      "IncomeForecastResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "forecast_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Forecast Run Id"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "total_expected_income_paise": {
+            "type": "integer",
+            "title": "Total Expected Income Paise"
+          },
+          "total_expected_income": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Expected Income"
+          },
+          "scheduled_income_paise": {
+            "type": "integer",
+            "title": "Scheduled Income Paise"
+          },
+          "scheduled_income": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Scheduled Income"
+          },
+          "estimated_discretionary_income_paise": {
+            "type": "integer",
+            "title": "Estimated Discretionary Income Paise"
+          },
+          "estimated_discretionary_income": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Estimated Discretionary Income"
+          },
+          "model_used": {
+            "type": "string",
+            "title": "Model Used"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ForecastPointResponse"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "forecast_run_id",
+          "horizon_days",
+          "total_expected_income_paise",
+          "total_expected_income",
+          "scheduled_income_paise",
+          "scheduled_income",
+          "estimated_discretionary_income_paise",
+          "estimated_discretionary_income",
+          "model_used",
+          "points"
+        ],
+        "title": "IncomeForecastResponse",
+        "description": "Income projection breakdown."
       },
       "InvitationResponse": {
         "properties": {
@@ -30146,6 +32855,146 @@
         },
         "type": "object",
         "title": "RuleUpdateRequest"
+      },
+      "ScenarioCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "scenario_type": {
+            "type": "string",
+            "title": "Scenario Type",
+            "description": "baseline, optimistic, conservative, custom",
+            "default": "custom"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "maximum": 365.0,
+            "minimum": 7.0,
+            "title": "Horizon Days",
+            "default": 30
+          },
+          "income_change_pct": {
+            "type": "number",
+            "title": "Income Change Pct",
+            "description": "Percentage change to regular income (e.g. +10.0 or -5.0)",
+            "default": 0.0
+          },
+          "expense_change_pct": {
+            "type": "number",
+            "title": "Expense Change Pct",
+            "description": "Percentage change to discretionary expenses (e.g. -15.0)",
+            "default": 0.0
+          },
+          "one_time_inflows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "One Time Inflows",
+            "description": "List of {date: YYYY-MM-DD, amount_paise: int, description: str}"
+          },
+          "one_time_outflows": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "One Time Outflows",
+            "description": "List of {date: YYYY-MM-DD, amount_paise: int, description: str}"
+          },
+          "monthly_savings_change_paise": {
+            "type": "integer",
+            "title": "Monthly Savings Change Paise",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "ScenarioCreateRequest",
+        "description": "Payload to build a deterministic what-if scenario."
+      },
+      "ScenarioResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "scenario_type": {
+            "type": "string",
+            "title": "Scenario Type"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "assumptions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Assumptions"
+          },
+          "results": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Results"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "workspace_id",
+          "name",
+          "scenario_type",
+          "horizon_days",
+          "assumptions",
+          "results",
+          "created_at"
+        ],
+        "title": "ScenarioResponse",
+        "description": "Deterministic scenario calculation result."
       },
       "SubscriptionCreateRequest": {
         "properties": {

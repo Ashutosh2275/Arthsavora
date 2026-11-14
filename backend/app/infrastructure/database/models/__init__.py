@@ -53,6 +53,12 @@ from app.infrastructure.database.models.recurring import (
     RecurringReminder,
     RecurringSuggestion,
 )
+from app.infrastructure.database.models.forecast import (
+    ForecastRun,
+    ForecastPoint,
+    FinancialScenario,
+    ForecastEvaluation,
+)
 
 __all__ = [
     "User",
@@ -94,4 +100,8 @@ __all__ = [
     "Subscription",
     "RecurringReminder",
     "RecurringSuggestion",
+    "ForecastRun",
+    "ForecastPoint",
+    "FinancialScenario",
+    "ForecastEvaluation",
 ]

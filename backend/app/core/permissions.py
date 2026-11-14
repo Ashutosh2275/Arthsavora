@@ -95,6 +95,10 @@ class Permission(str, Enum):
     VIEW_SUBSCRIPTIONS = "subscriptions:view"
     MANAGE_SUBSCRIPTIONS = "subscriptions:manage"
 
+    # Financial Forecasting, Cash-Flow Prediction & Scenarios
+    VIEW_FORECASTS = "forecasts:view"
+    MANAGE_FORECASTS = "forecasts:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -137,6 +141,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
             Permission.MANAGE_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
+            Permission.MANAGE_FORECASTS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -159,6 +165,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
             Permission.MANAGE_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
+            Permission.MANAGE_FORECASTS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -174,6 +182,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_GOALS,
             Permission.VIEW_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -217,6 +226,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
             Permission.MANAGE_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
+            Permission.MANAGE_FORECASTS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -249,6 +260,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
             Permission.MANAGE_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
+            Permission.MANAGE_FORECASTS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -266,6 +279,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_GOALS,
             Permission.VIEW_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -281,6 +295,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_GOALS,
             Permission.VIEW_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -295,6 +310,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_GOALS,
             Permission.VIEW_RECURRING,
             Permission.VIEW_SUBSCRIPTIONS,
+            Permission.VIEW_FORECASTS,
         },
     },
 }

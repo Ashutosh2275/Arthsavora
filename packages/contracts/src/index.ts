@@ -1937,6 +1937,211 @@ export interface CashFlowCommitmentsResponse {
   upcoming_occurrences: OccurrenceResponse[];
 }
 
+// -------------------------------------------------------------------------
+// Financial Forecasting, Cash-Flow Prediction & Scenarios Contracts
+// -------------------------------------------------------------------------
+
+export interface ForecastGenerateRequest {
+  horizon_days?: number;
+  resolution?: string;
+  preferred_model?: string | null;
+  include_recurring?: boolean;
+  confidence_level?: number;
+}
+
+export interface ForecastPointResponse {
+  id?: UUID | null;
+  forecast_date: string;
+  metric_type: string;
+  category_id?: UUID | null;
+  category_name?: string | null;
+  point_estimate_paise: number;
+  point_estimate: number | string;
+  lower_estimate_paise: number;
+  lower_estimate: number | string;
+  upper_estimate_paise: number;
+  upper_estimate: number | string;
+  confidence_level: number;
+  is_recurring_commitment: boolean;
+  breakdown_metadata?: Record<string, any>;
+}
+
+export interface CashFlowForecastResponse {
+  workspace_id: UUID;
+  forecast_run_id: UUID;
+  horizon_days: number;
+  resolution: string;
+  currency: string;
+  starting_balance_paise: number;
+  starting_balance: number | string;
+  projected_ending_balance_paise: number;
+  projected_ending_balance: number | string;
+  total_projected_inflow_paise: number;
+  total_projected_inflow: number | string;
+  total_projected_outflow_paise: number;
+  total_projected_outflow: number | string;
+  net_cash_flow_paise: number;
+  net_cash_flow: number | string;
+  model_name: string;
+  model_version: string;
+  data_quality_score: number;
+  status: string;
+  timeline: Array<{
+    date: string;
+    starting_balance_paise: number;
+    inflow_paise: number;
+    inflow_recurring_paise: number;
+    outflow_paise: number;
+    outflow_recurring_paise: number;
+    net_cash_flow_paise: number;
+    projected_balance_paise: number;
+    lower_balance_paise: number;
+    upper_balance_paise: number;
+  }>;
+  created_at: string;
+}
+
+export interface IncomeForecastResponse {
+  workspace_id: UUID;
+  forecast_run_id: UUID;
+  horizon_days: number;
+  total_expected_income_paise: number;
+  total_expected_income: number | string;
+  scheduled_income_paise: number;
+  scheduled_income: number | string;
+  estimated_discretionary_income_paise: number;
+  estimated_discretionary_income: number | string;
+  model_used: string;
+  points: ForecastPointResponse[];
+}
+
+export interface ExpenseForecastResponse {
+  workspace_id: UUID;
+  forecast_run_id: UUID;
+  horizon_days: number;
+  total_expected_expense_paise: number;
+  total_expected_expense: number | string;
+  scheduled_commitments_paise: number;
+  scheduled_commitments: number | string;
+  discretionary_expense_paise: number;
+  discretionary_expense: number | string;
+  model_used: string;
+  points: ForecastPointResponse[];
+}
+
+export interface CategoryForecastItem {
+  category_id?: UUID | null;
+  category_name: string;
+  projected_amount_paise: number;
+  projected_amount: number | string;
+  lower_amount_paise: number;
+  lower_amount: number | string;
+  upper_amount_paise: number;
+  upper_amount: number | string;
+  historical_monthly_average_paise: number;
+  historical_monthly_average: number | string;
+  trend_direction: string;
+}
+
+export interface CategoryForecastResponse {
+  workspace_id: UUID;
+  forecast_run_id: UUID;
+  horizon_days: number;
+  categories: CategoryForecastItem[];
+}
+
+export interface BudgetExhaustionItem {
+  budget_id: string;
+  budget_name: string;
+  category_id?: string | null;
+  category_name?: string | null;
+  total_allocated_paise: number;
+  total_allocated: number | string;
+  current_spend_paise: number;
+  current_spend: number | string;
+  remaining_paise: number;
+  remaining: number | string;
+  burn_rate_daily_paise: number;
+  burn_rate_daily: number | string;
+  utilization_pct: number;
+  estimated_exhaustion_date?: string | null;
+  days_to_exhaustion?: number | null;
+  status: string;
+}
+
+export interface BudgetExhaustionResponse {
+  workspace_id: UUID;
+  as_of_date: string;
+  estimates: BudgetExhaustionItem[];
+}
+
+export interface GoalTrajectoryItem {
+  goal_id: string;
+  goal_name: string;
+  target_amount_paise: number;
+  target_amount: number | string;
+  current_balance_paise: number;
+  current_balance: number | string;
+  remaining_paise: number;
+  remaining: number | string;
+  target_date?: string | null;
+  monthly_savings_pace_paise: number;
+  monthly_savings_pace: number | string;
+  projected_completion_date?: string | null;
+  is_on_track: boolean;
+  status: string;
+}
+
+export interface GoalTrajectoryResponse {
+  workspace_id: UUID;
+  as_of_date: string;
+  goals: GoalTrajectoryItem[];
+}
+
+export interface ScenarioCreateRequest {
+  name: string;
+  description?: string;
+  scenario_type?: string;
+  horizon_days?: number;
+  income_change_pct?: number;
+  expense_change_pct?: number;
+  one_time_inflows?: Array<{ date: string; amount_paise: number; description?: string }>;
+  one_time_outflows?: Array<{ date: string; amount_paise: number; description?: string }>;
+  monthly_savings_change_paise?: number;
+}
+
+export interface ScenarioResponse {
+  id: UUID;
+  workspace_id: UUID;
+  name: string;
+  description?: string | null;
+  scenario_type: string;
+  horizon_days: number;
+  assumptions: Record<string, any>;
+  results: Record<string, any>;
+  created_at: string;
+}
+
+export interface EvaluationResponse {
+  id: UUID;
+  workspace_id: UUID;
+  model_name: string;
+  metric_type: string;
+  horizon_days: number;
+  mae_paise: number;
+  mae: number | string;
+  rmse_paise: number;
+  rmse: number | string;
+  wape: number;
+  bias_paise: number;
+  bias: number | string;
+  interval_coverage?: number | null;
+  sample_size: number;
+  is_best_model: boolean;
+  created_at: string;
+}
+
+
 
 
 

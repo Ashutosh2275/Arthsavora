@@ -9,6 +9,7 @@ from app.api.v1 import (
     analytics_routes,
     auth,
     budget_routes,
+    forecast_routes,
     goal_routes,
     health,
     import_routes,
@@ -48,3 +49,5 @@ v1_router.include_router(goal_routes.router, prefix="/goals")
 v1_router.include_router(goal_routes.router, prefix="/workspaces/{workspace_id}/goals")
 v1_router.include_router(recurring_routes.router, prefix="/recurring")
 v1_router.include_router(recurring_routes.router, prefix="/workspaces/{workspace_id}/recurring")
+v1_router.include_router(forecast_routes.router, prefix="/forecasts")
+v1_router.include_router(forecast_routes.router, prefix="/workspaces/{workspace_id}/forecasts")
