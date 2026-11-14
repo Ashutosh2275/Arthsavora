@@ -333,6 +333,70 @@ def create_period_closed_event(
     )
 
 
+def create_import_job_created_event(
+    workspace_id: uuid.UUID,
+    job_id: uuid.UUID,
+    source_type: str,
+    original_filename: Optional[str],
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="import.job_created",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "job_id": str(job_id),
+            "source_type": source_type,
+            "original_filename": original_filename,
+        },
+    )
+
+
+def create_import_job_completed_event(
+    workspace_id: uuid.UUID,
+    job_id: uuid.UUID,
+    total_records: int,
+    imported_records: int,
+    duplicate_records: int,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="import.job_completed",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "job_id": str(job_id),
+            "total_records": total_records,
+            "imported_records": imported_records,
+            "duplicate_records": duplicate_records,
+        },
+    )
+
+
+def create_import_job_failed_event(
+    workspace_id: uuid.UUID,
+    job_id: uuid.UUID,
+    error_summary: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="import.job_failed",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "job_id": str(job_id),
+            "error_summary": error_summary,
+        },
+    )
+
+
+
 # ---------------------------------------------------------------------------
 # Outbox Collector
 # ---------------------------------------------------------------------------

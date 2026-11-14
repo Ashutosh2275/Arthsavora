@@ -5,6 +5,7 @@ import Dashboard from '@/pages/Dashboard';
 import Accounts from '@/pages/Accounts';
 import Transactions from '@/pages/Transactions';
 import { Ledger } from '@/pages/Ledger';
+import { Import } from '@/pages/Import';
 import Expenses from '@/pages/Expenses';
 import Budget from '@/pages/Budget';
 import Goals from '@/pages/Goals';
@@ -63,6 +64,16 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Ledger />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/import"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Import />
               </AppLayout>
             </ProtectedRoute>
           }

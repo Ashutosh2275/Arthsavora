@@ -190,3 +190,86 @@ class SystemAccountProtectedError(DomainError):
             code="SYSTEM_ACCOUNT_PROTECTED",
             details={"account_code": account_code, "account_name": account_name},
         )
+
+
+class ImportProcessingError(DomainError):
+    """Raised when statement processing or parsing fails critically."""
+
+    def __init__(
+        self,
+        message: str,
+        job_id: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        d = details or {}
+        if job_id:
+            d["job_id"] = str(job_id)
+        super().__init__(message=message, code="IMPORT_PROCESSING_ERROR", details=d)
+
+
+class InvalidFileFormatError(DomainError):
+    """Raised when an uploaded file cannot be parsed or violates structural formats."""
+
+    def __init__(
+        self,
+        message: str,
+        format_detected: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        d = details or {}
+        if format_detected:
+            d["format_detected"] = format_detected
+        super().__init__(message=message, code="INVALID_FILE_FORMAT", details=d)
+
+
+class FileTooLargeError(DomainError):
+    """Raised when an uploaded statement file exceeds the maximum allowed payload size."""
+
+    def __init__(
+        self,
+        file_size: int,
+        max_size: int,
+        message: Optional[str] = None,
+    ):
+        msg = (
+            message
+            or f"File size of {file_size} bytes exceeds maximum allowed limit of {max_size} bytes (10MB)."
+        )
+        super().__init__(
+            message=msg,
+            code="FILE_TOO_LARGE",
+            details={"file_size": file_size, "max_size": max_size},
+        )
+
+
+class UnsafeFileError(DomainError):
+    """Raised when an uploaded file fails cryptographic, MIME, or magic signature security verification."""
+
+    def __init__(
+        self,
+        message: str,
+        reason: Optional[str] = None,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        d = details or {}
+        if reason:
+            d["reason"] = reason
+        super().__init__(message=message, code="UNSAFE_FILE_DETECTED", details=d)
+
+
+class DuplicateImportError(DomainError):
+    """Raised when an identical statement file (by SHA-256 hash) has already been processed."""
+
+    def __init__(
+        self,
+        file_hash: str,
+        existing_job_id: str,
+        message: Optional[str] = None,
+    ):
+        msg = message or f"Identical file has already been uploaded in job '{existing_job_id}'."
+        super().__init__(
+            message=msg,
+            code="DUPLICATE_IMPORT_FILE",
+            details={"file_hash": file_hash, "existing_job_id": str(existing_job_id)},
+        )
+

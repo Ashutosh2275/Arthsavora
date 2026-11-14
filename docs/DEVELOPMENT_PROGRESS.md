@@ -422,6 +422,68 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - **37 passed web tests** in `apps/web/` across 10 test suites (including 5 tests in `Ledger.test.tsx`).
   - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
 
+---
+
+## Prompt 11: Transaction Import, Statement Processing and Data Acquisition [COMPLETED]
+
+- [x] **Relational Domain Model & Schema Migrations:**
+  - Expanded `ImportJob` PostgreSQL model with: `account_id`, `original_filename`, `storage_reference`, `file_checksum`, `file_size`, `mime_type`, `valid_records`, `invalid_records`, `duplicate_records`, `imported_records`, `processing_metadata`, and `completed_at`.
+  - Created `ImportBatch` model with columns for formats, row counts, custom column mappings, opening/closing balances, calculated closing balance, and discrepancy.
+  - Created `ImportCandidate` staging model with columns for raw parsed data, normalized data, validation status/errors, duplicate status/match reference, confidence score, review status, selection flag, and created transaction reference.
+  - Applied Alembic migration `f585e5963394_expand_import_and_data_acquisition.py` to production and test PostgreSQL databases.
+- [x] **Secure File Ingestion & Storage Subsystem:**
+  - Enforced 10 MB maximum file size limit (`FileTooLargeError`).
+  - Implemented cryptographic magic byte signatures verification (`%PDF-`, `PK\x03\x04`, plain text) to prevent file extension spoofing (`UnsafeFileError`).
+  - Implemented SHA-256 idempotency checksumming to detect and prevent duplicate statement uploads (`DuplicateImportError`).
+  - Implemented sandboxed file storage with path traversal sanitization and UUID isolation under `storage/imports/{workspace_id}/{job_id}/`.
+- [x] **Multi-Format Parsers & Adapters:**
+  - `CsvStatementParser`: RFC 4180 compliant with dialect sniffing (comma, semicolon, tab, pipe), multi-encoding fallback (UTF-8, UTF-8-sig, Latin-1, CP1252), Indian bank header detection (HDFC, SBI, ICICI, Axis, Kotak), and summary/total row suppression.
+  - `XlsxStatementParser`: Memory-bounded streaming via `openpyxl` with **formula execution disabled** (`data_only=True`, `read_only=True`) and multi-sheet inspection/selection.
+  - `PdfStatementParser`: Vector table extraction via `pdfplumber`, text coordinate fallback for borderless tables, opening and closing balance regex extraction with negative lookahead to protect dates.
+  - `OcrStatementAdapter`: Scanned statement handling via Tesseract OCR with image thresholding, text extraction, and confidence tracking (`0.70`).
+- [x] **Normalization, Validation & Multi-Level Deduplication:**
+  - `StatementNormalizer`: Normalizes dates to ISO 8601 `YYYY-MM-DD`, parses Indian number formatting (`1,25,000.50`), resolves parentheses/debit indicators to exact `Decimal` and integer minor units (`amount_paise`), and infers transaction direction and type.
+  - `StatementValidator`: Evaluates candidates as `valid`, `invalid`, or `ambiguous` with structured error messages.
+  - `StatementDeduplicator`: Enforces file-level SHA-256 duplicate rejection, exact reference ID matching, probable matching ($\pm 1$ day, same account, same amount in paise, same direction), and intra-batch duplicate detection without silent data loss.
+- [x] **Statement Balance Reconciliation:**
+  - Computes: $\text{Calculated Closing Balance} = \text{Opening Balance} + \sum \text{Inflows} - \sum \text{Outflows}$.
+  - Derives reconciliation discrepancy $\Delta = \text{Reported Closing Balance} - \text{Calculated Closing Balance}$ and exposes dedicated reconciliation endpoint.
+- [x] **Staged Review & Atomic General Ledger Confirmation:**
+  - Separated statement parsing from transaction creation: parsed records are staged as candidates and never posted without explicit review.
+  - Confirmation endpoint creates operational `Transaction` records, updates account balance in exact integer paise, and posts balanced journal entries to the General Ledger via `LedgerService.post_transaction_to_ledger`.
+- [x] **API Endpoints & RBAC:**
+  - Dual-mounted endpoints at `/api/v1/workspaces/{workspace_id}/imports/*` and `/api/v1/imports/*`:
+    - `POST /upload`: Multipart file upload with optional column mapping.
+    - `GET /jobs`: Workspace import history list with status filtering.
+    - `GET /jobs/{job_id}`: Import job progress and candidate summary metrics.
+    - `GET /jobs/{job_id}/candidates`: Paginated candidate review table with filter by validation/duplicate/review status.
+    - `PATCH /jobs/{job_id}/candidates/{candidate_id}`: Edit candidate fields and toggle import selection.
+    - `POST /jobs/{job_id}/batches/{batch_id}/confirm`: Atomic batch confirmation to Transactions and General Ledger.
+    - `GET /jobs/{job_id}/batches/{batch_id}/reconciliation`: Real-time statement balance reconciliation analysis.
+  - Enforced `Permission.IMPORT_DATA` and `Permission.VIEW_IMPORTS` with anti-IDOR workspace scoping (404 on cross-workspace access).
+- [x] **Frontend UI & Web Store:**
+  - Built Zustand store `apps/web/src/store/useImportStore.ts`.
+  - Built responsive Statement Import page `apps/web/src/pages/Import.tsx` with drag-and-drop file upload, format badges, custom column mapping accordion, candidate review table, metric stat cards, balance reconciliation card, candidate edit modal, and confirm modal.
+  - Mounted `/import` route in `apps/web/src/App.tsx` and added top navigation link in `apps/web/src/components/layout/AppLayout.tsx`.
+- [x] **Monorepo Contracts & OpenAPI:**
+  - Updated `docs/openapi.json` (110 paths, 80 schema components).
+  - Synchronized TypeScript contracts in `packages/contracts/src/index.ts`.
+- [x] **Comprehensive Test Verification:**
+  - **136 passed backend tests** in `backend/tests/` (100% pass across all 136 tests, including 10 new comprehensive integration tests in `test_import_and_data_acquisition.py`).
+  - **41 passed web tests** in `apps/web/` across 11 test suites (including 4 new tests in `Import.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- [x] **Technical Documentation Delivered (8 Documents):**
+  - `docs/DATA_ACQUISITION_ARCHITECTURE.md`
+  - `docs/IMPORT_PIPELINE.md`
+  - `docs/CSV_IMPORT_STANDARD.md`
+  - `docs/PDF_STATEMENT_PROCESSING.md`
+  - `docs/IMPORT_VALIDATION_RULES.md`
+  - `docs/IMPORT_DEDUPLICATION.md`
+  - `docs/STATEMENT_RECONCILIATION.md`
+  - `docs/IMPORT_SECURITY.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+
 
 
 

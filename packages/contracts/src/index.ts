@@ -819,4 +819,185 @@ export interface TrialBalanceResponse {
   entries: TrialBalanceEntry[];
 }
 
+// -------------------------------------------------------------------------
+// Statement Ingestion & Data Acquisition Contracts
+// -------------------------------------------------------------------------
+
+export type ImportStatus =
+  | 'uploaded'
+  | 'validating'
+  | 'processing'
+  | 'awaiting_review'
+  | 'confirmed'
+  | 'partially_confirmed'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+  | 'expired';
+
+export type ImportSourceType =
+  | 'csv'
+  | 'xlsx'
+  | 'pdf_statement'
+  | 'credit_card_statement'
+  | 'manual';
+
+export type SourceFormat = 'csv' | 'xlsx' | 'pdf_text' | 'pdf_ocr' | 'manual';
+export type ValidationStatus = 'valid' | 'invalid' | 'ambiguous' | 'duplicate';
+export type DuplicateStatus = 'none' | 'exact' | 'probable';
+export type ReviewStatus = 'pending' | 'accepted' | 'rejected' | 'edited';
+
+export interface ImportCandidateResponse {
+  id: string;
+  import_batch_id: string;
+  workspace_id: string;
+  account_id?: string | null;
+  source_row_number: number;
+  raw_data: Record<string, unknown>;
+  normalized_data: {
+    transaction_date?: string | null;
+    description?: string | null;
+    amount?: string | null;
+    amount_paise?: number | null;
+    direction?: string | null;
+    transaction_type?: string | null;
+    currency?: string | null;
+    reference_number?: string | null;
+    balance?: string | null;
+    balance_paise?: number | null;
+  };
+  validation_status: ValidationStatus;
+  validation_errors: string[];
+  duplicate_status: DuplicateStatus;
+  duplicate_match_id?: string | null;
+  duplicate_reason?: string | null;
+  confidence_score: string | number;
+  review_status: ReviewStatus;
+  selected_for_import: boolean;
+  created_transaction_id?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ImportCandidateUpdateRequest {
+  selected_for_import?: boolean;
+  review_status?: ReviewStatus;
+  description?: string;
+  transaction_date?: string;
+  amount?: number | string;
+  direction?: string;
+  transaction_type?: string;
+  category_id?: string;
+}
+
+export interface ImportBatchResponse {
+  id: string;
+  import_job_id: string;
+  workspace_id: string;
+  source_format: SourceFormat;
+  sheet_name?: string | null;
+  row_count: number;
+  valid_row_count: number;
+  invalid_row_count: number;
+  duplicate_count: number;
+  processing_status: string;
+  column_mapping: Record<string, string>;
+  opening_balance?: string | null;
+  closing_balance?: string | null;
+  calculated_closing_balance?: string | null;
+  reconciliation_difference?: string | null;
+  metadata_payload: Record<string, unknown>;
+  created_at: string;
+}
+
+export interface ImportJobSummary {
+  id: string;
+  workspace_id: string;
+  user_id: string;
+  account_id?: string | null;
+  source_type: ImportSourceType;
+  original_filename?: string | null;
+  file_size?: number | null;
+  mime_type?: string | null;
+  status: ImportStatus;
+  total_records: number;
+  valid_records: number;
+  invalid_records: number;
+  duplicate_records: number;
+  imported_records: number;
+  error_summary?: string | null;
+  created_at: string;
+  completed_at?: string | null;
+}
+
+export interface ImportUploadResponse {
+  job_id: string;
+  batch_id: string;
+  status: ImportStatus;
+  source_type: ImportSourceType;
+  original_filename?: string | null;
+  total_records: number;
+  valid_records: number;
+  invalid_records: number;
+  duplicate_records: number;
+  available_sheets: string[];
+  reconciliation: {
+    opening_balance?: string | null;
+    closing_balance?: string | null;
+    calculated_closing_balance?: string | null;
+    difference?: string | null;
+    is_reconciled?: boolean | null;
+  };
+  candidates_preview: {
+    id: string;
+    row: number;
+    date?: string | null;
+    description?: string | null;
+    amount?: string | null;
+    direction?: string | null;
+    status: string;
+    duplicate: string;
+    selected: boolean;
+  }[];
+}
+
+export interface ImportConfirmRequest {
+  target_account_id?: string | null;
+}
+
+export interface ImportConfirmResponse {
+  job_id: string;
+  status: ImportStatus;
+  imported_count: number;
+  created_transaction_ids: string[];
+  completed_at?: string | null;
+}
+
+export interface ImportReconciliationReport {
+  batch_id: string;
+  opening_balance?: string | null;
+  closing_balance?: string | null;
+  total_inflows: string;
+  total_outflows: string;
+  calculated_closing_balance?: string | null;
+  difference?: string | null;
+  is_reconciled: boolean;
+  details: Record<string, unknown>;
+}
+
+export interface ImportJobListResponse {
+  items: ImportJobSummary[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface ImportCandidateListResponse {
+  items: ImportCandidateResponse[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+
 

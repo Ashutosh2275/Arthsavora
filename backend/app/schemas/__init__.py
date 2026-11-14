@@ -79,6 +79,18 @@ from .accounting import (
     TrialBalanceEntry,
     TrialBalanceResponse,
 )
+from .import_schema import (
+    ImportBatchResponse,
+    ImportCandidateListResponse,
+    ImportCandidateResponse,
+    ImportCandidateUpdateRequest,
+    ImportConfirmRequest,
+    ImportConfirmResponse,
+    ImportJobListResponse,
+    ImportJobSummary,
+    ImportReconciliationReport,
+    ImportUploadResponse,
+)
 
 __all__ = [
     "ApiResponse",
@@ -134,4 +146,14 @@ __all__ = [
     "AccountBalanceResponse",
     "TrialBalanceEntry",
     "TrialBalanceResponse",
+    "ImportBatchResponse",
+    "ImportCandidateListResponse",
+    "ImportCandidateResponse",
+    "ImportCandidateUpdateRequest",
+    "ImportConfirmRequest",
+    "ImportConfirmResponse",
+    "ImportJobListResponse",
+    "ImportJobSummary",
+    "ImportReconciliationReport",
+    "ImportUploadResponse",
 ]

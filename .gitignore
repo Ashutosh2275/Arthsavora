@@ -38,3 +38,7 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local Storage and Logs
+storage/
+*.log

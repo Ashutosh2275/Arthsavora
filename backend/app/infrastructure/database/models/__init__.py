@@ -21,7 +21,14 @@ from app.infrastructure.database.models.accounting import (
     JournalLine,
     AccountingPeriod,
 )
-from app.infrastructure.database.models.acquisition import DataSource, ConsentRecord, ImportJob, ImportFile
+from app.infrastructure.database.models.acquisition import (
+    DataSource,
+    ConsentRecord,
+    ImportJob,
+    ImportFile,
+    ImportBatch,
+    ImportCandidate,
+)
 from app.infrastructure.database.models.audit import AuditLog
 
 __all__ = [
@@ -45,5 +52,7 @@ __all__ = [
     "ConsentRecord",
     "ImportJob",
     "ImportFile",
+    "ImportBatch",
+    "ImportCandidate",
     "AuditLog",
 ]
