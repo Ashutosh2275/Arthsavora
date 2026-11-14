@@ -25,10 +25,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 3 — Financial Intelligence & Categorization (Prompts 11–15)
-- **Current Prompt:** Prompt 12 — Transaction Categorization and Merchant Intelligence [12]
-- **Completed Prompts:** 12 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, and Categorization/Merchant Intelligence fully established)
-- **Prompt 12 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 13 — Milestone Goals & Real Ledger-Backed Savings Velocity Engine [13]
+- **Current Prompt:** Prompt 13 — Financial Analytics, Spending Insights and Dashboard Intelligence [13]
+- **Completed Prompts:** 13 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, and Financial Analytics Engine established)
+- **Prompt 13 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 14 — Financial Anomaly Detection, Fraud Prevention & Risk Surveillance Engine [14]
 
 ---
 
@@ -530,6 +530,60 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/USER_FEEDBACK_LEARNING.md`
   - `docs/AI_PRIVACY_BOUNDARIES.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+### Prompt 13: Financial Analytics, Spending Insights and Dashboard Intelligence [13]
+- **Status:** COMPLETED & VERIFIED
+- **Core Domain & Principles:**
+  - Strict derivation from verified financial records (`transactions` with `status = 'posted'`, and `accounts` / `journal_entries` for balance sheet derivation).
+  - Multi-currency safety: strict currency isolation (`INR` default) with zero unverified cross-currency summation.
+  - Paired internal transfers and credit card bill payments (`credit_card_payment`) strictly excluded from operating cash flow to prevent artificial turnover inflation and living-cost double counting.
+  - Contra-expense treatment for merchant refunds: Net Operating Expenses = Gross Expenses - Refunds.
+  - India Financial Year (FY) calculation support: 1 April – 31 March (e.g. FY 2025-26, FY 2026-27).
+  - Server-side PostgreSQL aggregation queries avoiding runtime deserialization of transaction histories.
+  - Transparent data quality indicators: uncategorized transactions count/amount, excluded transfers volume, and excluded pending holds volume.
+  - CSV Formula Injection defense neutralizing macro execution (`=`, `+`, `-`, `@`, `\t`, `\r`) via apostrophe prefixing.
+- **Backend Architecture & Routes:**
+  - `app/domain/analytics.py`: Date bounds (India FY, month, quarter, equal previous period), savings rate math, percentage deltas, sentiments, and CSV cell sanitization.
+  - `app/repositories/analytics_repository.py`: High-performance PostgreSQL aggregation queries for overview, cash flow trends, category breakdown, top merchants, and net worth.
+  - `app/services/analytics/analytics_service.py`: Service orchestrating queries, enforcing 10-year bounded spans, validating ISO currency codes, and building sanitized CSV streams.
+  - `app/schemas/analytics_schema.py`: Pydantic request/response schemas with exact decimal and paise representation.
+  - `app/api/v1/analytics_routes.py`: Authenticated REST endpoints guarded by `Permission.VIEW_ANALYTICS` and `Permission.EXPORT_ANALYTICS`:
+    * `GET /overview`: Summary KPIs, net cash flow, savings rate, and data quality indicators.
+    * `GET /cash-flow`: Bucketed time series with cumulative cash flow for trend visualization.
+    * `GET /categories`: Category breakdown with percentages and uncategorized handling.
+    * `GET /merchants`: Top merchant spending ranking with average ticket and frequency.
+    * `GET /net-worth`: Balance sheet position (Assets - Liabilities = Net Worth).
+    * `GET /comparison`: Period-over-period performance comparison with delta sentiments.
+    * `GET /export`: Sanitized CSV report streaming.
+- **Frontend State & Interactive UI:**
+  - `apps/web/src/store/useAnalyticsStore.ts`: Zustand store managing filters (date presets, custom range, grouping, account filter, currency) and parallel analytics fetching.
+  - `apps/web/src/pages/Dashboard.tsx`: Comprehensive personal finance dashboard featuring:
+    * Net Worth, Inflow, Outflow, Net Cash Flow, and Savings Rate KPI cards with comparative delta badges.
+    * Recharts Area/Line chart for Cash Flow trajectory (Inflow vs Outflow vs Net Cash Flow).
+    * Recharts Donut chart for Category distribution with custom legends.
+    * Top Merchant ranking table with ticket size and frequency.
+    * Balance Sheet asset vs liability breakdown.
+    * Data quality & transparency banner highlighting uncategorized spending and excluded transfers.
+    * Filter toolbar supporting date presets ("This Month", "Last Month", "This Quarter", "Current FY (India)", "Last 30 Days", "Last 90 Days", "Custom").
+    * One-click CSV export menu for all report types.
+- **Test Coverage & Verification:**
+  - Backend: 14 dedicated pytest tests in `backend/tests/test_financial_analytics.py` (100% passed). Full backend test suite: **170 passed in 50.87s**.
+  - Frontend: 6 vitest unit tests in `apps/web/src/pages/__tests__/Dashboard.test.tsx` (100% passed). Full web test suite: **52 passed across 13 test files in 17.09s**.
+  - TypeScript: Zero errors across all 5 workspace packages in `pnpm -r run typecheck`.
+  - OpenAPI: Schema updated with 148 paths in `docs/openapi.json`.
+- **Documentation:**
+  - `docs/ANALYTICS_ARCHITECTURE.md`
+  - `docs/FINANCIAL_METRIC_DICTIONARY.md`
+  - `docs/CASH_FLOW_ANALYTICS.md`
+  - `docs/CATEGORY_MERCHANT_ANALYTICS.md`
+  - `docs/NET_WORTH_CALCULATION.md`
+  - `docs/ANALYTICS_API_REFERENCE.md`
+  - `docs/ANALYTICS_PERFORMANCE.md`
+  - `docs/ANALYTICS_DATA_QUALITY.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

@@ -10721,6 +10721,1786 @@
         }
       }
     },
+    "/api/v1/analytics/overview": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Financial Overview & Summary KPIs",
+        "description": "Computes income, expenses, refunds, net cash flow, savings rate, and data quality indicators.\nServer-side aggregation from verified PostgreSQL records.",
+        "operationId": "get_financial_overview_api_v1_analytics_overview_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 1st of current month)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 1st of current month)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_FinancialOverviewResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/cash-flow": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Cash Flow Trends Over Time",
+        "description": "Retrieves bucketed cash flow series (income, expense, net flow, cumulative flow)\nfor interactive charting and trend inspection.",
+        "operationId": "get_cash_flow_trends_api_v1_analytics_cash_flow_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 90 days ago)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 90 days ago)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "grouping",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PeriodGrouping",
+              "description": "Temporal interval (day, week, month, quarter, financial_year)",
+              "default": "month"
+            },
+            "description": "Temporal interval (day, week, month, quarter, financial_year)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowTrendsResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/categories": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Category Spending Distribution",
+        "description": "Returns breakdown of expenditure by category with percentage distribution and transaction counts.\nHandles uncategorized transactions safely.",
+        "operationId": "get_category_spending_api_v1_analytics_categories_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 1st of month)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 1st of month)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Direction filter ('outflow' or 'inflow')",
+              "default": "outflow",
+              "title": "Direction"
+            },
+            "description": "Direction filter ('outflow' or 'inflow')"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Max categories to return",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Max categories to return"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CategorySpendingResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/merchants": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Top Merchant Spending & Ticket Sizes",
+        "description": "Ranks top commercial merchants by total spend, transaction volume, and average ticket size.",
+        "operationId": "get_merchant_spending_api_v1_analytics_merchants_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 1st of month)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 1st of month)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Max merchants to rank",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Max merchants to rank"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_MerchantSpendingResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/net-worth": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Account Balances & Net Worth",
+        "description": "Derives real-time balance sheet position:\nAssets minus Liabilities equals Net Worth.",
+        "operationId": "get_net_worth_api_v1_analytics_net_worth_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_NetWorthResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/comparison": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Period-over-Period Performance Comparison",
+        "description": "Compares two periods with exact monetary deltas, percentage shifts, and directional favorability sentiments.",
+        "operationId": "get_period_comparison_api_v1_analytics_comparison_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "current_start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Current period start date",
+              "title": "Current Start"
+            },
+            "description": "Current period start date"
+          },
+          {
+            "name": "current_end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Current period end date",
+              "title": "Current End"
+            },
+            "description": "Current period end date"
+          },
+          {
+            "name": "previous_start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Prior period start (auto-computed if omitted)",
+              "title": "Previous Start"
+            },
+            "description": "Prior period start (auto-computed if omitted)"
+          },
+          {
+            "name": "previous_end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Prior period end (auto-computed if omitted)",
+              "title": "Previous End"
+            },
+            "description": "Prior period end (auto-computed if omitted)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_PeriodComparisonResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/export": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Export Financial Analytics as CSV",
+        "description": "Streams a sanitized CSV file of the requested analytics report.\nProtects against CSV formula injection.",
+        "operationId": "export_analytics_csv_api_v1_analytics_export_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ReportType",
+              "description": "overview, cash_flow, categories, merchants, or net_worth",
+              "default": "overview"
+            },
+            "description": "overview, cash_flow, categories, merchants, or net_worth"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date",
+              "title": "Start Date"
+            },
+            "description": "Start date"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date",
+              "title": "End Date"
+            },
+            "description": "End date"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/analytics/overview": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Financial Overview & Summary KPIs",
+        "description": "Computes income, expenses, refunds, net cash flow, savings rate, and data quality indicators.\nServer-side aggregation from verified PostgreSQL records.",
+        "operationId": "get_financial_overview_api_v1_workspaces__workspace_id__analytics_overview_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 1st of current month)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 1st of current month)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_FinancialOverviewResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/analytics/cash-flow": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Cash Flow Trends Over Time",
+        "description": "Retrieves bucketed cash flow series (income, expense, net flow, cumulative flow)\nfor interactive charting and trend inspection.",
+        "operationId": "get_cash_flow_trends_api_v1_workspaces__workspace_id__analytics_cash_flow_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 90 days ago)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 90 days ago)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "grouping",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/PeriodGrouping",
+              "description": "Temporal interval (day, week, month, quarter, financial_year)",
+              "default": "month"
+            },
+            "description": "Temporal interval (day, week, month, quarter, financial_year)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CashFlowTrendsResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/analytics/categories": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Category Spending Distribution",
+        "description": "Returns breakdown of expenditure by category with percentage distribution and transaction counts.\nHandles uncategorized transactions safely.",
+        "operationId": "get_category_spending_api_v1_workspaces__workspace_id__analytics_categories_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 1st of month)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 1st of month)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Direction filter ('outflow' or 'inflow')",
+              "default": "outflow",
+              "title": "Direction"
+            },
+            "description": "Direction filter ('outflow' or 'inflow')"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Max categories to return",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Max categories to return"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_CategorySpendingResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/analytics/merchants": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Top Merchant Spending & Ticket Sizes",
+        "description": "Ranks top commercial merchants by total spend, transaction volume, and average ticket size.",
+        "operationId": "get_merchant_spending_api_v1_workspaces__workspace_id__analytics_merchants_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (defaults to 1st of month)",
+              "title": "Start Date"
+            },
+            "description": "Start date (defaults to 1st of month)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (defaults to today)",
+              "title": "End Date"
+            },
+            "description": "End date (defaults to today)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Max merchants to rank",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Max merchants to rank"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_MerchantSpendingResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/analytics/net-worth": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Account Balances & Net Worth",
+        "description": "Derives real-time balance sheet position:\nAssets minus Liabilities equals Net Worth.",
+        "operationId": "get_net_worth_api_v1_workspaces__workspace_id__analytics_net_worth_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_NetWorthResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/analytics/comparison": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Period-over-Period Performance Comparison",
+        "description": "Compares two periods with exact monetary deltas, percentage shifts, and directional favorability sentiments.",
+        "operationId": "get_period_comparison_api_v1_workspaces__workspace_id__analytics_comparison_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "current_start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Current period start date",
+              "title": "Current Start"
+            },
+            "description": "Current period start date"
+          },
+          {
+            "name": "current_end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "description": "Current period end date",
+              "title": "Current End"
+            },
+            "description": "Current period end date"
+          },
+          {
+            "name": "previous_start",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Prior period start (auto-computed if omitted)",
+              "title": "Previous Start"
+            },
+            "description": "Prior period start (auto-computed if omitted)"
+          },
+          {
+            "name": "previous_end",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Prior period end (auto-computed if omitted)",
+              "title": "Previous End"
+            },
+            "description": "Prior period end (auto-computed if omitted)"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_PeriodComparisonResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/analytics/export": {
+      "get": {
+        "tags": [
+          "Financial Analytics & Insights"
+        ],
+        "summary": "Export Financial Analytics as CSV",
+        "description": "Streams a sanitized CSV file of the requested analytics report.\nProtects against CSV formula injection.",
+        "operationId": "export_analytics_csv_api_v1_workspaces__workspace_id__analytics_export_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "report_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/ReportType",
+              "description": "overview, cash_flow, categories, merchants, or net_worth",
+              "default": "overview"
+            },
+            "description": "overview, cash_flow, categories, merchants, or net_worth"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date",
+              "title": "Start Date"
+            },
+            "description": "Start date"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date",
+              "title": "End Date"
+            },
+            "description": "End date"
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "3-letter ISO currency code",
+              "default": "INR",
+              "title": "Currency"
+            },
+            "description": "3-letter ISO currency code"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional account filter",
+              "title": "Account Id"
+            },
+            "description": "Optional account filter"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/signup": {
       "post": {
         "tags": [
@@ -12625,6 +14405,37 @@
         ],
         "title": "ApiResponse[BatchCategorizeResponse]"
       },
+      "ApiResponse_CashFlowTrendsResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CashFlowTrendsResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[CashFlowTrendsResponse]"
+      },
       "ApiResponse_CategoryResponse_": {
         "properties": {
           "status": {
@@ -12655,6 +14466,37 @@
           "data"
         ],
         "title": "ApiResponse[CategoryResponse]"
+      },
+      "ApiResponse_CategorySpendingResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CategorySpendingResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[CategorySpendingResponse]"
       },
       "ApiResponse_ClassificationResponse_": {
         "properties": {
@@ -12750,6 +14592,37 @@
           "data"
         ],
         "title": "ApiResponse[FeedbackResponse]"
+      },
+      "ApiResponse_FinancialOverviewResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FinancialOverviewResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[FinancialOverviewResponse]"
       },
       "ApiResponse_List_CategoryResponse__": {
         "properties": {
@@ -12891,6 +14764,99 @@
         ],
         "title": "ApiResponse[List[RuleResponse]]"
       },
+      "ApiResponse_MerchantSpendingResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MerchantSpendingResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[MerchantSpendingResponse]"
+      },
+      "ApiResponse_NetWorthResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/NetWorthResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[NetWorthResponse]"
+      },
+      "ApiResponse_PeriodComparisonResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/PeriodComparisonResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[PeriodComparisonResponse]"
+      },
       "ApiResponse_PreviewSuggestResponse_": {
         "properties": {
           "status": {
@@ -12990,6 +14956,64 @@
           "data"
         ],
         "title": "ApiResponse[Union[ClassificationResponse, NoneType]]"
+      },
+      "AssetAccountSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "account_type": {
+            "type": "string",
+            "title": "Account Type"
+          },
+          "institution_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Name"
+          },
+          "masked_identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Masked Identifier"
+          },
+          "current_book_balance_paise": {
+            "type": "integer",
+            "title": "Current Book Balance Paise"
+          },
+          "current_book_balance": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Current Book Balance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "account_type",
+          "current_book_balance_paise",
+          "current_book_balance"
+        ],
+        "title": "AssetAccountSummary",
+        "description": "Asset account balance line item."
       },
       "AuthSessionResponse": {
         "properties": {
@@ -13829,6 +15853,112 @@
         "title": "BusinessProfileSchema",
         "description": "Business entity profile and contact metadata."
       },
+      "CashFlowTrendPoint": {
+        "properties": {
+          "period_start": {
+            "type": "string",
+            "title": "Period Start"
+          },
+          "period_label": {
+            "type": "string",
+            "title": "Period Label"
+          },
+          "income_paise": {
+            "type": "integer",
+            "title": "Income Paise"
+          },
+          "income": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Income"
+          },
+          "expenses_paise": {
+            "type": "integer",
+            "title": "Expenses Paise"
+          },
+          "expenses": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Expenses"
+          },
+          "net_cash_flow_paise": {
+            "type": "integer",
+            "title": "Net Cash Flow Paise"
+          },
+          "net_cash_flow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Cash Flow"
+          },
+          "cumulative_cash_flow_paise": {
+            "type": "integer",
+            "title": "Cumulative Cash Flow Paise"
+          },
+          "cumulative_cash_flow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Cumulative Cash Flow"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period_start",
+          "period_label",
+          "income_paise",
+          "income",
+          "expenses_paise",
+          "expenses",
+          "net_cash_flow_paise",
+          "net_cash_flow",
+          "cumulative_cash_flow_paise",
+          "cumulative_cash_flow",
+          "transaction_count"
+        ],
+        "title": "CashFlowTrendPoint",
+        "description": "Single aggregated temporal bucket in a cash-flow series."
+      },
+      "CashFlowTrendsResponse": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "grouping": {
+            "$ref": "#/components/schemas/PeriodGrouping"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "title": "End Date"
+          },
+          "trends": {
+            "items": {
+              "$ref": "#/components/schemas/CashFlowTrendPoint"
+            },
+            "type": "array",
+            "title": "Trends"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "grouping",
+          "start_date",
+          "end_date",
+          "trends"
+        ],
+        "title": "CashFlowTrendsResponse",
+        "description": "Series of cash flow trend points over requested time intervals."
+      },
       "CategoryCreateRequest": {
         "properties": {
           "name": {
@@ -14040,6 +16170,116 @@
           "updated_at"
         ],
         "title": "CategoryResponse"
+      },
+      "CategorySpendingItem": {
+        "properties": {
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "category_name": {
+            "type": "string",
+            "title": "Category Name"
+          },
+          "category_slug": {
+            "type": "string",
+            "title": "Category Slug"
+          },
+          "icon": {
+            "type": "string",
+            "title": "Icon"
+          },
+          "color": {
+            "type": "string",
+            "title": "Color"
+          },
+          "is_system": {
+            "type": "boolean",
+            "title": "Is System"
+          },
+          "is_uncategorized": {
+            "type": "boolean",
+            "title": "Is Uncategorized"
+          },
+          "total_amount_paise": {
+            "type": "integer",
+            "title": "Total Amount Paise"
+          },
+          "total_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Amount"
+          },
+          "percentage_of_total": {
+            "type": "number",
+            "title": "Percentage Of Total"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "category_name",
+          "category_slug",
+          "icon",
+          "color",
+          "is_system",
+          "is_uncategorized",
+          "total_amount_paise",
+          "total_amount",
+          "percentage_of_total",
+          "transaction_count"
+        ],
+        "title": "CategorySpendingItem",
+        "description": "Category breakdown metric line item."
+      },
+      "CategorySpendingResponse": {
+        "properties": {
+          "direction": {
+            "type": "string",
+            "title": "Direction"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "total_spend_paise": {
+            "type": "integer",
+            "title": "Total Spend Paise"
+          },
+          "total_spend": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Spend"
+          },
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategorySpendingItem"
+            },
+            "type": "array",
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "direction",
+          "currency",
+          "total_spend_paise",
+          "total_spend",
+          "categories"
+        ],
+        "title": "CategorySpendingResponse",
+        "description": "Expenditure distribution across categories."
       },
       "CategoryTreeResponse": {
         "properties": {
@@ -14387,6 +16627,72 @@
         "title": "CreateInvitationRequest",
         "description": "Payload for issuing a cryptographically signed workspace invitation."
       },
+      "DataQualityIndicator": {
+        "properties": {
+          "uncategorized_count": {
+            "type": "integer",
+            "title": "Uncategorized Count",
+            "description": "Number of posted transactions lacking a category"
+          },
+          "uncategorized_amount_paise": {
+            "type": "integer",
+            "title": "Uncategorized Amount Paise",
+            "description": "Uncategorized transaction volume in paise"
+          },
+          "uncategorized_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Uncategorized Amount",
+            "description": "Uncategorized transaction volume in major units"
+          },
+          "excluded_transfers_count": {
+            "type": "integer",
+            "title": "Excluded Transfers Count",
+            "description": "Transfers excluded from income/expense to prevent turnover inflation"
+          },
+          "excluded_transfers_amount_paise": {
+            "type": "integer",
+            "title": "Excluded Transfers Amount Paise",
+            "description": "Excluded transfer volume in paise"
+          },
+          "excluded_transfers_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Excluded Transfers Amount",
+            "description": "Excluded transfer volume in major units"
+          },
+          "excluded_pending_count": {
+            "type": "integer",
+            "title": "Excluded Pending Count",
+            "description": "Pending transactions safely omitted from authoritative totals"
+          },
+          "excluded_pending_amount_paise": {
+            "type": "integer",
+            "title": "Excluded Pending Amount Paise",
+            "description": "Excluded pending volume in paise"
+          },
+          "excluded_pending_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Excluded Pending Amount",
+            "description": "Excluded pending volume in major units"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uncategorized_count",
+          "uncategorized_amount_paise",
+          "uncategorized_amount",
+          "excluded_transfers_count",
+          "excluded_transfers_amount_paise",
+          "excluded_transfers_amount",
+          "excluded_pending_count",
+          "excluded_pending_amount_paise",
+          "excluded_pending_amount"
+        ],
+        "title": "DataQualityIndicator",
+        "description": "Integrity and data completeness metrics for the analytical period."
+      },
       "DeactivateAccountRequest": {
         "properties": {
           "confirm": {
@@ -14607,6 +16913,122 @@
           "action"
         ],
         "title": "FeedbackSubmitRequest"
+      },
+      "FinancialOverviewResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "INR"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "title": "End Date"
+          },
+          "total_income_paise": {
+            "type": "integer",
+            "title": "Total Income Paise"
+          },
+          "total_income": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Income"
+          },
+          "gross_expenses_paise": {
+            "type": "integer",
+            "title": "Gross Expenses Paise"
+          },
+          "refunds_paise": {
+            "type": "integer",
+            "title": "Refunds Paise"
+          },
+          "total_expenses_paise": {
+            "type": "integer",
+            "title": "Total Expenses Paise"
+          },
+          "total_expenses": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Expenses"
+          },
+          "net_cash_flow_paise": {
+            "type": "integer",
+            "title": "Net Cash Flow Paise"
+          },
+          "net_cash_flow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Cash Flow"
+          },
+          "savings_paise": {
+            "type": "integer",
+            "title": "Savings Paise"
+          },
+          "savings": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Savings"
+          },
+          "savings_rate_percentage": {
+            "type": "number",
+            "title": "Savings Rate Percentage"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          },
+          "average_daily_spend_paise": {
+            "type": "integer",
+            "title": "Average Daily Spend Paise"
+          },
+          "average_daily_spend": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Average Daily Spend"
+          },
+          "days_in_period": {
+            "type": "integer",
+            "title": "Days In Period"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/DataQualityIndicator"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "start_date",
+          "end_date",
+          "total_income_paise",
+          "total_income",
+          "gross_expenses_paise",
+          "refunds_paise",
+          "total_expenses_paise",
+          "total_expenses",
+          "net_cash_flow_paise",
+          "net_cash_flow",
+          "savings_paise",
+          "savings",
+          "savings_rate_percentage",
+          "transaction_count",
+          "average_daily_spend_paise",
+          "average_daily_spend",
+          "days_in_period",
+          "data_quality"
+        ],
+        "title": "FinancialOverviewResponse",
+        "description": "Authoritative high-level financial summary KPIs."
       },
       "GoalCreate": {
         "properties": {
@@ -16225,6 +18647,98 @@
         "type": "object",
         "title": "LedgerAccountUpdate"
       },
+      "LiabilityAccountSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "account_type": {
+            "type": "string",
+            "title": "Account Type"
+          },
+          "institution_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution Name"
+          },
+          "masked_identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Masked Identifier"
+          },
+          "outstanding_liability_paise": {
+            "type": "integer",
+            "title": "Outstanding Liability Paise"
+          },
+          "outstanding_liability": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Outstanding Liability"
+          },
+          "credit_limit_paise": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credit Limit Paise"
+          },
+          "credit_limit": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credit Limit"
+          },
+          "due_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "account_type",
+          "outstanding_liability_paise",
+          "outstanding_liability"
+        ],
+        "title": "LiabilityAccountSummary",
+        "description": "Liability account debt line item."
+      },
       "MerchantAliasResponse": {
         "properties": {
           "id": {
@@ -16352,6 +18866,170 @@
         ],
         "title": "MerchantResponse"
       },
+      "MerchantSpendingItem": {
+        "properties": {
+          "merchant_name": {
+            "type": "string",
+            "title": "Merchant Name"
+          },
+          "total_amount_paise": {
+            "type": "integer",
+            "title": "Total Amount Paise"
+          },
+          "total_amount": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Amount"
+          },
+          "percentage_of_total": {
+            "type": "number",
+            "title": "Percentage Of Total"
+          },
+          "transaction_count": {
+            "type": "integer",
+            "title": "Transaction Count"
+          },
+          "average_ticket_paise": {
+            "type": "integer",
+            "title": "Average Ticket Paise"
+          },
+          "average_ticket": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Average Ticket"
+          },
+          "last_transaction_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Transaction Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "merchant_name",
+          "total_amount_paise",
+          "total_amount",
+          "percentage_of_total",
+          "transaction_count",
+          "average_ticket_paise",
+          "average_ticket"
+        ],
+        "title": "MerchantSpendingItem",
+        "description": "Merchant ranking and ticket metrics."
+      },
+      "MerchantSpendingResponse": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "total_spend_paise": {
+            "type": "integer",
+            "title": "Total Spend Paise"
+          },
+          "total_spend": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Spend"
+          },
+          "merchants": {
+            "items": {
+              "$ref": "#/components/schemas/MerchantSpendingItem"
+            },
+            "type": "array",
+            "title": "Merchants"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "total_spend_paise",
+          "total_spend",
+          "merchants"
+        ],
+        "title": "MerchantSpendingResponse",
+        "description": "Expenditure distribution across commercial merchants."
+      },
+      "NetWorthResponse": {
+        "properties": {
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "as_of_date": {
+            "type": "string",
+            "title": "As Of Date"
+          },
+          "total_assets_paise": {
+            "type": "integer",
+            "title": "Total Assets Paise"
+          },
+          "total_assets": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Assets"
+          },
+          "total_liabilities_paise": {
+            "type": "integer",
+            "title": "Total Liabilities Paise"
+          },
+          "total_liabilities": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Total Liabilities"
+          },
+          "net_worth_paise": {
+            "type": "integer",
+            "title": "Net Worth Paise"
+          },
+          "net_worth": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Worth"
+          },
+          "asset_accounts": {
+            "items": {
+              "$ref": "#/components/schemas/AssetAccountSummary"
+            },
+            "type": "array",
+            "title": "Asset Accounts"
+          },
+          "liability_accounts": {
+            "items": {
+              "$ref": "#/components/schemas/LiabilityAccountSummary"
+            },
+            "type": "array",
+            "title": "Liability Accounts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "workspace_id",
+          "currency",
+          "as_of_date",
+          "total_assets_paise",
+          "total_assets",
+          "total_liabilities_paise",
+          "total_liabilities",
+          "net_worth_paise",
+          "net_worth",
+          "asset_accounts",
+          "liability_accounts"
+        ],
+        "title": "NetWorthResponse",
+        "description": "Balance sheet summary computing total assets, liabilities, and net worth."
+      },
       "OwnershipTransferRequest": {
         "properties": {
           "new_owner_id": {
@@ -16424,6 +19102,201 @@
           "total_pages"
         ],
         "title": "PaginatedResponse[TransactionResponse]"
+      },
+      "PeriodComparisonResponse": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "current_period": {
+            "$ref": "#/components/schemas/PeriodMetrics"
+          },
+          "previous_period": {
+            "$ref": "#/components/schemas/PeriodMetrics"
+          },
+          "deltas": {
+            "$ref": "#/components/schemas/PeriodDeltas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "current_period",
+          "previous_period",
+          "deltas"
+        ],
+        "title": "PeriodComparisonResponse",
+        "description": "Side-by-side period performance comparison."
+      },
+      "PeriodDeltas": {
+        "properties": {
+          "income_delta_paise": {
+            "type": "integer",
+            "title": "Income Delta Paise"
+          },
+          "income_delta": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Income Delta"
+          },
+          "income_percentage_delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Income Percentage Delta"
+          },
+          "income_sentiment": {
+            "type": "string",
+            "title": "Income Sentiment"
+          },
+          "expenses_delta_paise": {
+            "type": "integer",
+            "title": "Expenses Delta Paise"
+          },
+          "expenses_delta": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Expenses Delta"
+          },
+          "expenses_percentage_delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expenses Percentage Delta"
+          },
+          "expenses_sentiment": {
+            "type": "string",
+            "title": "Expenses Sentiment"
+          },
+          "net_cash_flow_delta_paise": {
+            "type": "integer",
+            "title": "Net Cash Flow Delta Paise"
+          },
+          "net_cash_flow_delta": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Cash Flow Delta"
+          },
+          "net_cash_flow_percentage_delta": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Cash Flow Percentage Delta"
+          },
+          "net_cash_flow_sentiment": {
+            "type": "string",
+            "title": "Net Cash Flow Sentiment"
+          },
+          "savings_rate_delta_percentage": {
+            "type": "number",
+            "title": "Savings Rate Delta Percentage"
+          },
+          "savings_rate_sentiment": {
+            "type": "string",
+            "title": "Savings Rate Sentiment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "income_delta_paise",
+          "income_delta",
+          "income_sentiment",
+          "expenses_delta_paise",
+          "expenses_delta",
+          "expenses_sentiment",
+          "net_cash_flow_delta_paise",
+          "net_cash_flow_delta",
+          "net_cash_flow_sentiment",
+          "savings_rate_delta_percentage",
+          "savings_rate_sentiment"
+        ],
+        "title": "PeriodDeltas",
+        "description": "Comparative variations between periods."
+      },
+      "PeriodGrouping": {
+        "type": "string",
+        "enum": [
+          "day",
+          "week",
+          "month",
+          "quarter",
+          "financial_year"
+        ],
+        "title": "PeriodGrouping",
+        "description": "Supported temporal aggregation intervals for cash-flow and trend analytics."
+      },
+      "PeriodMetrics": {
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date"
+          },
+          "income_paise": {
+            "type": "integer",
+            "title": "Income Paise"
+          },
+          "income": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Income"
+          },
+          "expenses_paise": {
+            "type": "integer",
+            "title": "Expenses Paise"
+          },
+          "expenses": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Expenses"
+          },
+          "net_cash_flow_paise": {
+            "type": "integer",
+            "title": "Net Cash Flow Paise"
+          },
+          "net_cash_flow": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Cash Flow"
+          },
+          "savings_rate_percentage": {
+            "type": "number",
+            "title": "Savings Rate Percentage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start_date",
+          "end_date",
+          "income_paise",
+          "income",
+          "expenses_paise",
+          "expenses",
+          "net_cash_flow_paise",
+          "net_cash_flow",
+          "savings_rate_percentage"
+        ],
+        "title": "PeriodMetrics",
+        "description": "Metrics snapshot for a specific evaluation period."
       },
       "PreviewSuggestRequest": {
         "properties": {
@@ -16533,6 +19406,18 @@
         ],
         "title": "RefreshTokenRequest",
         "description": "Payload for renewing an access token using a refresh token."
+      },
+      "ReportType": {
+        "type": "string",
+        "enum": [
+          "overview",
+          "cash_flow",
+          "categories",
+          "merchants",
+          "net_worth"
+        ],
+        "title": "ReportType",
+        "description": "Types of analytical reports supported for UI rendering and controlled CSV export."
       },
       "RuleCreateRequest": {
         "properties": {

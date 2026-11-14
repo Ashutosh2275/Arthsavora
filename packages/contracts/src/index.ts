@@ -1175,6 +1175,185 @@ export interface FeedbackResponse {
   status: string;
 }
 
+// -------------------------------------------------------------------------
+// Prompt 13: Financial Analytics & Dashboard Intelligence Contracts
+// -------------------------------------------------------------------------
+
+export type PeriodGrouping = 'day' | 'week' | 'month' | 'quarter' | 'financial_year';
+export type ReportType = 'overview' | 'cash_flow' | 'categories' | 'merchants' | 'net_worth';
+export type FinancialSentiment = 'favorable' | 'unfavorable' | 'neutral';
+
+export interface DataQualityIndicator {
+  uncategorized_count: number;
+  uncategorized_amount_paise: number;
+  uncategorized_amount: number;
+  excluded_transfers_count: number;
+  excluded_transfers_amount_paise: number;
+  excluded_transfers_amount: number;
+  excluded_pending_count: number;
+  excluded_pending_amount_paise: number;
+  excluded_pending_amount: number;
+}
+
+export interface FinancialOverviewResponse {
+  workspace_id: string;
+  currency: string;
+  start_date: string;
+  end_date: string;
+  total_income_paise: number;
+  total_income: number;
+  gross_expenses_paise: number;
+  refunds_paise: number;
+  total_expenses_paise: number;
+  total_expenses: number;
+  net_cash_flow_paise: number;
+  net_cash_flow: number;
+  savings_paise: number;
+  savings: number;
+  savings_rate_percentage: number;
+  transaction_count: number;
+  average_daily_spend_paise: number;
+  average_daily_spend: number;
+  days_in_period: number;
+  data_quality: DataQualityIndicator;
+}
+
+export interface CashFlowTrendPoint {
+  period_start: string;
+  period_label: string;
+  income_paise: number;
+  income: number;
+  expenses_paise: number;
+  expenses: number;
+  net_cash_flow_paise: number;
+  net_cash_flow: number;
+  cumulative_cash_flow_paise: number;
+  cumulative_cash_flow: number;
+  transaction_count: number;
+}
+
+export interface CashFlowTrendsResponse {
+  currency: string;
+  grouping: PeriodGrouping;
+  start_date: string;
+  end_date: string;
+  trends: CashFlowTrendPoint[];
+}
+
+export interface CategorySpendingItem {
+  category_id?: string | null;
+  category_name: string;
+  category_slug: string;
+  icon: string;
+  color: string;
+  is_system: boolean;
+  is_uncategorized: boolean;
+  total_amount_paise: number;
+  total_amount: number;
+  percentage_of_total: number;
+  transaction_count: number;
+}
+
+export interface CategorySpendingResponse {
+  direction: string;
+  currency: string;
+  total_spend_paise: number;
+  total_spend: number;
+  categories: CategorySpendingItem[];
+}
+
+export interface MerchantSpendingItem {
+  merchant_name: string;
+  total_amount_paise: number;
+  total_amount: number;
+  percentage_of_total: number;
+  transaction_count: number;
+  average_ticket_paise: number;
+  average_ticket: number;
+  last_transaction_date?: string | null;
+}
+
+export interface MerchantSpendingResponse {
+  currency: string;
+  total_spend_paise: number;
+  total_spend: number;
+  merchants: MerchantSpendingItem[];
+}
+
+export interface AssetAccountSummary {
+  id: string;
+  name: string;
+  account_type: string;
+  institution_name?: string | null;
+  masked_identifier?: string | null;
+  current_book_balance_paise: number;
+  current_book_balance: number;
+}
+
+export interface LiabilityAccountSummary {
+  id: string;
+  name: string;
+  account_type: string;
+  institution_name?: string | null;
+  masked_identifier?: string | null;
+  outstanding_liability_paise: number;
+  outstanding_liability: number;
+  credit_limit_paise?: number | null;
+  credit_limit?: number | null;
+  due_date?: string | null;
+}
+
+export interface NetWorthResponse {
+  workspace_id: string;
+  currency: string;
+  as_of_date: string;
+  total_assets_paise: number;
+  total_assets: number;
+  total_liabilities_paise: number;
+  total_liabilities: number;
+  net_worth_paise: number;
+  net_worth: number;
+  asset_accounts: AssetAccountSummary[];
+  liability_accounts: LiabilityAccountSummary[];
+}
+
+export interface PeriodMetrics {
+  start_date: string;
+  end_date: string;
+  income_paise: number;
+  income: number;
+  expenses_paise: number;
+  expenses: number;
+  net_cash_flow_paise: number;
+  net_cash_flow: number;
+  savings_rate_percentage: number;
+}
+
+export interface PeriodDeltas {
+  income_delta_paise: number;
+  income_delta: number;
+  income_percentage_delta?: number | null;
+  income_sentiment: FinancialSentiment | string;
+  expenses_delta_paise: number;
+  expenses_delta: number;
+  expenses_percentage_delta?: number | null;
+  expenses_sentiment: FinancialSentiment | string;
+  net_cash_flow_delta_paise: number;
+  net_cash_flow_delta: number;
+  net_cash_flow_percentage_delta?: number | null;
+  net_cash_flow_sentiment: FinancialSentiment | string;
+  savings_rate_delta_percentage: number;
+  savings_rate_sentiment: FinancialSentiment | string;
+}
+
+export interface PeriodComparisonResponse {
+  currency: string;
+  current_period: PeriodMetrics;
+  previous_period: PeriodMetrics;
+  deltas: PeriodDeltas;
+}
+
+
 
 
 

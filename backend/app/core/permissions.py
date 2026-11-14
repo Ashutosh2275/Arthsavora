@@ -79,6 +79,10 @@ class Permission(str, Enum):
     MANAGE_RULES = "rules:manage"
     MANAGE_INTELLIGENCE = "intelligence:manage"
 
+    # Financial Analytics, Insights & Reports
+    VIEW_ANALYTICS = "analytics:view"
+    EXPORT_ANALYTICS = "analytics:export"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -111,6 +115,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_RULES,
             Permission.MANAGE_RULES,
             Permission.MANAGE_INTELLIGENCE,
+            Permission.VIEW_ANALYTICS,
+            Permission.EXPORT_ANALYTICS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -123,6 +129,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.IMPORT_DATA,
             Permission.VIEW_CATEGORIES,
             Permission.VIEW_RULES,
+            Permission.VIEW_ANALYTICS,
+            Permission.EXPORT_ANALYTICS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -133,6 +141,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_IMPORTS,
             Permission.VIEW_CATEGORIES,
             Permission.VIEW_RULES,
+            Permission.VIEW_ANALYTICS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -166,6 +175,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_RULES,
             Permission.MANAGE_RULES,
             Permission.MANAGE_INTELLIGENCE,
+            Permission.VIEW_ANALYTICS,
+            Permission.EXPORT_ANALYTICS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -188,6 +199,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_RULES,
             Permission.MANAGE_RULES,
             Permission.MANAGE_INTELLIGENCE,
+            Permission.VIEW_ANALYTICS,
+            Permission.EXPORT_ANALYTICS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -200,6 +213,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_IMPORTS,
             Permission.VIEW_CATEGORIES,
             Permission.VIEW_RULES,
+            Permission.VIEW_ANALYTICS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -210,6 +224,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_IMPORTS,
             Permission.IMPORT_DATA,
             Permission.VIEW_CATEGORIES,
+            Permission.VIEW_ANALYTICS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -219,6 +234,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_LEDGER,
             Permission.VIEW_IMPORTS,
             Permission.VIEW_CATEGORIES,
+            Permission.VIEW_ANALYTICS,
         },
     },
 }
@@ -239,6 +255,11 @@ class WorkspaceContext:
     membership: WorkspaceMember
     current_user: User
     role: WorkspaceRole
+
+    @property
+    def workspace_id(self) -> uuid.UUID:
+        """Returns the UUID of the active workspace."""
+        return self.workspace.id
 
     def can(self, permission: Permission) -> bool:
         """Helper checking if current context user has the specified permission."""
