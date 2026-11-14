@@ -20,7 +20,8 @@
 **Prompt 12 Commit Hash:** `37e9164`  
 **Prompt 13 Commit Hash:** `b83724a`  
 **Prompt 14 Commit Hash:** `ddfa119`  
-**Remote Push Verification:** Prompts 01–14 pushed and verified on `origin/main`  
+**Prompt 15 Commit Hash:** `6a7d981`  
+**Remote Push Verification:** Prompts 01–15 pushed and verified on `origin/main`  
 
 ---
 
@@ -53,7 +54,7 @@
 | **12** | Stage 3 | Transaction Categorization and Merchant Intelligence | **COMPLETED** | `37e9164` |
 | **13** | Stage 3 | Milestone Goals & Real Ledger-Backed Savings Velocity Engine | UPCOMING | - |
 | **14** | Stage 3 | Personal Budgeting, Financial Goals and Spending Controls | **COMPLETED** | `ddfa119` |
-| **15** | Stage 3 | Recurring Transactions, Subscription Management and Cash-Flow Commitments | **COMPLETED** | `PENDING_COMMIT` |
+| **15** | Stage 3 | Recurring Transactions, Subscription Management and Cash-Flow Commitments | **COMPLETED** | `6a7d981` |
 | **16** | Stage 4 | Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence | UPCOMING | - |
 | **17** | Stage 4 | Business Expense Categorization & Vendor Management | UPCOMING | - |
 | **18** | Stage 4 | Cross-Platform Mobile Application Setup (React Native + Expo) | UPCOMING | - |
