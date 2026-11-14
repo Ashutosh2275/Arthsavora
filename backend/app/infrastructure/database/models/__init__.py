@@ -30,6 +30,12 @@ from app.infrastructure.database.models.acquisition import (
     ImportCandidate,
 )
 from app.infrastructure.database.models.audit import AuditLog
+from app.infrastructure.database.models.merchant import Merchant, MerchantAlias
+from app.infrastructure.database.models.rule import ClassificationRule
+from app.infrastructure.database.models.intelligence import (
+    TransactionClassification,
+    UserClassificationFeedback,
+)
 
 __all__ = [
     "User",
@@ -55,4 +61,9 @@ __all__ = [
     "ImportBatch",
     "ImportCandidate",
     "AuditLog",
+    "Merchant",
+    "MerchantAlias",
+    "ClassificationRule",
+    "TransactionClassification",
+    "UserClassificationFeedback",
 ]

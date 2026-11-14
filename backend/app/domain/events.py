@@ -397,6 +397,65 @@ def create_import_job_failed_event(
 
 
 
+def create_category_created_event(
+    workspace_id: uuid.UUID,
+    category_id: uuid.UUID,
+    name: str,
+    category_type: str,
+    actor_id: Optional[uuid.UUID] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="category.created",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        payload={
+            "category_id": str(category_id),
+            "name": name,
+            "category_type": category_type,
+        },
+    )
+
+
+def create_transaction_categorized_event(
+    workspace_id: uuid.UUID,
+    transaction_id: uuid.UUID,
+    category_id: uuid.UUID,
+    method: str,
+    confidence_score: float,
+    actor_id: Optional[uuid.UUID] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="transaction.categorized",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        payload={
+            "transaction_id": str(transaction_id),
+            "category_id": str(category_id),
+            "method": method,
+            "confidence_score": confidence_score,
+        },
+    )
+
+
+def create_classification_feedback_event(
+    workspace_id: uuid.UUID,
+    transaction_id: uuid.UUID,
+    feedback_action: str,
+    confirmed_category_id: uuid.UUID,
+    actor_id: Optional[uuid.UUID] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="intelligence.feedback_recorded",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        payload={
+            "transaction_id": str(transaction_id),
+            "feedback_action": feedback_action,
+            "confirmed_category_id": str(confirmed_category_id),
+        },
+    )
+
+
 # ---------------------------------------------------------------------------
 # Outbox Collector
 # ---------------------------------------------------------------------------

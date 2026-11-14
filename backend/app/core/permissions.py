@@ -72,6 +72,13 @@ class Permission(str, Enum):
     IMPORT_DATA = "data:import"
     VIEW_IMPORTS = "data:view_imports"
 
+    # Transaction Intelligence, Categories & Rules
+    VIEW_CATEGORIES = "categories:view"
+    MANAGE_CATEGORIES = "categories:manage"
+    VIEW_RULES = "rules:view"
+    MANAGE_RULES = "rules:manage"
+    MANAGE_INTELLIGENCE = "intelligence:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -99,6 +106,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.POST_JOURNAL,
             Permission.VIEW_IMPORTS,
             Permission.IMPORT_DATA,
+            Permission.VIEW_CATEGORIES,
+            Permission.MANAGE_CATEGORIES,
+            Permission.VIEW_RULES,
+            Permission.MANAGE_RULES,
+            Permission.MANAGE_INTELLIGENCE,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -109,6 +121,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_LEDGER,
             Permission.VIEW_IMPORTS,
             Permission.IMPORT_DATA,
+            Permission.VIEW_CATEGORIES,
+            Permission.VIEW_RULES,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -117,6 +131,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_TRANSACTIONS,
             Permission.VIEW_LEDGER,
             Permission.VIEW_IMPORTS,
+            Permission.VIEW_CATEGORIES,
+            Permission.VIEW_RULES,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -145,6 +161,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_PERIODS,
             Permission.VIEW_IMPORTS,
             Permission.IMPORT_DATA,
+            Permission.VIEW_CATEGORIES,
+            Permission.MANAGE_CATEGORIES,
+            Permission.VIEW_RULES,
+            Permission.MANAGE_RULES,
+            Permission.MANAGE_INTELLIGENCE,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -162,6 +183,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_PERIODS,
             Permission.VIEW_IMPORTS,
             Permission.IMPORT_DATA,
+            Permission.VIEW_CATEGORIES,
+            Permission.MANAGE_CATEGORIES,
+            Permission.VIEW_RULES,
+            Permission.MANAGE_RULES,
+            Permission.MANAGE_INTELLIGENCE,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -172,6 +198,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_LEDGER,
             Permission.POST_JOURNAL,
             Permission.VIEW_IMPORTS,
+            Permission.VIEW_CATEGORIES,
+            Permission.VIEW_RULES,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -181,6 +209,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_LEDGER,
             Permission.VIEW_IMPORTS,
             Permission.IMPORT_DATA,
+            Permission.VIEW_CATEGORIES,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -189,6 +218,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_TRANSACTIONS,
             Permission.VIEW_LEDGER,
             Permission.VIEW_IMPORTS,
+            Permission.VIEW_CATEGORIES,
         },
     },
 }

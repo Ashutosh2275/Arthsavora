@@ -16,18 +16,19 @@
 **Prompt 08 Commit Hash:** `bbe5839bef9f2d3784d1294485fc46ba3f35e092`  
 **Prompt 09 Commit Hash:** `0265864`  
 **Prompt 10 Commit Hash:** `8ae6475`  
-**Remote Push Verification:** Prompts 01–10 pushed and verified on `origin/main`  
+**Prompt 11 Commit Hash:** `1ae1131`  
+**Remote Push Verification:** Prompts 01–11 pushed and verified on `origin/main`  
 
 ---
 
 ## 1. PROGRAMME STATUS OVERVIEW
 
 - **Total Planned Prompts:** 30
-- **Current Stage:** Stage 2 — Workspaces, Identity & Operations (Prompts 07–10)
-- **Current Prompt:** Prompt 10 — Double-Entry Accounting Engine and General Ledger [10]
-- **Completed Prompts:** 10 of 30 (Engineering Baseline, Architecture, Standards, Database, Backend, Domain Layer, Identity/Workspace Management, Financial Accounts, Financial Transactions, and Double-Entry Accounting Engine fully established)
-- **Prompt 10 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 11 — Personal & Household Multi-Account Dashboard & Cash Flow Tracker (Stage 3)
+- **Current Stage:** Stage 3 — Financial Intelligence & Categorization (Prompts 11–15)
+- **Current Prompt:** Prompt 12 — Transaction Categorization and Merchant Intelligence [12]
+- **Completed Prompts:** 12 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, and Categorization/Merchant Intelligence fully established)
+- **Prompt 12 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 13 — Milestone Goals & Real Ledger-Backed Savings Velocity Engine [13]
 
 ---
 
@@ -45,8 +46,8 @@
 | **08** | Stage 2 | Financial Accounts and Account Balance Management | **COMPLETED** | `bbe5839` |
 | **09** | Stage 2 | Transaction Management and Financial Data Integrity | **COMPLETED** | `0265864` |
 | **10** | Stage 2 | Double-Entry Accounting Engine and General Ledger | **COMPLETED** | `8ae6475` |
-| **11** | Stage 3 | Personal & Household Multi-Account Dashboard & Cash Flow Tracker | UPCOMING | - |
-| **12** | Stage 3 | Predictive Budgeting & ARIMA Forecasting Engine (Isolated Workers) | UPCOMING | - |
+| **11** | Stage 3 | Transaction Import, Statement Processing and Data Acquisition | **COMPLETED** | `1ae1131` |
+| **12** | Stage 3 | Transaction Categorization and Merchant Intelligence | **COMPLETED** | Pending Commit |
 | **13** | Stage 3 | Milestone Goals & Real Ledger-Backed Savings Velocity Engine | UPCOMING | - |
 | **14** | Stage 3 | Financial Anomaly & Fraud Risk Detection Engine | UPCOMING | - |
 | **15** | Stage 3 | Indian Tax Intelligence (Old vs New Regime, 80C, 80D, Capital Gains) | UPCOMING | - |
@@ -482,6 +483,54 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/STATEMENT_RECONCILIATION.md`
   - `docs/IMPORT_SECURITY.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+### Prompt 12: Transaction Categorization and Merchant Intelligence [12]
+- **Status:** COMPLETED & VERIFIED
+- **Database Architecture & Alembic Migrations:**
+  - Extended `Category` model with `description`, `workspace_type`, `transaction_type_compatibility`, `display_order`.
+  - Created `Merchant` and `MerchantAlias` models (`merchants`, `merchant_aliases`) with normalized lookup index and confidence rating.
+  - Created `ClassificationRule` model (`classification_rules`) with strict JSON condition schema, priority ordering, and workspace scoping.
+  - Created `TransactionClassification` and `UserClassificationFeedback` models (`transaction_classifications`, `user_classification_feedback`) with original prediction preservation.
+  - Added `normalized_description` column to `Transaction` model.
+  - Generated and applied Alembic migration `f03413c3943b_expand_categorization_and_merchant_.py` with safe `server_default` constraints on both `arthsavora` and `arthsavora_test`.
+- **Domain Layer:**
+  - Created `app/domain/category_taxonomy.py` defining enums (`CategoryType`, `CategoryStatus`, `ConfidenceBand`, `ClassificationMethod`, `FeedbackAction`, `RuleScope`), complete hierarchical `SYSTEM_CATEGORIES` taxonomy (Personal, Family, Business), and `SYSTEM_MERCHANTS` with Indian aliases.
+  - Added domain exceptions: `CategoryInUseError`, `CircularCategoryHierarchyError`, `SystemCategoryProtectedError`, `InvalidCategoryTypeError`, `InvalidRuleConditionError`.
+  - Registered domain events: `create_category_created_event`, `create_transaction_categorized_event`, `create_classification_feedback_event`.
+  - Added RBAC permissions: `VIEW_CATEGORIES`, `MANAGE_CATEGORIES`, `VIEW_RULES`, `MANAGE_RULES`, `MANAGE_INTELLIGENCE` across personal, family, and business roles.
+- **Intelligence Engine & Machine Learning:**
+  - Implemented `DescriptionNormalizer` with 9-stage deterministic cleaning (UPI RRN / UTR extraction, channel detection, VPA stripping, POS/terminal noise removal, city noise removal, banking noise and preposition suppression, token deduplication).
+  - Implemented `RuleEngine` evaluating deterministic priority-ordered rules with zero `eval`/`exec`.
+  - Built `MLTransactionClassifier` using character subword TF-IDF (`char_wb`, ngrams 1–3) + balanced Logistic Regression with calibrated probabilities, 89.1% held-out test accuracy, and persistent versioned artifact (`backend/models/transaction_classifier_v1.joblib`).
+  - Created `CategorizationService` orchestrating the 5-tier hybrid decision pipeline (User Rules -> System Rules -> Merchant Aliases -> ML Prediction -> Fallback) and live preview sandbox.
+  - Implemented `FeedbackService` processing user feedback (`accept`, `correct_category`, `create_rule`, `mark_unknown`) with instant rule synthesis and immutable audit logging.
+- **Financial Invariant Guarantee:**
+  - AI predictions and categorization suggestions are staged in `transaction_classifications` and **never** mutate posted double-entry journal entries.
+- **Frontend UI & Web Store:**
+  - Created Zustand store `apps/web/src/store/useCategoryStore.ts`.
+  - Built comprehensive page `apps/web/src/pages/Categories.tsx` with 4 interactive tabs (Category Taxonomy tree, Classification Rules, Known Merchants, Intelligence Sandbox live preview) and creation modals.
+  - Mounted `/categories` route with `ProtectedRoute` in `apps/web/src/App.tsx` and added navigation link with `Tag` icon in `apps/web/src/components/layout/AppLayout.tsx`.
+- **API Endpoints & Contracts:**
+  - Implemented RESTful endpoints in `app/api/v1/intelligence_routes.py` (Categories tree/CRUD, Merchants list/create/aliases, Rules list/create/delete, Categorization preview/batch, and Feedback submit/list).
+  - Updated `docs/openapi.json` (134 paths, 108 schemas).
+  - Synchronized TypeScript contracts in `packages/contracts/src/index.ts`.
+- **Comprehensive Verification:**
+  - **156 passed backend tests** in `backend/tests/` (100% pass across all 156 tests, including 20 new tests in `test_categorization_and_merchant_intelligence.py`).
+  - **46 passed web tests** in `apps/web/` across 12 test suites (including 5 new tests in `Categories.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- **Technical Documentation Delivered (8 Documents):**
+  - `docs/CATEGORY_TAXONOMY.md`
+  - `docs/MERCHANT_INTELLIGENCE.md`
+  - `docs/DESCRIPTION_NORMALIZATION.md`
+  - `docs/CLASSIFICATION_ENGINE.md`
+  - `docs/ML_TRAINING_PIPELINE.md`
+  - `docs/MODEL_EVALUATION.md`
+  - `docs/USER_FEEDBACK_LEARNING.md`
+  - `docs/AI_PRIVACY_BOUNDARIES.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

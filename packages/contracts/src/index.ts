@@ -999,5 +999,182 @@ export interface ImportCandidateListResponse {
   offset: number;
 }
 
+// ===========================================================================
+// Transaction Intelligence & Categorization Types
+// ===========================================================================
+
+export type ConfidenceBand = 'high' | 'medium' | 'low' | 'unknown';
+export type ClassificationMethod = 'system_rule' | 'user_rule' | 'merchant_alias' | 'ml_model' | 'manual';
+export type FeedbackAction = 'accept' | 'correct_category' | 'correct_merchant' | 'mark_unknown' | 'create_rule';
+
+export interface CategoryCreateRequest {
+  name: string;
+  category_type: string;
+  parent_id?: string | null;
+  slug?: string | null;
+  description?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  workspace_type?: string;
+  display_order?: number;
+}
+
+export interface CategoryUpdateRequest {
+  name?: string;
+  parent_id?: string | null;
+  description?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  status?: string;
+  workspace_type?: string;
+  display_order?: number;
+}
+
+export interface CategoryResponse {
+  id: string;
+  workspace_id?: string | null;
+  parent_id?: string | null;
+  name: string;
+  slug: string;
+  category_type: string;
+  description?: string | null;
+  icon?: string | null;
+  color?: string | null;
+  is_system: boolean;
+  status: string;
+  workspace_type: string;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CategoryTreeResponse extends CategoryResponse {
+  children: CategoryTreeResponse[];
+}
+
+export interface MerchantAliasResponse {
+  id: string;
+  alias: string;
+  normalized_alias: string;
+  match_type: string;
+  confidence: number;
+}
+
+export interface MerchantResponse {
+  id: string;
+  workspace_id?: string | null;
+  canonical_name: string;
+  slug: string;
+  default_category_id?: string | null;
+  merchant_type: string;
+  website?: string | null;
+  logo_url?: string | null;
+  is_verified: boolean;
+  status: string;
+  aliases: MerchantAliasResponse[];
+}
+
+export interface RuleCreateRequest {
+  name: string;
+  conditions: Record<string, unknown>;
+  suggested_category_id: string;
+  suggested_merchant_id?: string | null;
+  priority?: number;
+  is_enabled?: boolean;
+  rule_scope?: string;
+}
+
+export interface RuleUpdateRequest {
+  name?: string;
+  conditions?: Record<string, unknown>;
+  suggested_category_id?: string;
+  suggested_merchant_id?: string | null;
+  priority?: number;
+  is_enabled?: boolean;
+}
+
+export interface RuleResponse {
+  id: string;
+  workspace_id?: string | null;
+  name: string;
+  priority: number;
+  is_enabled: boolean;
+  rule_scope: string;
+  conditions: Record<string, unknown>;
+  suggested_category_id: string;
+  suggested_category_name?: string | null;
+  suggested_merchant_id?: string | null;
+  suggested_merchant_name?: string | null;
+  created_at: string;
+}
+
+export interface ClassificationResponse {
+  classification_id: string;
+  workspace_id: string;
+  transaction_id: string;
+  original_description: string;
+  normalized_description?: string | null;
+  merchant_name?: string | null;
+  suggested_category_id: string;
+  suggested_category_name: string;
+  confidence_score: number;
+  confidence_band: ConfidenceBand | string;
+  method: ClassificationMethod | string;
+  model_version: string;
+  explanation: string;
+  status: string;
+  created_at?: string | null;
+}
+
+export interface BatchCategorizeRequest {
+  transaction_ids: string[];
+  force_reclassify?: boolean;
+}
+
+export interface BatchCategorizeResponse {
+  total_requested: number;
+  categorized_count: number;
+  results: ClassificationResponse[];
+}
+
+export interface PreviewSuggestRequest {
+  description: string;
+  direction?: string;
+  amount_paise?: number | null;
+}
+
+export interface PreviewSuggestResponse {
+  normalized_description: string;
+  merchant_candidate?: string | null;
+  payment_channel: string;
+  suggested_category_id?: string | null;
+  suggested_category_name: string;
+  confidence_score: number;
+  confidence_band: ConfidenceBand | string;
+  method: string;
+  explanation: string;
+}
+
+export interface FeedbackSubmitRequest {
+  action: FeedbackAction | string;
+  confirmed_category_id?: string | null;
+  confirmed_merchant_name?: string | null;
+  feedback_reason?: string | null;
+  create_rule?: boolean;
+  rule_name?: string | null;
+}
+
+export interface FeedbackResponse {
+  feedback_id: string;
+  workspace_id: string;
+  transaction_id: string;
+  action: string;
+  confirmed_category_id?: string | null;
+  confirmed_merchant_name?: string | null;
+  created_rule_id?: string | null;
+  status: string;
+}
+
+
 
 

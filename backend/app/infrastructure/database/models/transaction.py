@@ -60,6 +60,7 @@ class Transaction(Base, UUIDPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin):
     transaction_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
     settlement_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     description: Mapped[str] = mapped_column(String(512), nullable=False)
+    normalized_description: Mapped[str | None] = mapped_column(String(512), nullable=True)
     merchant_name: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     category_id: Mapped[uuid.UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),

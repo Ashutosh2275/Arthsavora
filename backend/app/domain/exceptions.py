@@ -273,3 +273,89 @@ class DuplicateImportError(DomainError):
             details={"file_hash": file_hash, "existing_job_id": str(existing_job_id)},
         )
 
+
+# ===========================================================================
+# Categorization & Merchant Intelligence Exceptions
+# ===========================================================================
+
+class CategoryInUseError(DomainError):
+    """Raised when attempting to delete a category actively referenced by financial transactions."""
+
+    def __init__(
+        self,
+        category_id: str,
+        transaction_count: int,
+        message: Optional[str] = None,
+    ):
+        msg = message or f"Category '{category_id}' is referenced by {transaction_count} transactions and cannot be deleted without reassignment."
+        super().__init__(
+            message=msg,
+            code="CATEGORY_IN_USE",
+            details={"category_id": str(category_id), "transaction_count": transaction_count},
+        )
+
+
+class CircularCategoryHierarchyError(DomainError):
+    """Raised when category parent-child relationship forms a directed loop."""
+
+    def __init__(
+        self,
+        category_id: str,
+        parent_id: str,
+        message: Optional[str] = None,
+    ):
+        msg = message or f"Setting parent '{parent_id}' for category '{category_id}' creates a circular hierarchy loop."
+        super().__init__(
+            message=msg,
+            code="CIRCULAR_CATEGORY_HIERARCHY",
+            details={"category_id": str(category_id), "parent_id": str(parent_id)},
+        )
+
+
+class SystemCategoryProtectedError(DomainError):
+    """Raised when attempting to delete or mutate protected universal system categories."""
+
+    def __init__(
+        self,
+        category_id: str,
+        category_name: str,
+        message: Optional[str] = None,
+    ):
+        msg = message or f"System category '{category_name}' ({category_id}) is immutable and cannot be deleted."
+        super().__init__(
+            message=msg,
+            code="SYSTEM_CATEGORY_PROTECTED",
+            details={"category_id": str(category_id), "category_name": category_name},
+        )
+
+
+class InvalidCategoryTypeError(DomainError):
+    """Raised when category type is incompatible with parent category or transaction."""
+
+    def __init__(
+        self,
+        category_type: str,
+        message: Optional[str] = None,
+    ):
+        msg = message or f"Category type '{category_type}' is invalid or incompatible with parent category."
+        super().__init__(
+            message=msg,
+            code="INVALID_CATEGORY_TYPE",
+            details={"category_type": category_type},
+        )
+
+
+class InvalidRuleConditionError(DomainError):
+    """Raised when a user-defined classification rule contains unsafe or invalid conditions."""
+
+    def __init__(
+        self,
+        reason: str,
+        details: Optional[Dict[str, Any]] = None,
+    ):
+        super().__init__(
+            message=f"Invalid rule condition: {reason}",
+            code="INVALID_RULE_CONDITION",
+            details=details or {},
+        )
+

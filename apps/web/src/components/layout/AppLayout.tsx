@@ -12,6 +12,7 @@ import {
   Receipt,
   BookOpen,
   Upload,
+  Tag,
   Menu,
   X,
 } from 'lucide-react';
@@ -34,6 +35,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: 'Transactions', path: '/transactions', icon: <Receipt size={18} /> },
     { name: 'Ledger', path: '/ledger', icon: <BookOpen size={18} /> },
     { name: 'Import', path: '/import', icon: <Upload size={18} /> },
+    { name: 'Categories', path: '/categories', icon: <Tag size={18} /> },
     { name: 'Expenses', path: '/expenses', icon: <Wallet size={18} /> },
     { name: 'Budget & AI', path: '/budget', icon: <Target size={18} /> },
     { name: 'Milestones', path: '/goals', icon: <Trophy size={18} /> },
