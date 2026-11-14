@@ -111,6 +111,10 @@ class Permission(str, Enum):
     VIEW_DOCUMENTS = "documents:view"
     MANAGE_DOCUMENTS = "documents:manage"
 
+    # Unified Notifications, Financial Alerts & User Communication
+    VIEW_NOTIFICATIONS = "notifications:view"
+    MANAGE_NOTIFICATIONS = "notifications:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -161,6 +165,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
             Permission.MANAGE_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -190,6 +196,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.USE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
             Permission.MANAGE_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -209,6 +217,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANOMALIES,
             Permission.USE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -260,6 +270,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
             Permission.MANAGE_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -300,6 +312,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
             Permission.MANAGE_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -323,6 +337,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.USE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
             Permission.MANAGE_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -343,6 +359,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.USE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
             Permission.MANAGE_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -361,6 +379,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANOMALIES,
             Permission.USE_ASSISTANT,
             Permission.VIEW_DOCUMENTS,
+            Permission.VIEW_NOTIFICATIONS,
+            Permission.MANAGE_NOTIFICATIONS,
         },
     },
 }

@@ -77,6 +77,13 @@ from app.infrastructure.database.models.document import (
     DocumentReviewRecord,
     DocumentTransactionAssociation,
 )
+from app.infrastructure.database.models.notification import (
+    Notification,
+    NotificationDelivery,
+    NotificationPreference,
+    NotificationTemplate,
+    PushSubscription,
+)
 
 __all__ = [
     "User",
@@ -134,4 +141,9 @@ __all__ = [
     "DocumentExtractionResult",
     "DocumentReviewRecord",
     "DocumentTransactionAssociation",
+    "Notification",
+    "NotificationDelivery",
+    "NotificationPreference",
+    "NotificationTemplate",
+    "PushSubscription",
 ]

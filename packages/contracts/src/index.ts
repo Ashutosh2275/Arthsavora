@@ -2562,6 +2562,127 @@ export interface TransactionMatchCandidate {
   transaction_summary: Record<string, any>;
 }
 
+// ============================================================================
+// Prompt 20: Unified Notifications & Financial Alerts Contracts
+// ============================================================================
+
+export type NotificationCategory =
+  | 'transaction'
+  | 'budget'
+  | 'goal'
+  | 'recurring'
+  | 'forecast'
+  | 'anomaly'
+  | 'document'
+  | 'assistant'
+  | 'security'
+  | 'system';
+
+export type NotificationSeverity = 'info' | 'success' | 'warning' | 'critical';
+
+export type NotificationChannel = 'in_app' | 'email' | 'web_push' | 'mobile_push';
+
+export type DeliveryStatus =
+  | 'pending'
+  | 'queued'
+  | 'sending'
+  | 'delivered'
+  | 'failed'
+  | 'retry_scheduled'
+  | 'cancelled';
+
+export interface NotificationDeliveryResponse {
+  id: UUID;
+  channel: NotificationChannel | string;
+  provider: string;
+  status: DeliveryStatus | string;
+  attempt_count: number;
+  provider_message_reference?: string | null;
+  last_attempt_at?: string | null;
+  delivered_at?: string | null;
+  failure_reason?: string | null;
+}
+
+export interface NotificationResponse {
+  id: UUID;
+  recipient_user_id: UUID;
+  workspace_id?: UUID | null;
+  category: NotificationCategory | string;
+  event_type: string;
+  title: string;
+  message: string;
+  severity: NotificationSeverity | string;
+  related_resource_type?: string | null;
+  related_resource_id?: string | null;
+  action_url?: string | null;
+  metadata_json: Record<string, any>;
+  event_timestamp: string;
+  created_at: string;
+  is_read: boolean;
+  read_at?: string | null;
+  is_archived: boolean;
+  deliveries: NotificationDeliveryResponse[];
+}
+
+export interface NotificationListResponse {
+  items: NotificationResponse[];
+  total: number;
+  limit: number;
+  offset: number;
+  unread_count: number;
+}
+
+export interface UnreadCountResponse {
+  unread_count: number;
+}
+
+export interface MarkReadResponse {
+  success: boolean;
+  affected_count: number;
+}
+
+export interface NotificationPreferenceResponse {
+  id: UUID;
+  user_id: UUID;
+  category: string;
+  channel: string;
+  is_enabled: boolean;
+  min_severity: string;
+  quiet_hours_enabled: boolean;
+  quiet_hours_start?: string | null;
+  quiet_hours_end?: string | null;
+  timezone: string;
+  frequency: string;
+  updated_at: string;
+}
+
+export interface NotificationPreferenceUpdateRequest {
+  category: string;
+  channel: string;
+  is_enabled: boolean;
+  min_severity?: string;
+  quiet_hours_enabled?: boolean;
+  quiet_hours_start?: string | null;
+  quiet_hours_end?: string | null;
+  timezone?: string;
+  frequency?: string;
+}
+
+export interface PushSubscriptionResponse {
+  id: UUID;
+  endpoint: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface PushSubscriptionCreateRequest {
+  endpoint: string;
+  p256dh_key: string;
+  auth_key: string;
+  user_agent?: string | null;
+}
+
+
 
 
 

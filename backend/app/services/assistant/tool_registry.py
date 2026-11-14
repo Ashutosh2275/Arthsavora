@@ -318,6 +318,19 @@ FINANCIAL_TOOLS: Dict[str, FinancialToolDefinitionVO] = {
         sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
         timeout_seconds=10,
     ),
+    "get_unread_notifications": FinancialToolDefinitionVO(
+        name="get_unread_notifications",
+        description="Retrieves the user's unread notifications and alerts (budget warnings, upcoming bills, anomalies).",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "default": 5},
+            },
+        },
+        required_permission=Permission.VIEW_NOTIFICATIONS.value,
+        sensitivity=DataSensitivityEnum.CONFIDENTIAL,
+        timeout_seconds=10,
+    ),
 }
 
 

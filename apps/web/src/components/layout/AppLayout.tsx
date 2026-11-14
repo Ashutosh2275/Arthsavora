@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode } from 'react';
+import React, { useState, useEffect, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -19,9 +19,11 @@ import {
   TrendingUp,
   ShieldAlert,
   Bot,
+  Bell,
 } from 'lucide-react';
 import AIChatbot from '@/components/AIChatbot';
 import useAuthStore from '@/store/useAuthStore';
+import { useNotificationStore } from '@/store/useNotificationStore';
 import { Toaster } from 'sonner';
 
 interface AppLayoutProps {
@@ -30,8 +32,13 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { logout } = useAuthStore();
+  const { unreadCount, fetchUnreadCount } = useNotificationStore();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    fetchUnreadCount();
+  }, []);
 
   const navItems = [
     { name: 'Analytics', path: '/dashboard', icon: <LayoutDashboard size={18} /> },
@@ -47,6 +54,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: 'Recurring', path: '/recurring', icon: <Repeat size={18} /> },
     { name: 'Forecast', path: '/forecast', icon: <TrendingUp size={18} /> },
     { name: 'Security & Risk', path: '/anomalies', icon: <ShieldAlert size={18} /> },
+    { name: 'Alerts', path: '/notifications', icon: <Bell size={18} /> },
     { name: 'AI Assistant', path: '/assistant', icon: <Bot size={18} /> },
     { name: 'Reports', path: '/reports', icon: <FileText size={18} /> },
   ];
@@ -90,6 +98,19 @@ export function AppLayout({ children }: AppLayoutProps) {
           </div>
 
           <div className="flex items-center gap-2">
+            <Link
+              to="/notifications"
+              aria-label="View notifications"
+              className="relative p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+            >
+              <Bell size={18} />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white shadow-sm ring-2 ring-slate-900 animate-pulse">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </Link>
+
             <button
               onClick={logout}
               aria-label="Sign out of Arthsavora"

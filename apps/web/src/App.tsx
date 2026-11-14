@@ -15,6 +15,7 @@ import { Forecast } from '@/pages/Forecast';
 import { Anomalies } from '@/pages/Anomalies';
 import { Assistant } from '@/pages/Assistant';
 import { Documents } from '@/pages/Documents';
+import { Notifications } from '@/pages/Notifications';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
@@ -220,6 +221,26 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Documents />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Notifications />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/alerts"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Notifications />
               </AppLayout>
             </ProtectedRoute>
           }

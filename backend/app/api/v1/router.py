@@ -19,6 +19,7 @@ from app.api.v1 import (
     intelligence_routes,
     invitations,
     ledger,
+    notification_routes,
     recurring_routes,
     transactions,
     users,
@@ -60,3 +61,4 @@ v1_router.include_router(assistant_routes.router, prefix="/assistant")
 v1_router.include_router(assistant_routes.router, prefix="/workspaces/{workspace_id}/assistant")
 v1_router.include_router(document_routes.router, prefix="/documents")
 v1_router.include_router(document_routes.router, prefix="/workspaces/{workspace_id}/documents")
+v1_router.include_router(notification_routes.router, prefix="/notifications")

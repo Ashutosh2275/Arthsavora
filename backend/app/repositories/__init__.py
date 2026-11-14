@@ -11,6 +11,7 @@ from .user_repository import UserRepository
 from .account_repository import AccountRepository
 from .transaction_repository import TransactionRepository
 from .document_repository import DocumentRepository
+from .notification_repository import NotificationRepository
 
 __all__ = [
     "BaseRepository",
@@ -21,4 +22,5 @@ __all__ = [
     "AccountRepository",
     "TransactionRepository",
     "DocumentRepository",
+    "NotificationRepository",
 ]

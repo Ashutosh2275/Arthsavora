@@ -127,6 +127,10 @@ class ToolExecutor:
             elif tool_call.tool_name == "get_document_details":
                 return await self._exec_document_details(tool_call, workspace_id, args)
 
+            # 17. Unread Notifications
+            elif tool_call.tool_name == "get_unread_notifications":
+                return await self._exec_unread_notifications(tool_call, user_id, workspace_id, args)
+
             # 17-20. Action Proposal Drafts
             elif tool_call.tool_name in (
                 "create_budget_draft",
@@ -580,3 +584,32 @@ class ToolExecutor:
         }
 
         return ToolResultVO(call_id=tc.call_id, tool_name=tc.tool_name, success=True, data=data)
+
+    async def _exec_unread_notifications(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.repositories.notification_repository import NotificationRepository
+
+        limit = int(args.get("limit", 5))
+        repo = NotificationRepository(self.db)
+        items, total = await repo.list_notifications(
+            user_id=user_id, workspace_id=ws_id, is_read=False, limit=limit
+        )
+        notif_summaries = [
+            {
+                "id": str(n.id),
+                "category": n.category,
+                "title": n.title,
+                "message": n.message,
+                "severity": n.severity,
+                "created_at": n.created_at.isoformat(),
+                "action_url": n.action_url,
+            }
+            for n in items
+        ]
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={"unread_count": total, "notifications": notif_summaries},
+        )
