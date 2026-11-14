@@ -17,7 +17,10 @@
 **Prompt 09 Commit Hash:** `0265864`  
 **Prompt 10 Commit Hash:** `8ae6475`  
 **Prompt 11 Commit Hash:** `1ae1131`  
-**Remote Push Verification:** Prompts 01–11 pushed and verified on `origin/main`  
+**Prompt 12 Commit Hash:** `37e9164`  
+**Prompt 13 Commit Hash:** `b83724a`  
+**Prompt 14 Commit Hash:** `7bc7f0b`  
+**Remote Push Verification:** Prompts 01–14 pushed and verified on `origin/main`  
 
 ---
 
@@ -25,10 +28,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 3 — Financial Intelligence & Categorization (Prompts 11–15)
-- **Current Prompt:** Prompt 13 — Financial Analytics, Spending Insights and Dashboard Intelligence [13]
-- **Completed Prompts:** 13 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, and Financial Analytics Engine established)
-- **Prompt 13 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 14 — Financial Anomaly Detection, Fraud Prevention & Risk Surveillance Engine [14]
+- **Current Prompt:** Prompt 14 — Personal Budgeting, Financial Goals and Spending Controls [14]
+- **Completed Prompts:** 14 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, and Personal Budgeting & Financial Goals established)
+- **Prompt 14 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 15 — Financial Anomaly Detection, Fraud Prevention & Risk Surveillance Engine [15]
 
 ---
 
@@ -49,7 +52,7 @@
 | **11** | Stage 3 | Transaction Import, Statement Processing and Data Acquisition | **COMPLETED** | `1ae1131` |
 | **12** | Stage 3 | Transaction Categorization and Merchant Intelligence | **COMPLETED** | `37e9164` |
 | **13** | Stage 3 | Milestone Goals & Real Ledger-Backed Savings Velocity Engine | UPCOMING | - |
-| **14** | Stage 3 | Financial Anomaly & Fraud Risk Detection Engine | UPCOMING | - |
+| **14** | Stage 3 | Personal Budgeting, Financial Goals and Spending Controls | **COMPLETED** | `7bc7f0b` |
 | **15** | Stage 3 | Indian Tax Intelligence (Old vs New Regime, 80C, 80D, Capital Gains) | UPCOMING | - |
 | **16** | Stage 4 | Freelancer & Small Business Invoicing Engine with GST Compliance | UPCOMING | - |
 | **17** | Stage 4 | Business Expense Categorization & Vendor Management | UPCOMING | - |
@@ -533,56 +536,53 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
 
 ---
 
-### Prompt 13: Financial Analytics, Spending Insights and Dashboard Intelligence [13]
+### Prompt 14: Personal Budgeting, Financial Goals and Spending Controls [14]
 - **Status:** COMPLETED & VERIFIED
 - **Core Domain & Principles:**
-  - Strict derivation from verified financial records (`transactions` with `status = 'posted'`, and `accounts` / `journal_entries` for balance sheet derivation).
-  - Multi-currency safety: strict currency isolation (`INR` default) with zero unverified cross-currency summation.
-  - Paired internal transfers and credit card bill payments (`credit_card_payment`) strictly excluded from operating cash flow to prevent artificial turnover inflation and living-cost double counting.
-  - Contra-expense treatment for merchant refunds: Net Operating Expenses = Gross Expenses - Refunds.
-  - India Financial Year (FY) calculation support: 1 April – 31 March (e.g. FY 2025-26, FY 2026-27).
-  - Server-side PostgreSQL aggregation queries avoiding runtime deserialization of transaction histories.
-  - Transparent data quality indicators: uncategorized transactions count/amount, excluded transfers volume, and excluded pending holds volume.
-  - CSV Formula Injection defense neutralizing macro execution (`=`, `+`, `-`, `@`, `\t`, `\r`) via apostrophe prefixing.
+  - Complete personal budgeting and goal tracking system designed with strict accounting boundaries and deterministic calculation models.
+  - Budget types supported: `monthly`, `custom_period`, `category`, `annual`, `flexible`.
+  - Recurrence intervals supported: `monthly`, `quarterly`, `annual`, `custom`.
+  - Deterministic actual spending aggregation reusing Prompt 13 rules: includes only eligible posted expense transactions within period bounds, strictly excludes internal transfers (`transfer_id IS NOT NULL` or `transaction_type = 'transfer'`), credit card payments (`credit_card_payment`), loan principal repayments, and pending holds, while netting contra-expense merchant refunds.
+  - Transparent linear run-rate period-end projections: $\text{Average Daily Spend} \times \text{Total Period Days}$ with disclosed assumptions and zero volatile black-box ML.
+  - Immutable budget revision history tracking parameter changes, limit updates, and deletions with reasons.
+  - Idempotent budget alert engine triggering across 50%, 75%, 80%, 90%, and 100% threshold tiers with check-and-insert anti-spam guarantees.
+  - Target-based financial savings goals across 8 types (`emergency_fund`, `travel`, `education`, `vehicle`, `home`, `debt_repayment`, `personal_savings`, `custom`).
+  - Goal pacing calculations: completion percentage, remaining amount, time remaining, and required monthly contribution rate.
+  - Auditable goal activity ledger (`goal_activities` for contributions, withdrawals, reversals, and transfers) with non-negative balance enforcement ($C_{\text{paise}} \ge 0$) and optional transaction provenance.
+  - Status state machine with auto-completion when balance reaches target, and auto-reversion to active if balance drops below target.
+  - Strict accounting boundary: Goal contributions are earmarked liquid holds, not operating expenses; withdrawals release holds, not new income.
+- **Database Schema & Migration:**
+  - Alembic migration `610792208f78_add_personal_budgeting_and_financial_.py` applied to `arthsavora` database.
+  - Created tables: `budgets`, `budget_allocations`, `budget_revisions`, `budget_alerts`, `financial_goals`, `goal_activities`.
+  - Configured cascade deletion rules, check constraints (`amount_paise > 0`, `resulting_balance_paise >= 0`, `total_limit_paise > 0`), and composite performance indexes.
 - **Backend Architecture & Routes:**
-  - `app/domain/analytics.py`: Date bounds (India FY, month, quarter, equal previous period), savings rate math, percentage deltas, sentiments, and CSV cell sanitization.
-  - `app/repositories/analytics_repository.py`: High-performance PostgreSQL aggregation queries for overview, cash flow trends, category breakdown, top merchants, and net worth.
-  - `app/services/analytics/analytics_service.py`: Service orchestrating queries, enforcing 10-year bounded spans, validating ISO currency codes, and building sanitized CSV streams.
-  - `app/schemas/analytics_schema.py`: Pydantic request/response schemas with exact decimal and paise representation.
-  - `app/api/v1/analytics_routes.py`: Authenticated REST endpoints guarded by `Permission.VIEW_ANALYTICS` and `Permission.EXPORT_ANALYTICS`:
-    * `GET /overview`: Summary KPIs, net cash flow, savings rate, and data quality indicators.
-    * `GET /cash-flow`: Bucketed time series with cumulative cash flow for trend visualization.
-    * `GET /categories`: Category breakdown with percentages and uncategorized handling.
-    * `GET /merchants`: Top merchant spending ranking with average ticket and frequency.
-    * `GET /net-worth`: Balance sheet position (Assets - Liabilities = Net Worth).
-    * `GET /comparison`: Period-over-period performance comparison with delta sentiments.
-    * `GET /export`: Sanitized CSV report streaming.
+  - `app/domain/budget.py`: Enums (`BudgetType`, `BudgetStatus`, `BudgetWarningState`, `GoalType`, `GoalStatus`, `GoalPriority`, `GoalActivityType`), pure calculation functions (`calculate_budget_progress`, `calculate_period_progress`, `calculate_linear_projection`, `calculate_goal_progress`, `generate_next_period_bounds`).
+  - `app/repositories/budget_repository.py`: Workspace-scoped retrieval, PostgreSQL actual spending aggregation with transfer/card payment exclusions and refund netting, immutable `record_revision`, `list_revisions`, idempotent `record_alert_idempotent`, and `list_alerts`.
+  - `app/repositories/goal_repository.py`: Workspace-scoped goal CRUD, atomic `record_activity` ledger updates with non-negative balance protection and auto-completion status triggers, paginated `list_activities`.
+  - `app/services/budget/budget_service.py`: Lifecycle management, category allocations, deterministic progress evaluation, linear run-rate projections, audit revision logging, idempotent threshold alert triggers, and period rollovers.
+  - `app/services/budget/goal_service.py`: Goal CRUD, contributions, withdrawals, pacing progress derivation, activity ledger pagination.
+  - `app/schemas/budget_schema.py` & `app/schemas/goal_schema.py`: Pydantic request/response schemas with exact decimal and paise representation.
+  - `app/api/v1/budget_routes.py` & `app/api/v1/goal_routes.py`: Authenticated REST endpoints guarded by permissions (`VIEW_BUDGETS`, `MANAGE_BUDGETS`, `VIEW_GOALS`, `MANAGE_GOALS`).
+  - OpenAPI exported with 242 total routes in `docs/openapi.json`.
 - **Frontend State & Interactive UI:**
-  - `apps/web/src/store/useAnalyticsStore.ts`: Zustand store managing filters (date presets, custom range, grouping, account filter, currency) and parallel analytics fetching.
-  - `apps/web/src/pages/Dashboard.tsx`: Comprehensive personal finance dashboard featuring:
-    * Net Worth, Inflow, Outflow, Net Cash Flow, and Savings Rate KPI cards with comparative delta badges.
-    * Recharts Area/Line chart for Cash Flow trajectory (Inflow vs Outflow vs Net Cash Flow).
-    * Recharts Donut chart for Category distribution with custom legends.
-    * Top Merchant ranking table with ticket size and frequency.
-    * Balance Sheet asset vs liability breakdown.
-    * Data quality & transparency banner highlighting uncategorized spending and excluded transfers.
-    * Filter toolbar supporting date presets ("This Month", "Last Month", "This Quarter", "Current FY (India)", "Last 30 Days", "Last 90 Days", "Custom").
-    * One-click CSV export menu for all report types.
-- **Test Coverage & Verification:**
-  - Backend: 14 dedicated pytest tests in `backend/tests/test_financial_analytics.py` (100% passed). Full backend test suite: **170 passed in 50.87s**.
-  - Frontend: 6 vitest unit tests in `apps/web/src/pages/__tests__/Dashboard.test.tsx` (100% passed). Full web test suite: **52 passed across 13 test files in 17.09s**.
-  - TypeScript: Zero errors across all 5 workspace packages in `pnpm -r run typecheck`.
-  - OpenAPI: Schema updated with 148 paths in `docs/openapi.json`.
-- **Documentation:**
-  - `docs/ANALYTICS_ARCHITECTURE.md`
-  - `docs/FINANCIAL_METRIC_DICTIONARY.md`
-  - `docs/CASH_FLOW_ANALYTICS.md`
-  - `docs/CATEGORY_MERCHANT_ANALYTICS.md`
-  - `docs/NET_WORTH_CALCULATION.md`
-  - `docs/ANALYTICS_API_REFERENCE.md`
-  - `docs/ANALYTICS_PERFORMANCE.md`
-  - `docs/ANALYTICS_DATA_QUALITY.md`
+  - Zustand stores: `apps/web/src/store/useBudgetStore.ts`, `apps/web/src/store/useGoalStore.ts`.
+  - Pages built: `apps/web/src/pages/Budgets.tsx`, `apps/web/src/pages/Goals.tsx`.
+  - Navigation & routes wired in `apps/web/src/App.tsx` and `apps/web/src/components/layout/AppLayout.tsx`.
+- **Comprehensive Verification:**
+  - **181 passed backend tests** in `backend/tests/` (100% pass across all 181 tests, including 11 new tests in `test_personal_budgeting_and_goals.py`).
+  - **61 passed web tests** in `apps/web/` across 15 test suites (including 9 new tests in `Budgets.test.tsx` and `Goals.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- **Technical Documentation Delivered (9 Documents):**
+  - `docs/BUDGETING_ARCHITECTURE.md`
+  - `docs/BUDGET_CALCULATION_RULES.md`
+  - `docs/BUDGET_PERIOD_MANAGEMENT.md`
+  - `docs/BUDGET_REVISION_HISTORY.md`
+  - `docs/FINANCIAL_GOALS.md`
+  - `docs/GOAL_CONTRIBUTION_LEDGER.md`
+  - `docs/BUDGET_ALERTS.md`
+  - `docs/BUDGET_API_REFERENCE.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

@@ -37,8 +37,8 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: 'Import', path: '/import', icon: <Upload size={18} /> },
     { name: 'Categories', path: '/categories', icon: <Tag size={18} /> },
     { name: 'Expenses', path: '/expenses', icon: <Wallet size={18} /> },
-    { name: 'Budget & AI', path: '/budget', icon: <Target size={18} /> },
-    { name: 'Milestones', path: '/goals', icon: <Trophy size={18} /> },
+    { name: 'Budgets', path: '/budgets', icon: <Target size={18} /> },
+    { name: 'Goals', path: '/goals', icon: <Trophy size={18} /> },
     { name: 'Reports', path: '/reports', icon: <FileText size={18} /> },
   ];
 

@@ -8,7 +8,7 @@ import { Ledger } from '@/pages/Ledger';
 import { Import } from '@/pages/Import';
 import Categories from '@/pages/Categories';
 import Expenses from '@/pages/Expenses';
-import Budget from '@/pages/Budget';
+import Budgets from '@/pages/Budgets';
 import Goals from '@/pages/Goals';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
@@ -100,11 +100,21 @@ export default function App() {
           }
         />
         <Route
+          path="/budgets"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Budgets />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/budget"
           element={
             <ProtectedRoute>
               <AppLayout>
-                <Budget />
+                <Budgets />
               </AppLayout>
             </ProtectedRoute>
           }

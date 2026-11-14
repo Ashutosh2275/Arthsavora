@@ -4,7 +4,21 @@ Aggregates all versioned V1 API sub-routers.
 """
 
 from fastapi import APIRouter
-from app.api.v1 import accounts, analytics_routes, auth, health, import_routes, intelligence_routes, invitations, ledger, transactions, users, workspaces
+from app.api.v1 import (
+    accounts,
+    analytics_routes,
+    auth,
+    budget_routes,
+    goal_routes,
+    health,
+    import_routes,
+    intelligence_routes,
+    invitations,
+    ledger,
+    transactions,
+    users,
+    workspaces,
+)
 
 v1_router = APIRouter()
 
@@ -27,3 +41,7 @@ v1_router.include_router(intelligence_routes.router, prefix="")
 v1_router.include_router(intelligence_routes.router, prefix="/workspaces/{workspace_id}")
 v1_router.include_router(analytics_routes.router, prefix="/analytics")
 v1_router.include_router(analytics_routes.router, prefix="/workspaces/{workspace_id}/analytics")
+v1_router.include_router(budget_routes.router, prefix="/budgets")
+v1_router.include_router(budget_routes.router, prefix="/workspaces/{workspace_id}/budgets")
+v1_router.include_router(goal_routes.router, prefix="/goals")
+v1_router.include_router(goal_routes.router, prefix="/workspaces/{workspace_id}/goals")

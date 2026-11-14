@@ -264,7 +264,7 @@ export interface AnalyticsSummaryResponse {
 // Goal & Ingestion Contracts
 // -------------------------------------------------------------------------
 
-export interface GoalResponse {
+export interface LegacyGoalResponse {
   id: string;
   user_id: string;
   name: string;
@@ -1352,6 +1352,305 @@ export interface PeriodComparisonResponse {
   previous_period: PeriodMetrics;
   deltas: PeriodDeltas;
 }
+
+// -------------------------------------------------------------------------
+// Personal Budgeting & Spending Controls Contracts (Prompt 14)
+// -------------------------------------------------------------------------
+
+export type BudgetType = 'monthly' | 'custom_period' | 'category' | 'annual' | 'flexible';
+export type RecurrenceInterval = 'none' | 'monthly' | 'quarterly' | 'annual';
+export type BudgetStatus = 'active' | 'archived' | 'closed';
+export type BudgetWarningState = 'normal' | 'caution' | 'warning' | 'critical' | 'exceeded';
+
+export interface BudgetAllocationCreateItem {
+  category_id: UUID;
+  allocated_amount_paise: number;
+  warning_threshold_percentage?: number;
+  notes?: string | null;
+}
+
+export interface BudgetCreateRequest {
+  name: string;
+  start_date: string;
+  end_date: string;
+  total_allocated_paise: number;
+  budget_type?: BudgetType | string;
+  currency?: string;
+  recurrence_interval?: RecurrenceInterval | string;
+  allocations?: BudgetAllocationCreateItem[];
+  settings?: Record<string, any>;
+}
+
+export interface BudgetUpdateRequest {
+  name?: string;
+  start_date?: string;
+  end_date?: string;
+  total_allocated_paise?: number;
+  status?: BudgetStatus | string;
+  recurrence_interval?: RecurrenceInterval | string;
+  settings?: Record<string, any>;
+  revision_reason?: string;
+}
+
+export interface AllocationCreateRequest {
+  category_id: UUID;
+  allocated_amount_paise: number;
+  warning_threshold_percentage?: number;
+  notes?: string;
+  revision_reason?: string;
+}
+
+export interface AllocationUpdateRequest {
+  allocated_amount_paise?: number;
+  warning_threshold_percentage?: number;
+  notes?: string;
+  revision_reason?: string;
+}
+
+export interface BudgetRolloverRequest {
+  new_start_date?: string;
+  new_end_date?: string;
+  adjust_allocation_paise?: number;
+}
+
+export interface BudgetAllocationResponse {
+  id: UUID;
+  budget_id: UUID;
+  category_id: UUID;
+  category_name?: string | null;
+  category_color?: string | null;
+  allocated_amount_paise: number;
+  allocated_amount: number | string;
+  warning_threshold_percentage: number;
+  notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BudgetRevisionResponse {
+  id: UUID;
+  budget_id: UUID;
+  revision_number: number;
+  change_type: string;
+  previous_state: Record<string, any>;
+  new_state: Record<string, any>;
+  reason?: string | null;
+  changed_by_id?: UUID | null;
+  created_at: string;
+}
+
+export interface BudgetAlertResponse {
+  id: UUID;
+  budget_id: UUID;
+  allocation_id?: UUID | null;
+  category_name?: string | null;
+  threshold_percentage: number;
+  triggered_at_paise: number;
+  triggered_at_amount: number | string;
+  utilization_percentage: number;
+  message: string;
+  created_at: string;
+}
+
+export interface BudgetSummaryResponse {
+  id: UUID;
+  workspace_id: UUID;
+  name: string;
+  budget_type: BudgetType | string;
+  currency: string;
+  start_date: string;
+  end_date: string;
+  total_allocated_paise: number;
+  total_allocated: number | string;
+  recurrence_interval: RecurrenceInterval | string;
+  status: BudgetStatus | string;
+  allocations_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BudgetDetailResponse extends BudgetSummaryResponse {
+  allocations: BudgetAllocationResponse[];
+  settings: Record<string, any>;
+}
+
+export interface BudgetAllocationProgressResponse {
+  allocation_id: UUID;
+  category_id: UUID;
+  category_name: string;
+  category_color?: string | null;
+  allocated_paise: number;
+  allocated_amount: number | string;
+  spent_paise: number;
+  spent_amount: number | string;
+  remaining_paise: number;
+  remaining_amount: number | string;
+  utilization_percentage: number;
+  overspent: boolean;
+  warning_state: BudgetWarningState | string;
+  warning_threshold_percentage: number;
+}
+
+export interface BudgetLinearProjectionResponse {
+  days_in_period: number;
+  elapsed_days: number;
+  remaining_days: number;
+  daily_run_rate_paise: number;
+  daily_run_rate: number | string;
+  projected_period_end_spend_paise: number;
+  projected_period_end_spend: number | string;
+  projected_variance_paise: number;
+  projected_variance: number | string;
+  projected_overspent: boolean;
+  methodology: string;
+  assumptions: string;
+}
+
+export interface BudgetProgressResponse {
+  budget_id: UUID;
+  name: string;
+  currency: string;
+  start_date: string;
+  end_date: string;
+  as_of_date: string;
+  total_allocated_paise: number;
+  total_allocated_amount: number | string;
+  total_spent_paise: number;
+  total_spent_amount: number | string;
+  remaining_paise: number;
+  remaining_amount: number | string;
+  utilization_percentage: number;
+  overspent: boolean;
+  warning_state: BudgetWarningState | string;
+  period_days: number;
+  elapsed_days: number;
+  remaining_days: number;
+  period_elapsed_percentage: number;
+  linear_projection: BudgetLinearProjectionResponse;
+  allocations: BudgetAllocationProgressResponse[];
+  unallocated_capacity_paise: number;
+  unallocated_capacity_amount: number | string;
+  new_alerts_triggered: number;
+}
+
+// -------------------------------------------------------------------------
+// Financial Savings Goals Contracts (Prompt 14)
+// -------------------------------------------------------------------------
+
+export type GoalType =
+  | 'emergency_fund'
+  | 'education'
+  | 'travel'
+  | 'vehicle'
+  | 'home'
+  | 'debt_repayment'
+  | 'personal_savings'
+  | 'custom';
+
+export type GoalStatus = 'active' | 'completed' | 'paused' | 'archived';
+export type GoalPriority = 'low' | 'medium' | 'high';
+export type GoalActivityType =
+  | 'contribution'
+  | 'withdrawal'
+  | 'reversal'
+  | 'transfer_in'
+  | 'transfer_out';
+
+export interface GoalCreateRequest {
+  name: string;
+  target_amount_paise: number;
+  goal_type?: GoalType | string;
+  currency?: string;
+  start_date?: string;
+  target_date?: string | null;
+  priority?: GoalPriority | string;
+  color?: string;
+  icon?: string;
+  description?: string;
+  metadata_payload?: Record<string, any>;
+}
+
+export interface GoalUpdateRequest {
+  name?: string;
+  target_amount_paise?: number;
+  target_date?: string | null;
+  status?: GoalStatus | string;
+  priority?: GoalPriority | string;
+  color?: string;
+  icon?: string;
+  description?: string;
+  metadata_payload?: Record<string, any>;
+}
+
+export interface GoalActivityRequest {
+  amount_paise: number;
+  transaction_id?: UUID;
+  notes?: string;
+}
+
+export interface GoalActivityResponse {
+  id: UUID;
+  goal_id: UUID;
+  workspace_id: UUID;
+  activity_type: GoalActivityType | string;
+  amount_paise: number;
+  amount: number | string;
+  currency: string;
+  resulting_balance_paise: number;
+  transaction_id?: UUID | null;
+  notes?: string | null;
+  performed_by_id?: UUID | null;
+  created_at: string;
+}
+
+export interface GoalResponse {
+  id: UUID;
+  workspace_id: UUID;
+  name: string;
+  description?: string | null;
+  goal_type: GoalType | string;
+  currency: string;
+  target_amount_paise: number;
+  target_amount: number | string;
+  current_amount_paise: number;
+  current_amount: number | string;
+  start_date: string;
+  target_date?: string | null;
+  status: GoalStatus | string;
+  priority: GoalPriority | string;
+  color?: string | null;
+  icon?: string | null;
+  created_by_id?: UUID | null;
+  metadata_payload: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GoalProgressResponse {
+  goal_id: UUID;
+  name: string;
+  goal_type: GoalType | string;
+  currency: string;
+  status: GoalStatus | string;
+  priority: GoalPriority | string;
+  color?: string | null;
+  icon?: string | null;
+  target_amount_paise: number;
+  target_amount: number | string;
+  current_amount_paise: number;
+  current_amount: number | string;
+  start_date: string;
+  target_date?: string | null;
+  as_of_date: string;
+  remaining_paise: number;
+  remaining_amount: number | string;
+  completion_percentage: number;
+  is_completed: boolean;
+  days_remaining?: number | null;
+  required_monthly_savings_paise?: number | null;
+  required_monthly_savings_amount?: number | string | null;
+}
+
 
 
 

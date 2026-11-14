@@ -83,6 +83,12 @@ class Permission(str, Enum):
     VIEW_ANALYTICS = "analytics:view"
     EXPORT_ANALYTICS = "analytics:export"
 
+    # Personal Budgeting, Spending Controls & Financial Goals
+    VIEW_BUDGETS = "budgets:view"
+    MANAGE_BUDGETS = "budgets:manage"
+    VIEW_GOALS = "goals:view"
+    MANAGE_GOALS = "goals:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -117,6 +123,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_INTELLIGENCE,
             Permission.VIEW_ANALYTICS,
             Permission.EXPORT_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.MANAGE_BUDGETS,
+            Permission.VIEW_GOALS,
+            Permission.MANAGE_GOALS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -131,6 +141,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_RULES,
             Permission.VIEW_ANALYTICS,
             Permission.EXPORT_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.MANAGE_BUDGETS,
+            Permission.VIEW_GOALS,
+            Permission.MANAGE_GOALS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -142,6 +156,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_CATEGORIES,
             Permission.VIEW_RULES,
             Permission.VIEW_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.VIEW_GOALS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -177,6 +193,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_INTELLIGENCE,
             Permission.VIEW_ANALYTICS,
             Permission.EXPORT_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.MANAGE_BUDGETS,
+            Permission.VIEW_GOALS,
+            Permission.MANAGE_GOALS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -201,6 +221,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_INTELLIGENCE,
             Permission.VIEW_ANALYTICS,
             Permission.EXPORT_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.MANAGE_BUDGETS,
+            Permission.VIEW_GOALS,
+            Permission.MANAGE_GOALS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -214,6 +238,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_CATEGORIES,
             Permission.VIEW_RULES,
             Permission.VIEW_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.VIEW_GOALS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -225,6 +251,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.IMPORT_DATA,
             Permission.VIEW_CATEGORIES,
             Permission.VIEW_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.VIEW_GOALS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -235,6 +263,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_IMPORTS,
             Permission.VIEW_CATEGORIES,
             Permission.VIEW_ANALYTICS,
+            Permission.VIEW_BUDGETS,
+            Permission.VIEW_GOALS,
         },
     },
 }
@@ -260,6 +290,11 @@ class WorkspaceContext:
     def workspace_id(self) -> uuid.UUID:
         """Returns the UUID of the active workspace."""
         return self.workspace.id
+
+    @property
+    def user(self) -> User:
+        """Returns the authenticated User entity."""
+        return self.current_user
 
     def can(self, permission: Permission) -> bool:
         """Helper checking if current context user has the specified permission."""

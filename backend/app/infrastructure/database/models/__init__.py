@@ -36,6 +36,16 @@ from app.infrastructure.database.models.intelligence import (
     TransactionClassification,
     UserClassificationFeedback,
 )
+from app.infrastructure.database.models.budget import (
+    Budget,
+    BudgetAllocation,
+    BudgetRevision,
+    BudgetAlert,
+)
+from app.infrastructure.database.models.goal import (
+    FinancialGoal,
+    GoalActivity,
+)
 
 __all__ = [
     "User",
@@ -66,4 +76,10 @@ __all__ = [
     "ClassificationRule",
     "TransactionClassification",
     "UserClassificationFeedback",
+    "Budget",
+    "BudgetAllocation",
+    "BudgetRevision",
+    "BudgetAlert",
+    "FinancialGoal",
+    "GoalActivity",
 ]
