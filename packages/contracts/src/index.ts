@@ -310,18 +310,130 @@ export type AccountType =
   | 'bank'
   | 'savings'
   | 'current'
+  | 'salary'
+  | 'fixed_deposit'
+  | 'recurring_deposit'
   | 'credit_card'
   | 'loan'
   | 'wallet'
+  | 'digital_wallet'
   | 'investment'
+  | 'business_cash'
+  | 'business_bank'
+  | 'business_current'
+  | 'business_credit_card'
+  | 'petty_cash'
+  | 'loan_account'
+  | 'other_business'
   | 'other';
+
+export type AccountStatus = 'active' | 'inactive' | 'archived' | 'closed';
+
+export type BalanceType = 'book' | 'available' | 'provider_reported' | 'liability' | 'opening';
+
+export interface BalanceBreakdown {
+  currency: CurrencyCode | string;
+  book_balance: string;
+  book_balance_paise: number;
+  available_balance?: string | null;
+  available_balance_paise?: number | null;
+  provider_reported_balance?: string | null;
+  provider_reported_balance_paise?: number | null;
+  provider_reported_at?: ISODateString | null;
+  outstanding_liability?: string | null;
+  outstanding_liability_paise?: number | null;
+  pending_amount: string;
+  pending_amount_paise: number;
+  opening_balance: string;
+  opening_balance_paise: number;
+  opening_balance_date?: string | null;
+  opening_balance_source?: string | null;
+  credit_limit?: string | null;
+  credit_limit_paise?: number | null;
+  available_credit?: string | null;
+  available_credit_paise?: number | null;
+  statement_balance?: string | null;
+  statement_balance_paise?: number | null;
+  minimum_due?: string | null;
+  minimum_due_paise?: number | null;
+  due_date?: string | null;
+  original_principal?: string | null;
+  original_principal_paise?: number | null;
+  outstanding_principal?: string | null;
+  outstanding_principal_paise?: number | null;
+  interest_rate?: number | null;
+  repayment_amount?: string | null;
+  repayment_amount_paise?: number | null;
+}
+
+export interface AccountBalanceSnapshotResponse {
+  id: UUID;
+  account_id: UUID;
+  workspace_id: UUID;
+  balance_type: BalanceType | string;
+  balance_amount: string;
+  balance_paise: number;
+  currency: CurrencyCode | string;
+  effective_at: ISODateString;
+  source: string;
+  source_reference?: string | null;
+  reconciliation_status: string;
+  created_at: ISODateString;
+}
+
+export interface AccountBalanceSnapshotCreateRequest {
+  balance_type: BalanceType | string;
+  balance_amount: string;
+  currency?: CurrencyCode | string;
+  effective_at?: ISODateString;
+  source?: string;
+  source_reference?: string;
+  reconciliation_status?: string;
+}
 
 export interface AccountCreateRequest {
   name: string;
   account_type: AccountType | string;
-  currency?: CurrencyCode;
+  account_subtype?: string | null;
+  description?: string | null;
+  currency?: CurrencyCode | string;
   institution_name?: string | null;
   masked_identifier?: string | null;
+  opening_date?: string | null;
+  opening_balance?: string;
+  opening_balance_source?: string;
+  credit_limit?: string | null;
+  due_date?: string | null;
+  minimum_due?: string | null;
+  statement_balance?: string | null;
+  initial_liability?: string | null;
+  outstanding_liability?: string | null;
+  original_principal?: string | null;
+  outstanding_principal?: string | null;
+  interest_rate?: number | null;
+  repayment_amount?: string | null;
+  loan_due_date?: string | null;
+  provider_name?: string | null;
+  provider_account_id?: string | null;
+  connection_id?: string | null;
+  metadata?: Record<string, unknown>;
+}
+
+export interface AccountUpdateRequest {
+  name?: string;
+  account_subtype?: string | null;
+  description?: string | null;
+  institution_name?: string | null;
+  masked_identifier?: string | null;
+  credit_limit?: string | null;
+  minimum_due?: string | null;
+  due_date?: string | null;
+  metadata?: Record<string, unknown>;
+}
+
+export interface AccountCloseRequest {
+  closing_date: string;
+  closing_notes?: string;
 }
 
 export interface AccountResponse {
@@ -329,11 +441,37 @@ export interface AccountResponse {
   workspace_id: UUID;
   name: string;
   account_type: AccountType | string;
-  currency: CurrencyCode;
+  account_subtype?: string | null;
+  description?: string | null;
+  currency: CurrencyCode | string;
   institution_name?: string | null;
   masked_identifier?: string | null;
-  status: string;
+  status: AccountStatus | string;
+  opening_date?: string | null;
+  closing_date?: string | null;
   created_at: ISODateString;
+  updated_at: ISODateString;
+  current_book_balance: string;
+  current_book_balance_paise: number;
+  available_balance?: string | null;
+  available_balance_paise?: number | null;
+  provider_reported_balance?: string | null;
+  provider_reported_balance_paise?: number | null;
+  provider_reported_at?: ISODateString | null;
+  outstanding_liability?: string | null;
+  outstanding_liability_paise?: number | null;
+  pending_amount: string;
+  pending_amount_paise: number;
+  credit_limit?: string | null;
+  available_credit?: string | null;
+  due_date?: string | null;
+  interest_rate?: number | null;
+  repayment_amount?: string | null;
+  provider_name?: string | null;
+  connection_status?: string | null;
+  last_synced_at?: ISODateString | null;
+  source_metadata?: Record<string, unknown>;
+  balances: BalanceBreakdown;
 }
 
 export interface TransactionCreateRequest {

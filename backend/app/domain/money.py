@@ -130,6 +130,10 @@ class Money:
         precision = CURRENCY_PRECISIONS.get(self.currency, 2)
         return self.amount.quantize(Decimal(10) ** -precision, rounding=ROUND_HALF_EVEN)
 
+    def to_decimal_string(self) -> str:
+        """Returns standard decimal string formatted to currency precision."""
+        return str(self.display_amount)
+
     @property
     def is_zero(self) -> bool:
         return self.amount == Decimal("0.0000")

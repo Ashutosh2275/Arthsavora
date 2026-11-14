@@ -12,7 +12,7 @@ from app.infrastructure.database.models.workspace import (
     WorkspaceStatus,
     WorkspaceRole,
 )
-from app.infrastructure.database.models.account import Account
+from app.infrastructure.database.models.account import Account, AccountBalanceSnapshot
 from app.infrastructure.database.models.category import Category
 from app.infrastructure.database.models.transaction import Transaction
 from app.infrastructure.database.models.accounting import LedgerAccount, JournalEntry, JournalLine
@@ -29,6 +29,7 @@ __all__ = [
     "WorkspaceStatus",
     "WorkspaceRole",
     "Account",
+    "AccountBalanceSnapshot",
     "Category",
     "Transaction",
     "LedgerAccount",

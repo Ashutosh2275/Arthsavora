@@ -268,6 +268,53 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/FAMILY_PRIVACY_MODEL.md`
   - `docs/WORKSPACE_API_REFERENCE.md`
 
+---
+
+## Prompt 08: Financial Accounts and Account Balance Management [COMPLETED]
+**Commit:** `bbe5839bef9f2d3784d1294485fc46ba3f35e092`
+
+- [x] **Normalized Account Domain Model:**
+  - Expanded `Account` PostgreSQL model with: `account_subtype`, `description`, `created_by_id`, `opening_balance_paise`, `opening_balance_date`, `opening_balance_source`, `current_book_balance_paise`, `available_balance_paise`, `provider_reported_balance_paise`, `provider_reported_at`, `outstanding_liability_paise`, `pending_amount_paise`, `credit_limit_paise`, `statement_balance_paise`, `minimum_due_paise`, `due_date`, `interest_rate`, `repayment_amount_paise`, `provider_name`, `provider_account_id`, `connection_id`, `last_synced_at`, `connection_status`, and `source_metadata`.
+  - Created `AccountBalanceSnapshot` PostgreSQL model for immutable point-in-time balance audits (`account_balance_snapshots` table).
+  - Enforced composite unique constraint `uq_workspace_provider_account` on `(workspace_id, provider_name, provider_account_id)`.
+- [x] **Database Migration & Schema Upgrade:**
+  - Generated and applied Alembic migration `5defc6d4ac0c_expand_financial_accounts_and_add_.py`.
+  - Synchronized dev (`arthsavora`) and test (`arthsavora_test`) databases on PostgreSQL port 5433.
+- [x] **Taxonomy & Workspace Validation:**
+  - Enforced `ALLOWED_ACCOUNT_TYPES` across Personal, Family, and Business workspaces with clear domain validation (`INVALID_ACCOUNT_TYPE` 422).
+  - Supported all major Indian account classifications (`savings`, `salary`, `current`, `credit_card`, `digital_wallet`, `cash`, `fixed_deposit`, `recurring_deposit`, `loan`, `business_bank`, `business_current`, `business_credit_card`, `petty_cash`, `loan_account`).
+- [x] **Multi-Balance Architecture & Integer Minor Unit Precision:**
+  - Quantized all monetary figures to 64-bit integer paise using domain `Money` value object (zero floating-point math).
+  - Clear separation between Book Balance, Available Balance, Provider-Reported Balance, Outstanding Liability, and Pending Amount.
+  - Credit Card Math: tracks `credit_limit`, `outstanding_liability`, `available_credit`, `statement_balance`, `minimum_due`, and billing due dates.
+  - Loan Math: tracks `original_principal`, `outstanding_principal`, `interest_rate`, `repayment_amount` (EMI), and EMI due dates.
+  - Automatic creation of baseline snapshot of type `opening` when accounts are created with opening balance.
+- [x] **Lifecycle State Machine:**
+  - Validated state transitions: `active` <-> `archived` -> `closed`.
+  - Rejection of modifications to archived accounts (`422 Unprocessable Entity`).
+  - Temporal validation on account closure enforcing `closing_date >= opening_date`.
+- [x] **Dual RESTful Routing & Granular RBAC:**
+  - Implemented both header-scoped (`/api/v1/accounts/` with `X-Workspace-ID`) and hierarchical (`/api/v1/workspaces/{workspace_id}/accounts/`) routing.
+  - Enforced permissions `VIEW_ACCOUNTS` and `MANAGE_ACCOUNTS` across routes.
+  - Full anti-IDOR boundary validation (cross-tenant access returns 404).
+- [x] **Frontend Financial Accounts Interface:**
+  - Created `apps/web/src/pages/Accounts.tsx` with summary KPIs (Liquid Assets, Total Liabilities, Credit Limit, Active Accounts), category tabs, dynamic "Add Account" modal, and "Account Details & Balance History" modal.
+  - Built `apps/web/src/store/useAccountStore.ts` with complete CRUD, snapshot recording, and lifecycle operations.
+  - Added `/accounts` route to `apps/web/src/App.tsx` and top navigation link to `apps/web/src/components/layout/AppLayout.tsx`.
+- [x] **Contracts & Documentation Delivered:**
+  - Monorepo contracts synchronized in `packages/contracts/src/index.ts`.
+  - OpenAPI 3.1.0 specification updated in `docs/openapi.json` (55 paths, 46 schema components).
+  - `docs/ACCOUNT_MANAGEMENT.md`
+  - `docs/ACCOUNT_TYPES.md`
+  - `docs/BALANCE_ARCHITECTURE.md`
+  - `docs/ACCOUNT_SECURITY.md`
+  - `docs/ACCOUNT_API_REFERENCE.md`
+- [x] **Comprehensive Test Verification:**
+  - 107 passing backend integration tests in `backend/tests/` (including 10 comprehensive tests in `test_financial_accounts.py`).
+  - 28 passing web tests in `apps/web/` (including 4 unit/integration tests in `Accounts.test.tsx`).
+  - Monorepo TypeScript check: 0 errors across all 5 workspace projects.
+
+
 
 
 

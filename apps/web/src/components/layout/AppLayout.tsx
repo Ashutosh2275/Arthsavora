@@ -2,6 +2,7 @@ import React, { useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Landmark,
   Wallet,
   Target,
   LogOut,
@@ -26,6 +27,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const navItems = [
     { name: 'Analytics', path: '/dashboard', icon: <LayoutDashboard size={18} /> },
+    { name: 'Accounts', path: '/accounts', icon: <Landmark size={18} /> },
     { name: 'Expenses', path: '/expenses', icon: <Wallet size={18} /> },
     { name: 'Budget & AI', path: '/budget', icon: <Target size={18} /> },
     { name: 'Milestones', path: '/goals', icon: <Trophy size={18} /> },

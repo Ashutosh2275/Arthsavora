@@ -2,6 +2,7 @@ import React, { type ReactNode } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Auth from '@/pages/Auth';
 import Dashboard from '@/pages/Dashboard';
+import Accounts from '@/pages/Accounts';
 import Expenses from '@/pages/Expenses';
 import Budget from '@/pages/Budget';
 import Goals from '@/pages/Goals';
@@ -30,6 +31,16 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Dashboard />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/accounts"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Accounts />
               </AppLayout>
             </ProtectedRoute>
           }
