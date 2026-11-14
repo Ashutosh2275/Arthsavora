@@ -15,7 +15,12 @@ from app.infrastructure.database.models.workspace import (
 from app.infrastructure.database.models.account import Account, AccountBalanceSnapshot
 from app.infrastructure.database.models.category import Category
 from app.infrastructure.database.models.transaction import Transaction
-from app.infrastructure.database.models.accounting import LedgerAccount, JournalEntry, JournalLine
+from app.infrastructure.database.models.accounting import (
+    LedgerAccount,
+    JournalEntry,
+    JournalLine,
+    AccountingPeriod,
+)
 from app.infrastructure.database.models.acquisition import DataSource, ConsentRecord, ImportJob, ImportFile
 from app.infrastructure.database.models.audit import AuditLog
 
@@ -35,6 +40,7 @@ __all__ = [
     "LedgerAccount",
     "JournalEntry",
     "JournalLine",
+    "AccountingPeriod",
     "DataSource",
     "ConsentRecord",
     "ImportJob",

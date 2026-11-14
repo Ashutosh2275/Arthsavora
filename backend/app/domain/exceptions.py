@@ -105,3 +105,88 @@ class UnauthorizedDomainActionError(DomainError):
             code=code,
             details={"action": action, "reason": reason},
         )
+
+
+class UnbalancedJournalError(DomainError):
+    """Raised when a journal entry's total debits do not equal total credits."""
+
+    def __init__(
+        self,
+        total_debits: Any,
+        total_credits: Any,
+        difference: Any,
+        message: Optional[str] = None,
+    ):
+        msg = (
+            message
+            or f"Unbalanced journal entry: Total debits ({total_debits}) must equal total credits ({total_credits}). Difference: {difference}"
+        )
+        super().__init__(
+            message=msg,
+            code="UNBALANCED_JOURNAL_ENTRY",
+            details={
+                "total_debits": str(total_debits),
+                "total_credits": str(total_credits),
+                "difference": str(difference),
+            },
+        )
+
+
+class PeriodClosedError(DomainError):
+    """Raised when attempting to post a journal entry to a closed accounting period."""
+
+    def __init__(
+        self,
+        period_name: str,
+        entry_date: Any,
+        message: Optional[str] = None,
+    ):
+        msg = (
+            message
+            or f"Cannot post to closed accounting period '{period_name}' for entry date {entry_date}."
+        )
+        super().__init__(
+            message=msg,
+            code="ACCOUNTING_PERIOD_CLOSED",
+            details={"period_name": period_name, "entry_date": str(entry_date)},
+        )
+
+
+class ImmutableJournalError(DomainError):
+    """Raised when attempting to modify, delete, or re-post an immutable posted journal entry."""
+
+    def __init__(
+        self,
+        entry_number: str,
+        status: str,
+        message: Optional[str] = None,
+    ):
+        msg = (
+            message
+            or f"Journal entry '{entry_number}' in status '{status}' is immutable and cannot be altered or re-posted."
+        )
+        super().__init__(
+            message=msg,
+            code="IMMUTABLE_JOURNAL_ENTRY",
+            details={"entry_number": entry_number, "status": status},
+        )
+
+
+class SystemAccountProtectedError(DomainError):
+    """Raised when attempting to delete or alter a system-critical chart-of-accounts ledger account."""
+
+    def __init__(
+        self,
+        account_code: str,
+        account_name: str,
+        message: Optional[str] = None,
+    ):
+        msg = (
+            message
+            or f"Ledger account '{account_code}' ({account_name}) is a protected system account and cannot be deleted or re-classified."
+        )
+        super().__init__(
+            message=msg,
+            code="SYSTEM_ACCOUNT_PROTECTED",
+            details={"account_code": account_code, "account_name": account_name},
+        )

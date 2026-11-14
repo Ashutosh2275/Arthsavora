@@ -15,7 +15,8 @@
 **Prompt 07 Commit Hash:** `1236419435d802e6668108318dc7feb050a67033`  
 **Prompt 08 Commit Hash:** `bbe5839bef9f2d3784d1294485fc46ba3f35e092`  
 **Prompt 09 Commit Hash:** `0265864`  
-**Remote Push Verification:** Prompts 01–09 pushed and verified on `origin/main`  
+**Prompt 10 Commit Hash:** `3d79fb0`  
+**Remote Push Verification:** Prompts 01–10 pushed and verified on `origin/main`  
 
 ---
 
@@ -23,10 +24,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 2 — Workspaces, Identity & Operations (Prompts 07–10)
-- **Current Prompt:** Prompt 09 — Transaction Management and Financial Data Integrity [9]
-- **Completed Prompts:** 9 of 30 (Engineering Baseline, Architecture, Standards, Database, Backend, Domain Layer, Identity/Workspace Management, Financial Accounts, and Financial Transaction Engine fully established)
-- **Prompt 09 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 10 — Core Financial Account & Transaction Reconciliation (Stage 2)
+- **Current Prompt:** Prompt 10 — Double-Entry Accounting Engine and General Ledger [10]
+- **Completed Prompts:** 10 of 30 (Engineering Baseline, Architecture, Standards, Database, Backend, Domain Layer, Identity/Workspace Management, Financial Accounts, Financial Transactions, and Double-Entry Accounting Engine fully established)
+- **Prompt 10 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 11 — Personal & Household Multi-Account Dashboard & Cash Flow Tracker (Stage 3)
 
 ---
 
@@ -43,7 +44,7 @@
 | **07** | Stage 2 | Identity, User Profiles and Workspace Management | **COMPLETED** | `1236419` |
 | **08** | Stage 2 | Financial Accounts and Account Balance Management | **COMPLETED** | `bbe5839` |
 | **09** | Stage 2 | Transaction Management and Financial Data Integrity | **COMPLETED** | `0265864` |
-| **10** | Stage 2 | Core Financial Account & Transaction Reconciliation | UPCOMING | - |
+| **10** | Stage 2 | Double-Entry Accounting Engine and General Ledger | **COMPLETED** | `3d79fb0` |
 | **11** | Stage 3 | Personal & Household Multi-Account Dashboard & Cash Flow Tracker | UPCOMING | - |
 | **12** | Stage 3 | Predictive Budgeting & ARIMA Forecasting Engine (Isolated Workers) | UPCOMING | - |
 | **13** | Stage 3 | Milestone Goals & Real Ledger-Backed Savings Velocity Engine | UPCOMING | - |
@@ -362,6 +363,65 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - **116 passed backend tests** in `backend/tests/` (100% pass across all 116 tests).
   - **32 passed web tests** in `apps/web/` across 9 test suites (including 4 comprehensive tests in `Transactions.test.tsx`).
   - **0 errors** in monorepo TypeScript typecheck (`pnpm -r run typecheck`).
+
+---
+
+## 12. PROMPT 10 ACCEPTANCE & VERIFICATION RECORDS [COMPLETED]
+**Prompt:** Double-Entry Accounting Engine and General Ledger [10]  
+**Status:** COMPLETED & VERIFIED  
+
+- [x] **Relational Ledger & Accounting Period Data Model:**
+  - Created `AccountingPeriod` model in `backend/app/infrastructure/database/models/accounting.py` with unique constraint `(workspace_id, fiscal_year, period_number)` and date validity checks.
+  - Expanded `LedgerAccount` with hierarchical structure: `parent_id`, `sub_type`, `description`, `is_system`, and unique code per workspace `(workspace_id, code)`.
+  - Expanded `JournalEntry` with `reversal_reason`, `accounting_period_id`, `posted_by_id`, `metadata_payload`.
+  - Expanded `JournalLine` with dual precision: `amount_paise` (`BIGINT`), `financial_account_id`, `counterparty_name`, `source_metadata`, and auto-derivation of paise from decimal amount in constructor.
+- [x] **Database-Level Integrity Triggers (Alembic Migration):**
+  - Generated and applied migration `20c1c10ddc96_expand_accounting_ledger_and_periods.py` across `arthsavora` and `arthsavora_test` databases on port 5433.
+  - Implemented `trg_journal_balanced_deferred`: PostgreSQL deferred constraint trigger evaluating on transaction commit to assert $\sum \text{Debits} == \sum \text{Credits}$ and $\ge 2$ lines (error code `P0001`).
+  - Implemented `trg_prevent_posted_line_mutation`: Intercepts `UPDATE` and `DELETE` on journal lines belonging to posted/reversed entries (error code `P0002`).
+  - Implemented `trg_prevent_posted_journal_deletion`: Intercepts `DELETE` on posted/reversed journal entries (error code `P0003`).
+- [x] **Standard Chart of Accounts (COA) for India:**
+  - Implemented 28-account standard COA in `backend/app/domain/accounting_types.py` covering Assets (1000s), Liabilities (2000s), Equity (3000s), Revenue (4000s), and Expenses (5000s).
+  - Created two-pass hierarchical seeding in `LedgerAccountRepository.seed_default_chart_of_accounts` establishing parent-child links cleanly.
+  - Protected system accounts (`is_system=True`) from deletion or code mutation with `SystemAccountProtectedError`.
+- [x] **Controlled Posting & Reversal Workflow:**
+  - Built row-locking posting workflow (`SELECT ... FOR UPDATE`) in `LedgerService.post_journal_entry` checking period openness, line presence, and debit-credit equality.
+  - Built compensating reversal pipeline (`LedgerService.reverse_journal_entry`): creates inverse mirror entry with inverted debits/credits, links `reversal_of_entry_id`, requires `reversal_reason`, and marks original as `reversed`.
+  - Dispatches domain events `JOURNAL_CREATED`, `JOURNAL_REVERSED`, and `PERIOD_CLOSED`.
+- [x] **Operational Transaction-to-Ledger Mapping:**
+  - Implemented `LedgerService.post_transaction_to_ledger` mapping:
+    - Inflows (Salary/Revenue): Debit Bank Asset, Credit Revenue.
+    - Outflows (Purchases): Debit Expense, Credit Bank Asset.
+    - Credit Card Purchases: Debit Expense, Credit CC Liability.
+    - Credit Card Bill Payments: Debit CC Liability, Credit Bank Asset (**zero double-counting of expenses**).
+    - Transfers: Debit Destination Asset, Credit Source Asset.
+    - Opening Balances: Debit Asset, Credit Opening Balance Equity.
+- [x] **Authoritative Trial Balance & Derived Balances:**
+  - Implemented derived account balance calculation respecting classification normal balance (Debit: Assets/Expenses, Credit: Liabilities/Equity/Revenue).
+  - Implemented `get_trial_balance` aggregating all active accounts into debit and credit columns, rigorously proving $\sum \text{Debits} == \sum \text{Credits}$ with zero discrepancy.
+- [x] **API Endpoints & RBAC:**
+  - Built 11 RESTful endpoints in `backend/app/api/v1/ledger.py` mounted at both `/api/v1/workspaces/{workspace_id}/ledger/*` and `/api/v1/ledger/*`.
+  - Enforced permissions (`VIEW_LEDGER`, `MANAGE_LEDGER`, `POST_JOURNAL`, `REVERSE_JOURNAL`, `MANAGE_PERIODS`) across Owner, Admin, Member, Viewer, and Accountant roles.
+- [x] **Frontend UI & Web Store:**
+  - Synchronized TypeScript contracts in `packages/contracts/src/index.ts`.
+  - Exported updated OpenAPI 3.1.0 specification in `docs/openapi.json` (94 paths, 69 schema components).
+  - Built Zustand store `apps/web/src/store/useLedgerStore.ts`.
+  - Created responsive General Ledger interface `apps/web/src/pages/Ledger.tsx` with tabs for General Journal, Chart of Accounts, and Trial Balance, summary balance cards, "Record Journal Entry" modal, "Inspect Lines" modal, "Compensating Reversal" modal, and "Add Account" modal.
+  - Mounted `/ledger` route in `apps/web/src/App.tsx` and top navigation link in `apps/web/src/components/layout/AppLayout.tsx`.
+- [x] **Technical Documentation Delivered (8 Documents):**
+  - `docs/ACCOUNTING_ARCHITECTURE.md`
+  - `docs/CHART_OF_ACCOUNTS.md`
+  - `docs/JOURNAL_ENTRY_STANDARD.md`
+  - `docs/POSTING_RULES.md`
+  - `docs/LEDGER_INTEGRITY.md`
+  - `docs/BALANCE_DERIVATION.md`
+  - `docs/ACCOUNTING_API_REFERENCE.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+- [x] **Verification & Test Coverage:**
+  - **126 passed backend tests** in `backend/tests/` (100% pass across all 126 tests, including 10 comprehensive tests in `test_double_entry_ledger.py`).
+  - **37 passed web tests** in `apps/web/` across 10 test suites (including 5 tests in `Ledger.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+
 
 
 

@@ -154,6 +154,7 @@ async def reverse_journal_entry(
             line_number=idx,
             entry_type=inverted_type,
             amount=orig_line.amount,
+            amount_paise=getattr(orig_line, "amount_paise", int(round(orig_line.amount * 100))),
             currency=orig_line.currency,
             description=f"Reversal of line {orig_line.line_number}",
         )

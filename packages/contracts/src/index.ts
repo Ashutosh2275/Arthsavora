@@ -643,3 +643,180 @@ export interface TransactionHistoryEntry {
   details: Record<string, unknown>;
 }
 
+// -------------------------------------------------------------------------
+// General Ledger & Double-Entry Accounting Contracts
+// -------------------------------------------------------------------------
+
+export type LedgerAccountType = 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+export type LedgerNormalBalance = 'debit' | 'credit';
+export type JournalEntryStatus = 'draft' | 'posted' | 'reversed';
+export type AccountingPeriodStatus = 'open' | 'closed';
+
+export interface LedgerAccountResponse {
+  id: UUID;
+  workspace_id: UUID;
+  code: string;
+  name: string;
+  account_type: LedgerAccountType | string;
+  normal_balance: LedgerNormalBalance | string;
+  sub_type?: string | null;
+  description?: string | null;
+  parent_id?: UUID | null;
+  linked_account_id?: UUID | null;
+  is_active: boolean;
+  is_system: boolean;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+export interface LedgerAccountCreateRequest {
+  code: string;
+  name: string;
+  account_type: LedgerAccountType | string;
+  normal_balance?: LedgerNormalBalance | string;
+  sub_type?: string | null;
+  description?: string | null;
+  parent_id?: UUID | null;
+  linked_account_id?: UUID | null;
+}
+
+export interface LedgerAccountUpdateRequest {
+  name?: string;
+  description?: string;
+  is_active?: boolean;
+}
+
+export interface AccountingPeriodResponse {
+  id: UUID;
+  workspace_id: UUID;
+  fiscal_year: string;
+  period_number: number;
+  name: string;
+  start_date: string;
+  end_date: string;
+  status: AccountingPeriodStatus | string;
+  closed_at?: ISODateString | null;
+  closed_by_id?: UUID | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+export interface AccountingPeriodCreateRequest {
+  fiscal_year: string;
+  period_number: number;
+  name: string;
+  start_date: string;
+  end_date: string;
+}
+
+export interface JournalLineResponse {
+  id: UUID;
+  journal_entry_id: UUID;
+  ledger_account_id: UUID;
+  line_number: number;
+  entry_type: 'debit' | 'credit';
+  amount: string;
+  amount_paise: number;
+  currency: string;
+  description?: string | null;
+  financial_account_id?: UUID | null;
+  counterparty_name?: string | null;
+  ledger_account_code?: string | null;
+  ledger_account_name?: string | null;
+}
+
+export interface JournalLineCreateRequest {
+  ledger_account_id: UUID;
+  entry_type: 'debit' | 'credit';
+  amount: string;
+  amount_paise?: number;
+  currency?: string;
+  description?: string | null;
+  financial_account_id?: UUID | null;
+  counterparty_name?: string | null;
+}
+
+export interface JournalEntryResponse {
+  id: UUID;
+  workspace_id: UUID;
+  entry_number: string;
+  entry_date: string;
+  posting_date?: ISODateString | null;
+  status: JournalEntryStatus | string;
+  description: string;
+  source_type: string;
+  source_id?: UUID | null;
+  reversal_of_entry_id?: UUID | null;
+  reversal_reason?: string | null;
+  accounting_period_id?: UUID | null;
+  created_by?: UUID | null;
+  posted_by_id?: UUID | null;
+  metadata: Record<string, unknown>;
+  lines: JournalLineResponse[];
+  total_debits: string;
+  total_credits: string;
+  is_balanced: boolean;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+export interface JournalEntryCreateRequest {
+  entry_number?: string;
+  entry_date: string;
+  description: string;
+  source_type?: string;
+  lines: JournalLineCreateRequest[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface JournalEntryReverseRequest {
+  reason: string;
+  reversal_number?: string;
+}
+
+export interface JournalListResponse {
+  items: JournalEntryResponse[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AccountBalanceResponse {
+  account_id: string;
+  code: string;
+  name: string;
+  account_type: string;
+  normal_balance: string;
+  total_debits: string;
+  total_credits: string;
+  total_debits_paise: number;
+  total_credits_paise: number;
+  net_balance: string;
+  net_balance_paise: number;
+}
+
+export interface TrialBalanceEntry {
+  account_id: string;
+  code: string;
+  name: string;
+  account_type: string;
+  normal_balance: string;
+  debit_balance: string;
+  credit_balance: string;
+  debit_balance_paise: number;
+  credit_balance_paise: number;
+}
+
+export interface TrialBalanceResponse {
+  as_of_date: string;
+  is_balanced: boolean;
+  total_debits: string;
+  total_credits: string;
+  total_debits_paise: number;
+  total_credits_paise: number;
+  difference: string;
+  difference_paise: number;
+  entries: TrialBalanceEntry[];
+}
+
+

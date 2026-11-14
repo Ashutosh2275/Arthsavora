@@ -266,6 +266,73 @@ def create_journal_posted_event(
     )
 
 
+def create_journal_created_event(
+    workspace_id: uuid.UUID,
+    journal_id: uuid.UUID,
+    entry_number: str,
+    source_type: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="accounting.journal_created",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "journal_id": str(journal_id),
+            "entry_number": entry_number,
+            "source_type": source_type,
+        },
+    )
+
+
+def create_journal_reversed_event(
+    workspace_id: uuid.UUID,
+    original_journal_id: uuid.UUID,
+    reversal_journal_id: uuid.UUID,
+    reversal_number: str,
+    reason: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="accounting.journal_reversed",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "original_journal_id": str(original_journal_id),
+            "reversal_journal_id": str(reversal_journal_id),
+            "reversal_number": reversal_number,
+            "reason": reason,
+        },
+    )
+
+
+def create_period_closed_event(
+    workspace_id: uuid.UUID,
+    period_id: uuid.UUID,
+    fiscal_year: str,
+    period_number: int,
+    period_name: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="accounting.period_closed",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "period_id": str(period_id),
+            "fiscal_year": fiscal_year,
+            "period_number": period_number,
+            "period_name": period_name,
+        },
+    )
+
+
 # ---------------------------------------------------------------------------
 # Outbox Collector
 # ---------------------------------------------------------------------------

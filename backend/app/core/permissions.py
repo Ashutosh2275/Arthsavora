@@ -61,6 +61,13 @@ class Permission(str, Enum):
     UPDATE_TRANSACTIONS = "transactions:update"
     DELETE_TRANSACTIONS = "transactions:delete"
 
+    # General Ledger & Double-Entry Accounting
+    VIEW_LEDGER = "ledger:view"
+    MANAGE_LEDGER = "ledger:manage"
+    POST_JOURNAL = "ledger:post"
+    REVERSE_JOURNAL = "ledger:reverse"
+    MANAGE_PERIODS = "ledger:periods"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -83,6 +90,9 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_TRANSACTIONS,
             Permission.CREATE_TRANSACTIONS,
             Permission.UPDATE_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
+            Permission.MANAGE_LEDGER,
+            Permission.POST_JOURNAL,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -90,12 +100,14 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ACCOUNTS,
             Permission.VIEW_TRANSACTIONS,
             Permission.CREATE_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
             Permission.VIEW_MEMBERS,
             Permission.VIEW_ACCOUNTS,
             Permission.VIEW_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -117,6 +129,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.CREATE_TRANSACTIONS,
             Permission.UPDATE_TRANSACTIONS,
             Permission.DELETE_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
+            Permission.MANAGE_LEDGER,
+            Permission.POST_JOURNAL,
+            Permission.REVERSE_JOURNAL,
+            Permission.MANAGE_PERIODS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -127,6 +144,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_TRANSACTIONS,
             Permission.CREATE_TRANSACTIONS,
             Permission.UPDATE_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
+            Permission.MANAGE_LEDGER,
+            Permission.POST_JOURNAL,
+            Permission.REVERSE_JOURNAL,
+            Permission.MANAGE_PERIODS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -134,18 +156,22 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ACCOUNTS,
             Permission.VIEW_TRANSACTIONS,
             Permission.CREATE_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
+            Permission.POST_JOURNAL,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
             Permission.VIEW_ACCOUNTS,
             Permission.VIEW_TRANSACTIONS,
             Permission.CREATE_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
             Permission.VIEW_MEMBERS,
             Permission.VIEW_ACCOUNTS,
             Permission.VIEW_TRANSACTIONS,
+            Permission.VIEW_LEDGER,
         },
     },
 }
