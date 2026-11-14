@@ -288,6 +288,36 @@ FINANCIAL_TOOLS: Dict[str, FinancialToolDefinitionVO] = {
         sensitivity=DataSensitivityEnum.INTERNAL,
         timeout_seconds=5,
     ),
+    "search_documents": FinancialToolDefinitionVO(
+        name="search_documents",
+        description="Searches and lists recent uploaded financial receipts, invoices, and supporting documents in the workspace.",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "status": {"type": "string", "description": "Filter by status: pending, extracted, review_required, confirmed, rejected"},
+                "document_type": {"type": "string", "description": "Filter by type: receipt, invoice, bill"},
+                "search": {"type": "string", "description": "Search query matching filename or merchant"},
+                "limit": {"type": "integer", "default": 10},
+            },
+        },
+        required_permission=Permission.VIEW_DOCUMENTS.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_document_details": FinancialToolDefinitionVO(
+        name="get_document_details",
+        description="Retrieves complete structured extraction details, merchant, date, total amount, taxes, line items, and linked transaction for a specific document.",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "document_id": {"type": "string", "description": "UUID of the financial document"},
+            },
+            "required": ["document_id"],
+        },
+        required_permission=Permission.VIEW_DOCUMENTS.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
 }
 
 

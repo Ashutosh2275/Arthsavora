@@ -22,6 +22,7 @@ from app.infrastructure.database.models.goal import FinancialGoal
 from app.infrastructure.database.models.recurring import RecurringDefinition, Subscription
 from app.infrastructure.database.models.transaction import Transaction
 from app.repositories.anomaly_repository import AnomalyRepository
+from app.repositories.document_repository import DocumentRepository
 from app.services.analytics.analytics_service import AnalyticsService
 from app.services.assistant.tool_registry import FINANCIAL_TOOLS, get_tool_definition
 
@@ -118,7 +119,15 @@ class ToolExecutor:
             elif tool_call.tool_name == "get_anomaly_details":
                 return await self._exec_anomalies(tool_call, workspace_id, args)
 
-            # 15-18. Action Proposal Drafts
+            # 15. Search Documents & Receipts
+            elif tool_call.tool_name == "search_documents":
+                return await self._exec_search_documents(tool_call, workspace_id, args)
+
+            # 16. Document Details
+            elif tool_call.tool_name == "get_document_details":
+                return await self._exec_document_details(tool_call, workspace_id, args)
+
+            # 17-20. Action Proposal Drafts
             elif tool_call.tool_name in (
                 "create_budget_draft",
                 "create_goal_draft",
@@ -488,4 +497,86 @@ class ToolExecutor:
                 for d in detections
             ],
         }
+        return ToolResultVO(call_id=tc.call_id, tool_name=tc.tool_name, success=True, data=data)
+
+    async def _exec_search_documents(self, tc: ToolCallVO, ws_id: uuid.UUID, args: Dict[str, Any]) -> ToolResultVO:
+        limit = min(20, max(1, args.get("limit", 10)))
+        status_filter = args.get("status")
+        doc_type = args.get("document_type")
+        search_query = args.get("search")
+
+        repo = DocumentRepository(self.db)
+        docs, total = await repo.list_workspace_documents(
+            workspace_id=ws_id,
+            status=status_filter,
+            document_type=doc_type,
+            search_query=search_query,
+            limit=limit,
+        )
+
+        doc_summaries = []
+        for d in docs:
+            latest_ext = d.extractions[0] if d.extractions else None
+            structured = latest_ext.structured_data if latest_ext else {}
+            doc_summaries.append({
+                "id": str(d.id),
+                "filename": d.original_filename,
+                "status": d.status,
+                "document_type": d.document_type,
+                "created_at": d.created_at.isoformat(),
+                "merchant_name": structured.get("merchant_name"),
+                "total_amount": structured.get("total_amount"),
+                "date": structured.get("receipt_date"),
+                "is_linked_to_transaction": len(d.transaction_associations) > 0,
+            })
+
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={"total_documents": total, "documents": doc_summaries},
+        )
+
+    async def _exec_document_details(self, tc: ToolCallVO, ws_id: uuid.UUID, args: Dict[str, Any]) -> ToolResultVO:
+        doc_id_raw = args.get("document_id")
+        if not doc_id_raw:
+            return ToolResultVO(call_id=tc.call_id, tool_name=tc.tool_name, success=False, error="Missing required parameter 'document_id'.")
+
+        try:
+            doc_id = uuid.UUID(str(doc_id_raw))
+        except ValueError:
+            return ToolResultVO(call_id=tc.call_id, tool_name=tc.tool_name, success=False, error=f"Invalid UUID '{doc_id_raw}'.")
+
+        repo = DocumentRepository(self.db)
+        doc = await repo.get_document_details(doc_id, ws_id)
+        if not doc:
+            return ToolResultVO(call_id=tc.call_id, tool_name=tc.tool_name, success=False, error=f"Document '{doc_id}' not found.")
+
+        latest_ext = doc.extractions[0] if doc.extractions else None
+
+        data = {
+            "id": str(doc.id),
+            "filename": doc.original_filename,
+            "status": doc.status,
+            "document_type": doc.document_type,
+            "created_at": doc.created_at.isoformat(),
+            "mime_type": doc.mime_type,
+            "file_size_bytes": doc.file_size,
+            "extraction": {
+                "ocr_provider": latest_ext.ocr_provider if latest_ext else None,
+                "overall_confidence": float(latest_ext.overall_confidence) if latest_ext else 0.0,
+                "validation_status": latest_ext.validation_status if latest_ext else None,
+                "validation_warnings": latest_ext.validation_warnings if latest_ext else [],
+                "structured_data": latest_ext.structured_data if latest_ext else {},
+            } if latest_ext else None,
+            "linked_transactions": [
+                {
+                    "association_id": str(a.id),
+                    "transaction_id": str(a.transaction_id),
+                    "type": a.association_type,
+                }
+                for a in doc.transaction_associations
+            ],
+        }
+
         return ToolResultVO(call_id=tc.call_id, tool_name=tc.tool_name, success=True, data=data)

@@ -39,6 +39,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: 'Transactions', path: '/transactions', icon: <Receipt size={18} /> },
     { name: 'Ledger', path: '/ledger', icon: <BookOpen size={18} /> },
     { name: 'Import', path: '/import', icon: <Upload size={18} /> },
+    { name: 'Receipts', path: '/documents', icon: <FileText size={18} /> },
     { name: 'Categories', path: '/categories', icon: <Tag size={18} /> },
     { name: 'Expenses', path: '/expenses', icon: <Wallet size={18} /> },
     { name: 'Budgets', path: '/budgets', icon: <Target size={18} /> },

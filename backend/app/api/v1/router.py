@@ -11,6 +11,7 @@ from app.api.v1 import (
     assistant_routes,
     auth,
     budget_routes,
+    document_routes,
     forecast_routes,
     goal_routes,
     health,
@@ -57,3 +58,5 @@ v1_router.include_router(anomaly_routes.router, prefix="/anomalies")
 v1_router.include_router(anomaly_routes.router, prefix="/workspaces/{workspace_id}/anomalies")
 v1_router.include_router(assistant_routes.router, prefix="/assistant")
 v1_router.include_router(assistant_routes.router, prefix="/workspaces/{workspace_id}/assistant")
+v1_router.include_router(document_routes.router, prefix="/documents")
+v1_router.include_router(document_routes.router, prefix="/workspaces/{workspace_id}/documents")

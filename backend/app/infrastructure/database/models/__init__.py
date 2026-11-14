@@ -71,6 +71,12 @@ from app.infrastructure.database.models.assistant import (
     AssistantActionDraft,
     AssistantUsageLog,
 )
+from app.infrastructure.database.models.document import (
+    FinancialDocument,
+    DocumentExtractionResult,
+    DocumentReviewRecord,
+    DocumentTransactionAssociation,
+)
 
 __all__ = [
     "User",
@@ -124,4 +130,8 @@ __all__ = [
     "AssistantMessage",
     "AssistantActionDraft",
     "AssistantUsageLog",
+    "FinancialDocument",
+    "DocumentExtractionResult",
+    "DocumentReviewRecord",
+    "DocumentTransactionAssociation",
 ]

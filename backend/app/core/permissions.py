@@ -107,6 +107,10 @@ class Permission(str, Enum):
     USE_ASSISTANT = "assistant:use"
     MANAGE_ASSISTANT = "assistant:manage"
 
+    # Receipt Intelligence, Document Capture & OCR Extraction
+    VIEW_DOCUMENTS = "documents:view"
+    MANAGE_DOCUMENTS = "documents:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -155,6 +159,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_ANOMALIES,
             Permission.USE_ASSISTANT,
             Permission.MANAGE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
+            Permission.MANAGE_DOCUMENTS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -182,6 +188,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANOMALIES,
             Permission.MANAGE_ANOMALIES,
             Permission.USE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
+            Permission.MANAGE_DOCUMENTS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -200,6 +208,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.USE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -249,6 +258,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_ANOMALIES,
             Permission.USE_ASSISTANT,
             Permission.MANAGE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
+            Permission.MANAGE_DOCUMENTS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -287,6 +298,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_ANOMALIES,
             Permission.USE_ASSISTANT,
             Permission.MANAGE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
+            Permission.MANAGE_DOCUMENTS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -308,6 +321,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANOMALIES,
             Permission.MANAGE_ANOMALIES,
             Permission.USE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
+            Permission.MANAGE_DOCUMENTS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -326,6 +341,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.USE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
+            Permission.MANAGE_DOCUMENTS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -343,6 +360,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.USE_ASSISTANT,
+            Permission.VIEW_DOCUMENTS,
         },
     },
 }

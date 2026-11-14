@@ -14,6 +14,7 @@ import Recurring from '@/pages/Recurring';
 import { Forecast } from '@/pages/Forecast';
 import { Anomalies } from '@/pages/Anomalies';
 import { Assistant } from '@/pages/Assistant';
+import { Documents } from '@/pages/Documents';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
@@ -199,6 +200,26 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Assistant />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/documents"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Documents />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/receipts"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Documents />
               </AppLayout>
             </ProtectedRoute>
           }

@@ -2411,6 +2411,158 @@ export interface AssistantUsageSummary {
   avg_latency_ms: number;
 }
 
+// -------------------------------------------------------------------------
+// Receipt Intelligence, OCR & Document Extraction Contracts (Prompt 19)
+// -------------------------------------------------------------------------
+
+export type DocumentType = 'receipt' | 'invoice' | 'bill' | 'supporting_doc';
+export type DocumentStatus =
+  | 'pending'
+  | 'preprocessing'
+  | 'processing'
+  | 'extracted'
+  | 'review_required'
+  | 'confirmed'
+  | 'rejected'
+  | 'failed';
+export type TransactionMatchStatus = 'exact' | 'candidate' | 'ambiguous' | 'none';
+export type DocumentPaymentMethod = 'upi' | 'card' | 'cash' | 'netbanking' | 'unknown';
+export type DocumentValidationStatus = 'valid' | 'warning' | 'invalid_math' | 'incomplete';
+
+export interface DocumentLineItem {
+  description: string;
+  hsn_sac?: string | null;
+  quantity: string;
+  unit_price: string;
+  unit_price_paise: number;
+  tax_rate?: string | null;
+  amount: string;
+  amount_paise: number;
+}
+
+export interface TaxBreakdown {
+  cgst: string;
+  cgst_paise: number;
+  sgst: string;
+  sgst_paise: number;
+  igst: string;
+  igst_paise: number;
+  total_tax: string;
+  total_tax_paise: number;
+  gstin?: string | null;
+}
+
+export interface StructuredReceiptData {
+  merchant_name?: string | null;
+  gstin?: string | null;
+  receipt_date?: string | null;
+  invoice_number?: string | null;
+  currency: string;
+  subtotal: string;
+  subtotal_paise: number;
+  taxes: TaxBreakdown;
+  discount: string;
+  discount_paise: number;
+  total_amount: string;
+  total_amount_paise: number;
+  payment_method: string;
+  payment_reference?: string | null;
+  suggested_category_id?: string | null;
+  suggested_category_name?: string | null;
+  line_items: DocumentLineItem[];
+}
+
+export interface DocumentExtractionResult {
+  id: UUID;
+  document_id: UUID;
+  workspace_id: UUID;
+  ocr_provider: string;
+  ocr_version?: string | null;
+  raw_text: string;
+  structured_data: StructuredReceiptData;
+  field_confidences: Record<string, number>;
+  overall_confidence: number | string;
+  validation_status: DocumentValidationStatus;
+  validation_warnings: string[];
+  created_at: string;
+}
+
+export interface DocumentReviewRecord {
+  id: UUID;
+  document_id: UUID;
+  workspace_id: UUID;
+  reviewer_id?: UUID | null;
+  original_data: Record<string, any>;
+  corrected_data: Record<string, any>;
+  review_action: string;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface DocumentTransactionAssociation {
+  id: UUID;
+  document_id: UUID;
+  transaction_id: UUID;
+  workspace_id: UUID;
+  association_type: string;
+  match_score?: number | string | null;
+  match_evidence: Record<string, any>;
+  created_by_id?: UUID | null;
+  created_at: string;
+}
+
+export interface FinancialDocument {
+  id: UUID;
+  workspace_id: UUID;
+  uploaded_by_id?: UUID | null;
+  original_filename: string;
+  file_size: number;
+  mime_type: string;
+  file_checksum: string;
+  document_type: DocumentType;
+  status: DocumentStatus;
+  preprocessing_metadata: Record<string, any>;
+  retention_metadata: Record<string, any>;
+  extractions?: DocumentExtractionResult[];
+  reviews?: DocumentReviewRecord[];
+  transaction_associations?: DocumentTransactionAssociation[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DocumentListResponse {
+  items: FinancialDocument[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface DocumentCorrectionRequest {
+  corrected_data: Record<string, any>;
+  notes?: string;
+}
+
+export interface DocumentConfirmRequest {
+  account_id: UUID;
+  confirmed_data?: Record<string, any>;
+  notes?: string;
+}
+
+export interface DocumentMatchAssociateRequest {
+  transaction_id: UUID;
+  match_score?: number | string;
+  notes?: string;
+}
+
+export interface TransactionMatchCandidate {
+  transaction_id: UUID;
+  match_status: TransactionMatchStatus;
+  match_score: number | string;
+  evidence: Record<string, any>;
+  transaction_summary: Record<string, any>;
+}
+
+
 
 
 
