@@ -10,6 +10,7 @@ import Categories from '@/pages/Categories';
 import Expenses from '@/pages/Expenses';
 import Budgets from '@/pages/Budgets';
 import Goals from '@/pages/Goals';
+import Recurring from '@/pages/Recurring';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
@@ -125,6 +126,26 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Goals />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recurring"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Recurring />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/subscriptions"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Recurring />
               </AppLayout>
             </ProtectedRoute>
           }

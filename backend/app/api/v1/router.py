@@ -15,6 +15,7 @@ from app.api.v1 import (
     intelligence_routes,
     invitations,
     ledger,
+    recurring_routes,
     transactions,
     users,
     workspaces,
@@ -45,3 +46,5 @@ v1_router.include_router(budget_routes.router, prefix="/budgets")
 v1_router.include_router(budget_routes.router, prefix="/workspaces/{workspace_id}/budgets")
 v1_router.include_router(goal_routes.router, prefix="/goals")
 v1_router.include_router(goal_routes.router, prefix="/workspaces/{workspace_id}/goals")
+v1_router.include_router(recurring_routes.router, prefix="/recurring")
+v1_router.include_router(recurring_routes.router, prefix="/workspaces/{workspace_id}/recurring")

@@ -15,6 +15,7 @@ import {
   Tag,
   Menu,
   X,
+  Repeat,
 } from 'lucide-react';
 import AIChatbot from '@/components/AIChatbot';
 import useAuthStore from '@/store/useAuthStore';
@@ -39,6 +40,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: 'Expenses', path: '/expenses', icon: <Wallet size={18} /> },
     { name: 'Budgets', path: '/budgets', icon: <Target size={18} /> },
     { name: 'Goals', path: '/goals', icon: <Trophy size={18} /> },
+    { name: 'Recurring', path: '/recurring', icon: <Repeat size={18} /> },
     { name: 'Reports', path: '/reports', icon: <FileText size={18} /> },
   ];
 

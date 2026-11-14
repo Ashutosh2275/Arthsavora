@@ -1651,6 +1651,293 @@ export interface GoalProgressResponse {
   required_monthly_savings_amount?: number | string | null;
 }
 
+// -------------------------------------------------------------------------
+// Recurring Transactions, Subscriptions & Cash-Flow Commitments Contracts
+// -------------------------------------------------------------------------
+
+export type RecurringDirection = 'inflow' | 'outflow';
+export type RecurringFrequency = 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'semi_annual' | 'annual' | 'custom';
+export type EndOfMonthPolicy = 'last_day' | 'closest_before' | 'skip';
+export type RecurringStatus = 'active' | 'paused' | 'cancelled' | 'completed';
+export type OccurrenceStatus = 'scheduled' | 'upcoming' | 'due' | 'matched' | 'confirmed' | 'skipped' | 'cancelled' | 'overdue';
+export type SubscriptionStatus = 'active' | 'trial' | 'paused' | 'cancelled' | 'expired' | 'unknown';
+export type BillingFrequency = 'weekly' | 'monthly' | 'quarterly' | 'semi_annual' | 'annual';
+export type ReminderType = 'upcoming_payment' | 'upcoming_renewal' | 'trial_ending' | 'payment_overdue' | 'cancellation_deadline';
+export type SuggestionStatus = 'pending' | 'confirmed' | 'dismissed';
+
+export interface RecurringDefinitionCreateRequest {
+  name: string;
+  description?: string;
+  direction?: RecurringDirection;
+  transaction_type?: string;
+  expected_amount_paise: number;
+  is_variable_amount?: boolean;
+  currency?: string;
+  category_id?: UUID;
+  merchant_id?: UUID;
+  merchant_name?: string;
+  account_id?: UUID;
+  frequency?: RecurringFrequency;
+  interval?: number;
+  day_of_month?: number;
+  day_of_week?: number;
+  end_of_month_policy?: EndOfMonthPolicy;
+  start_date: string;
+  end_date?: string;
+  timezone?: string;
+}
+
+export interface RecurringDefinitionUpdateRequest {
+  name?: string;
+  description?: string;
+  expected_amount_paise?: number;
+  is_variable_amount?: boolean;
+  category_id?: UUID;
+  merchant_id?: UUID;
+  merchant_name?: string;
+  account_id?: UUID;
+  frequency?: RecurringFrequency;
+  interval?: number;
+  day_of_month?: number;
+  day_of_week?: number;
+  end_of_month_policy?: EndOfMonthPolicy;
+  end_date?: string;
+  next_expected_date?: string;
+  status?: RecurringStatus;
+}
+
+export interface RecurringDefinitionResponse {
+  id: UUID;
+  workspace_id: UUID;
+  name: string;
+  description?: string | null;
+  direction: RecurringDirection | string;
+  transaction_type: string;
+  expected_amount_paise: number;
+  expected_amount: number | string;
+  is_variable_amount: boolean;
+  currency: string;
+  category_id?: UUID | null;
+  category_name?: string | null;
+  merchant_id?: UUID | null;
+  merchant_name?: string | null;
+  account_id?: UUID | null;
+  account_name?: string | null;
+  frequency: RecurringFrequency | string;
+  interval: number;
+  day_of_month?: number | null;
+  day_of_week?: number | null;
+  end_of_month_policy: string;
+  start_date: string;
+  end_date?: string | null;
+  next_expected_date: string;
+  timezone: string;
+  status: RecurringStatus | string;
+  normalized_monthly_paise: number;
+  normalized_annual_paise: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OccurrenceMatchRequest {
+  transaction_id: UUID;
+  notes?: string;
+}
+
+export interface OccurrenceConfirmRequest {
+  notes?: string;
+}
+
+export interface OccurrenceSkipRequest {
+  reason?: string;
+}
+
+export interface OccurrenceResponse {
+  id: UUID;
+  workspace_id: UUID;
+  recurring_definition_id: UUID;
+  recurring_name?: string | null;
+  direction?: string | null;
+  expected_date: string;
+  expected_amount_paise: number;
+  expected_amount: number | string;
+  currency: string;
+  status: OccurrenceStatus | string;
+  matched_transaction_id?: UUID | null;
+  matched_amount_paise?: number | null;
+  matched_amount?: number | string | null;
+  amount_variance_paise?: number | null;
+  match_confidence?: number | null;
+  notes?: string | null;
+  generated_at: string;
+  confirmed_at?: string | null;
+  updated_at: string;
+}
+
+export interface SubscriptionCreateRequest {
+  name: string;
+  provider_name?: string;
+  merchant_id?: UUID;
+  category_id?: UUID;
+  expected_amount_paise: number;
+  currency?: string;
+  billing_frequency?: BillingFrequency;
+  billing_cycle_interval?: number;
+  start_date: string;
+  next_billing_date: string;
+  renewal_date?: string;
+  trial_end_date?: string;
+  account_id?: UUID;
+  payment_method_display?: string;
+  is_variable_pricing?: boolean;
+  notes?: string;
+  create_recurring_definition?: boolean;
+}
+
+export interface SubscriptionUpdateRequest {
+  name?: string;
+  provider_name?: string;
+  expected_amount_paise?: number;
+  billing_frequency?: BillingFrequency;
+  billing_cycle_interval?: number;
+  next_billing_date?: string;
+  renewal_date?: string;
+  trial_end_date?: string;
+  cancellation_date?: string;
+  status?: SubscriptionStatus;
+  account_id?: UUID;
+  payment_method_display?: string;
+  is_variable_pricing?: boolean;
+  notes?: string;
+}
+
+export interface SubscriptionResponse {
+  id: UUID;
+  workspace_id: UUID;
+  recurring_definition_id?: UUID | null;
+  name: string;
+  provider_name?: string | null;
+  merchant_id?: UUID | null;
+  merchant_name?: string | null;
+  category_id?: UUID | null;
+  category_name?: string | null;
+  expected_amount_paise: number;
+  expected_amount: number | string;
+  currency: string;
+  billing_frequency: BillingFrequency | string;
+  billing_cycle_interval: number;
+  start_date: string;
+  next_billing_date: string;
+  renewal_date?: string | null;
+  trial_end_date?: string | null;
+  cancellation_date?: string | null;
+  account_id?: UUID | null;
+  account_name?: string | null;
+  payment_method_display?: string | null;
+  status: SubscriptionStatus | string;
+  is_variable_pricing: boolean;
+  notes?: string | null;
+  estimated_monthly_paise: number;
+  estimated_annual_paise: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecurringReminderResponse {
+  id: UUID;
+  workspace_id: UUID;
+  occurrence_id?: UUID | null;
+  recurring_definition_id?: UUID | null;
+  subscription_id?: UUID | null;
+  reminder_type: ReminderType | string;
+  days_before: number;
+  scheduled_for: string;
+  notification_channel: string;
+  is_sent: boolean;
+  sent_at?: string | null;
+  is_read: boolean;
+  message: string;
+  created_at: string;
+}
+
+export interface RecurringDetectRequest {
+  lookback_days?: number;
+  as_of_date?: string;
+}
+
+export interface RecurringSuggestionResponse {
+  id: UUID;
+  workspace_id: UUID;
+  merchant_id?: UUID | null;
+  merchant_name: string;
+  normalized_description: string;
+  direction: string;
+  suggested_frequency: string;
+  suggested_amount_paise: number;
+  suggested_amount: number | string;
+  min_amount_paise: number;
+  max_amount_paise: number;
+  currency: string;
+  category_id?: UUID | null;
+  confidence_score: number;
+  evidence_count: number;
+  evidence_summary: Record<string, any>;
+  first_seen_date: string;
+  last_seen_date: string;
+  estimated_next_date: string;
+  status: SuggestionStatus | string;
+  dismissed_reason?: string | null;
+  created_at: string;
+}
+
+export interface SuggestionConfirmRequest {
+  name?: string;
+  category_id?: UUID;
+  account_id?: UUID;
+  adjusted_amount_paise?: number;
+  adjusted_frequency?: RecurringFrequency;
+  is_subscription?: boolean;
+}
+
+export interface SuggestionDismissRequest {
+  reason?: string;
+}
+
+export interface CommitmentBreakdownByType {
+  type_name: string;
+  count: number;
+  total_amount_paise: number;
+  total_amount: number | string;
+}
+
+export interface CashFlowCommitmentsResponse {
+  workspace_id: UUID;
+  window_days: number;
+  start_date: string;
+  end_date: string;
+  total_expected_inflow_paise: number;
+  total_expected_inflow: number | string;
+  total_expected_outflow_paise: number;
+  total_expected_outflow: number | string;
+  net_commitment_paise: number;
+  net_commitment: number | string;
+  active_recurring_count: number;
+  active_subscription_count: number;
+  normalized_monthly_expenses_paise: number;
+  normalized_monthly_expenses: number | string;
+  normalized_annual_expenses_paise: number;
+  normalized_annual_expenses: number | string;
+  commitments_by_category: Array<{
+    category_name: string;
+    count: number;
+    total_amount_paise: number;
+    total_amount: number | string;
+  }>;
+  commitments_by_type: CommitmentBreakdownByType[];
+  upcoming_occurrences: OccurrenceResponse[];
+}
+
+
 
 
 

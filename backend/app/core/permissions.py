@@ -89,6 +89,12 @@ class Permission(str, Enum):
     VIEW_GOALS = "goals:view"
     MANAGE_GOALS = "goals:manage"
 
+    # Recurring Transactions, Subscriptions & Cash-Flow Commitments
+    VIEW_RECURRING = "recurring:view"
+    MANAGE_RECURRING = "recurring:manage"
+    VIEW_SUBSCRIPTIONS = "subscriptions:view"
+    MANAGE_SUBSCRIPTIONS = "subscriptions:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -127,6 +133,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_BUDGETS,
             Permission.VIEW_GOALS,
             Permission.MANAGE_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.MANAGE_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
+            Permission.MANAGE_SUBSCRIPTIONS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -145,6 +155,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_BUDGETS,
             Permission.VIEW_GOALS,
             Permission.MANAGE_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.MANAGE_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
+            Permission.MANAGE_SUBSCRIPTIONS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -158,6 +172,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANALYTICS,
             Permission.VIEW_BUDGETS,
             Permission.VIEW_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -197,6 +213,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_BUDGETS,
             Permission.VIEW_GOALS,
             Permission.MANAGE_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.MANAGE_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
+            Permission.MANAGE_SUBSCRIPTIONS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -225,6 +245,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_BUDGETS,
             Permission.VIEW_GOALS,
             Permission.MANAGE_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.MANAGE_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
+            Permission.MANAGE_SUBSCRIPTIONS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -240,6 +264,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANALYTICS,
             Permission.VIEW_BUDGETS,
             Permission.VIEW_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -253,6 +279,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANALYTICS,
             Permission.VIEW_BUDGETS,
             Permission.VIEW_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -265,6 +293,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_ANALYTICS,
             Permission.VIEW_BUDGETS,
             Permission.VIEW_GOALS,
+            Permission.VIEW_RECURRING,
+            Permission.VIEW_SUBSCRIPTIONS,
         },
     },
 }

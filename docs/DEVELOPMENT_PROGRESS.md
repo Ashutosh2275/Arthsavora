@@ -28,10 +28,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 3 — Financial Intelligence & Categorization (Prompts 11–15)
-- **Current Prompt:** Prompt 14 — Personal Budgeting, Financial Goals and Spending Controls [14]
-- **Completed Prompts:** 14 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, and Personal Budgeting & Financial Goals established)
-- **Prompt 14 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 15 — Financial Anomaly Detection, Fraud Prevention & Risk Surveillance Engine [15]
+- **Current Prompt:** Prompt 15 — Recurring Transactions, Subscription Management and Cash-Flow Commitments [15]
+- **Completed Prompts:** 15 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, and Recurring Transactions/Subscriptions established)
+- **Prompt 15 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 16 — Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence [16]
 
 ---
 
@@ -53,8 +53,8 @@
 | **12** | Stage 3 | Transaction Categorization and Merchant Intelligence | **COMPLETED** | `37e9164` |
 | **13** | Stage 3 | Milestone Goals & Real Ledger-Backed Savings Velocity Engine | UPCOMING | - |
 | **14** | Stage 3 | Personal Budgeting, Financial Goals and Spending Controls | **COMPLETED** | `ddfa119` |
-| **15** | Stage 3 | Indian Tax Intelligence (Old vs New Regime, 80C, 80D, Capital Gains) | UPCOMING | - |
-| **16** | Stage 4 | Freelancer & Small Business Invoicing Engine with GST Compliance | UPCOMING | - |
+| **15** | Stage 3 | Recurring Transactions, Subscription Management and Cash-Flow Commitments | **COMPLETED** | `PENDING_COMMIT` |
+| **16** | Stage 4 | Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence | UPCOMING | - |
 | **17** | Stage 4 | Business Expense Categorization & Vendor Management | UPCOMING | - |
 | **18** | Stage 4 | Cross-Platform Mobile Application Setup (React Native + Expo) | UPCOMING | - |
 | **19** | Stage 4 | Mobile Native Financial Features (On-Device SMS Sync & Biometrics) | UPCOMING | - |
@@ -582,6 +582,51 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/BUDGET_ALERTS.md`
   - `docs/BUDGET_API_REFERENCE.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+### Prompt 15: Recurring Transactions, Subscription Management and Cash-Flow Commitments [15]
+- **Status:** COMPLETED & VERIFIED
+- **Core Domain & Principles:**
+  - Dedicated recurring financial activity management system tracking scheduled income, expenses, subscriptions, rent, loan EMIs, utilities, and forward cash commitments.
+  - Strict accounting boundary: An expected recurring occurrence is strictly an anticipation of a financial event and NEVER treated as proof of transfer, avoiding artificial general ledger postings or fabricated bank account balances.
+  - Recurrence scheduling engine with deterministic date math: daily, weekly, biweekly, monthly, quarterly, semi-annual, annual, and custom cadences.
+  - Leap-year awareness (Feb 29) and end-of-month pinning invariant (Jan 31 -> Feb 28 -> Mar 31) preventing permanent calendar drift.
+  - Complete occurrence state lifecycle (`scheduled`, `upcoming`, `due`, `matched`, `confirmed`, `skipped`, `cancelled`, `overdue`) with idempotent forward generation up to 90 days governed by relational unique constraint `(recurring_definition_id, expected_date)`.
+  - Subscription management with trial period tracking, renewal dates, cancellation deadlines, and normalized monthly/annualized run rate computation.
+  - Deterministic occurrence-to-transaction matching heuristics across date proximity (±5 days), amount variance, merchant identification, and account origin.
+  - Historical pattern detection clustering past posted transactions, inferring intervals, scoring confidence (count, interval variance, amount variance), and requiring human confirmation/dismissal.
+  - Forward-looking cash-flow commitments view (7, 30, 90 days) aggregating expected inflows, outflows, net commitment, and functional type breakdowns (Rent, EMI, Utilities, Insurance, Subscriptions, Income).
+- **Database Schema & Migration:**
+  - Alembic migration `6ecf7233af63_add_recurring_transactions_.py` applied to PostgreSQL database on port 5433.
+  - Tables created: `recurring_definitions`, `recurring_occurrences`, `subscriptions`, `recurring_reminders`, `recurring_suggestions`.
+  - Configured cascade deletion rules, check constraints, composite performance indexes (`workspace_id, status`, `workspace_id, next_expected_date`, `workspace_id, expected_date`), and anti-IDOR isolation.
+- **Backend Architecture & Routes:**
+  - `app/domain/recurring.py`: Domain enums (`RecurrenceFrequency`, `OccurrenceStatus`, `SubscriptionStatus`, `CommitmentType`), calendar math with pinning, cost normalization, occurrence state evaluation, transaction matching heuristics, and clustering algorithms.
+  - `app/repositories/recurring_repository.py`: Workspace-scoped definitions, occurrences, subscriptions, reminders, suggestions, and transaction matching with eager relationship loading.
+  - `app/services/recurring/`: `SchedulingService`, `RecurringService`, `SubscriptionService`, `MatchingService`, `DetectionService`, `CommitmentService`.
+  - `app/schemas/recurring_schema.py`: Pydantic request/response schemas with exact decimal and paise representations.
+  - `app/api/v1/recurring_routes.py`: 14 REST endpoints mounted at `/recurring` and `/workspaces/{workspace_id}/recurring` protected by permissions (`VIEW_RECURRING`, `MANAGE_RECURRING`, `VIEW_SUBSCRIPTIONS`, `MANAGE_SUBSCRIPTIONS`).
+  - OpenAPI exported with 256 total routes in `docs/openapi.json`.
+- **Frontend State & Interactive UI:**
+  - Zustand stores: `apps/web/src/store/useRecurringStore.ts`, `apps/web/src/store/useSubscriptionStore.ts`.
+  - Page built: `apps/web/src/pages/Recurring.tsx` featuring 4 tabs: Cash-Flow Commitments (7/30/90 days), Recurring Schedules, Subscriptions & Trials, and Pattern Suggestions.
+  - Navigation & routes wired in `apps/web/src/App.tsx` and `apps/web/src/components/layout/AppLayout.tsx`.
+- **Comprehensive Verification:**
+  - **193 passed backend tests** in `backend/tests/` (100% pass across all 193 tests, including 12 new comprehensive tests in `test_recurring_and_subscriptions.py`).
+  - **66 passed web tests** in `apps/web/` across 16 test suites (including 5 new tests in `Recurring.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- **Technical Documentation Delivered (8 Documents):**
+  - `docs/RECURRING_FINANCE_ARCHITECTURE.md`
+  - `docs/RECURRENCE_SCHEDULING_RULES.md`
+  - `docs/OCCURRENCE_LIFECYCLE.md`
+  - `docs/SUBSCRIPTION_MANAGEMENT.md`
+  - `docs/RECURRING_PATTERN_DETECTION.md`
+  - `docs/TRANSACTION_MATCHING_RULES.md`
+  - `docs/COMMITMENT_ANALYTICS.md`
+  - `docs/RECURRING_NOTIFICATION_POLICY.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

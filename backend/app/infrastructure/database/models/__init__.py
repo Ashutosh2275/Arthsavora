@@ -46,6 +46,13 @@ from app.infrastructure.database.models.goal import (
     FinancialGoal,
     GoalActivity,
 )
+from app.infrastructure.database.models.recurring import (
+    RecurringDefinition,
+    RecurringOccurrence,
+    Subscription,
+    RecurringReminder,
+    RecurringSuggestion,
+)
 
 __all__ = [
     "User",
@@ -82,4 +89,9 @@ __all__ = [
     "BudgetAlert",
     "FinancialGoal",
     "GoalActivity",
+    "RecurringDefinition",
+    "RecurringOccurrence",
+    "Subscription",
+    "RecurringReminder",
+    "RecurringSuggestion",
 ]
