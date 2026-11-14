@@ -17,6 +17,7 @@ import {
   X,
   Repeat,
   TrendingUp,
+  ShieldAlert,
 } from 'lucide-react';
 import AIChatbot from '@/components/AIChatbot';
 import useAuthStore from '@/store/useAuthStore';
@@ -43,6 +44,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: 'Goals', path: '/goals', icon: <Trophy size={18} /> },
     { name: 'Recurring', path: '/recurring', icon: <Repeat size={18} /> },
     { name: 'Forecast', path: '/forecast', icon: <TrendingUp size={18} /> },
+    { name: 'Security & Risk', path: '/anomalies', icon: <ShieldAlert size={18} /> },
     { name: 'Reports', path: '/reports', icon: <FileText size={18} /> },
   ];
 

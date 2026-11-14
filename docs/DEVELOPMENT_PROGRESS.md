@@ -22,7 +22,8 @@
 **Prompt 14 Commit Hash:** `ddfa119`  
 **Prompt 15 Commit Hash:** `6a7d981`  
 **Prompt 16 Commit Hash:** `3695228`  
-**Remote Push Verification:** Prompts 01–16 pushed and verified on `origin/main`  
+**Prompt 17 Commit Hash:** `bc38bd5`  
+**Remote Push Verification:** Prompts 01–17 pushed and verified on `origin/main`  
 
 ---
 
@@ -30,10 +31,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 4 — Advanced Analytics & Forecasting (Prompts 16–20)
-- **Current Prompt:** Prompt 16 — Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence [16]
-- **Completed Prompts:** 16 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, and Financial Forecasting established)
-- **Prompt 16 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 17 — Business Expense Categorization & Vendor Management [17]
+- **Current Prompt:** Prompt 17 — Financial Anomaly Detection, Fraud Signals and Risk Intelligence [17]
+- **Completed Prompts:** 17 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, Financial Forecasting, and Financial Anomaly Detection established)
+- **Prompt 17 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 18 — Cross-Platform Mobile Application Setup (React Native + Expo) [18]
 
 ---
 
@@ -57,7 +58,7 @@
 | **14** | Stage 3 | Personal Budgeting, Financial Goals and Spending Controls | **COMPLETED** | `ddfa119` |
 | **15** | Stage 3 | Recurring Transactions, Subscription Management and Cash-Flow Commitments | **COMPLETED** | `6a7d981` |
 | **16** | Stage 4 | Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence | **COMPLETED** | `3695228` |
-| **17** | Stage 4 | Business Expense Categorization & Vendor Management | UPCOMING | - |
+| **17** | Stage 4 | Financial Anomaly Detection, Fraud Signals and Risk Intelligence | **COMPLETED** | `bc38bd5` |
 | **18** | Stage 4 | Cross-Platform Mobile Application Setup (React Native + Expo) | UPCOMING | - |
 | **19** | Stage 4 | Mobile Native Financial Features (On-Device SMS Sync & Biometrics) | UPCOMING | - |
 | **20** | Stage 4 | Multi-Currency Support & Automated FX Rate Ingestion | UPCOMING | - |
@@ -674,6 +675,52 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/FINANCIAL_SCENARIO_ENGINE.md`
   - `docs/FORECAST_MODEL_LIFECYCLE.md`
   - `docs/FORECAST_PRIVACY_SECURITY.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+### Prompt 17: Financial Anomaly Detection, Fraud Signals and Risk Intelligence [17]
+- **Status:** COMPLETED & VERIFIED
+- **Core Domain & Principles:**
+  - Continuous risk monitoring, financial anomaly detection, and fraud signal intelligence across personal, family, and commercial business workspaces.
+  - An anomaly is not automatically fraud: all user-facing language is neutral, objective, and non-alarmist.
+  - Strict read-only ledger invariant: Zero ledger or account balance mutations; detection results never independently block payments or freeze accounts.
+  - In-boundary privacy guarantee: No data transmission to third-party public AI/LLM APIs; all statistical and ML models run locally using scikit-learn and NumPy.
+  - Exact financial precision: 64-bit integer minor units (`paise`) and fixed-point `NUMERIC(18, 4)`. Floating point strictly banned from monetary calculations.
+  - Multi-detector hybrid architecture: Deterministic rules (`RULE_HIGH_AMOUNT`, `RULE_FREQUENCY_BURST`, `RULE_RECURRING_HIKE`, `RULE_CANCELLED_RECURRING`, `RULE_DUPLICATE_CANDIDATE`, `RULE_BALANCE_DISCREPANCY`), statistical MAD (Modified Z-score $\ge 3.5$) for merchant outliers, statistical IQR for category volume spikes, and unsupervised Isolation Forest multivariate inference.
+  - Evidence synthesis & multi-detector reinforcement boost: Multi-signal fusion with de-duplication and a +5 point confidence boost per additional confirming detector.
+  - Dynamic whitelist exceptions (`detection_exceptions`): Payee matching, category scope, account scope, spending ceiling (`max_amount_paise`), and expiration dates (`expires_at`).
+  - Human review lifecycle (`anomaly_reviews`): Immutable chronological audit trail (`acknowledge`, `mark_expected`, `mark_suspicious`, `dismiss`, `escalate`, `create_exception`).
+  - Customizable detection rules: System defaults inherited; workspace-specific overrides take precedence.
+- **Database Schema & Models:**
+  - Migration `5a4c3eff8761_add_financial_anomaly_detection_and_.py` applied cleanly to PostgreSQL 18.
+  - Relational models: `AnomalyDetection`, `AnomalyReview`, `DetectionRule`, `DetectionException`.
+- **Backend Architecture & Routes:**
+  - `app/domain/anomaly.py`: Pure functional domain models, statistical MAD/IQR estimators, Isolation Forest inference, whitelist matcher, and hybrid evidence synthesis.
+  - `app/repositories/anomaly_repository.py`: Workspace-isolated CRUD, paginated filters, summary KPIs, and trends.
+  - `app/services/anomaly/`: `FeaturePipelineService`, `AnomalyDetectionService`, `AnomalyReviewService`.
+  - `app/schemas/anomaly_schema.py`: Request/response Pydantic schemas with exact decimal/paise validation.
+  - `app/api/v1/anomaly_routes.py`: 13 REST endpoints mounted at `/anomalies` and `/workspaces/{workspace_id}/anomalies`. App route count: 340 routes.
+  - OpenAPI exported to `docs/openapi.json`.
+- **Frontend State & Interactive UI:**
+  - TypeScript contracts added to `packages/contracts/src/index.ts`.
+  - Zustand store: `apps/web/src/store/useAnomalyStore.ts`.
+  - Page: `apps/web/src/pages/Anomalies.tsx` (Overview KPIs, Anomaly Feed, Detection Rules, Whitelist Exceptions, Review Modal, Add Exception Modal).
+  - Navigation wired in `apps/web/src/App.tsx` and `apps/web/src/components/layout/AppLayout.tsx`.
+- **Comprehensive Verification:**
+  - **221 passed backend tests** in `backend/tests/` (100% pass across all 221 tests, including 15 tests in `test_financial_anomalies.py`).
+  - **76 passed web tests** in `apps/web/` across 18 test suites (including 5 tests in `Anomalies.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- **Technical Documentation Delivered (10 Documents):**
+  - `docs/ANOMALY_DETECTION_ARCHITECTURE.md`
+  - `docs/FINANCIAL_RISK_FEATURES.md`
+  - `docs/DETERMINISTIC_DETECTION_RULES.md`
+  - `docs/STATISTICAL_ANOMALY_DETECTION.md`
+  - `docs/ML_ANOMALY_DETECTION.md`
+  - `docs/RISK_SCORING_AND_EXPLAINABILITY.md`
+  - `docs/ANOMALY_REVIEW_WORKFLOW.md`
+  - `docs/ANOMALY_NOTIFICATION_POLICY.md`
+  - `docs/ANOMALY_PRIVACY_SECURITY.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
 
 

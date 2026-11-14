@@ -2141,6 +2141,180 @@ export interface EvaluationResponse {
   created_at: string;
 }
 
+// -----------------------------------------------------------------------------
+// Financial Anomaly Detection, Fraud Signals & Risk Intelligence Contracts [17]
+// -----------------------------------------------------------------------------
+
+export type AnomalyCategory =
+  | 'amount'
+  | 'frequency'
+  | 'merchant'
+  | 'category'
+  | 'timing'
+  | 'account'
+  | 'recurring'
+  | 'duplicate'
+  | 'import';
+
+export type DetectionMethod =
+  | 'deterministic_rule'
+  | 'statistical_mad'
+  | 'statistical_iqr'
+  | 'statistical_zscore'
+  | 'ml_isolation_forest'
+  | 'deduplication_engine';
+
+export type AnomalySeverity = 'informational' | 'low' | 'medium' | 'high' | 'critical';
+
+export type AnomalyStatus =
+  | 'new'
+  | 'under_review'
+  | 'acknowledged'
+  | 'expected_activity'
+  | 'dismissed'
+  | 'escalated';
+
+export type ReviewAction =
+  | 'acknowledge'
+  | 'mark_expected'
+  | 'mark_suspicious'
+  | 'dismiss'
+  | 'escalate'
+  | 'reopen'
+  | 'create_exception';
+
+export interface AnomalyTransactionSummary {
+  id: UUID;
+  transaction_date: string;
+  amount_paise: number;
+  amount: number | string;
+  currency: string;
+  direction: 'inflow' | 'outflow' | string;
+  description: string;
+  merchant_name?: string | null;
+  category_name?: string | null;
+  account_name?: string | null;
+}
+
+export interface AnomalyReviewResponse {
+  id: UUID;
+  anomaly_id: UUID;
+  workspace_id: UUID;
+  reviewer_id?: UUID | null;
+  action: string;
+  reason?: string | null;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface AnomalyDetectionResponse {
+  id: UUID;
+  workspace_id: UUID;
+  transaction_id?: UUID | null;
+  account_id?: UUID | null;
+  detection_type: string;
+  detection_method: string;
+  severity: AnomalySeverity | string;
+  risk_score: number;
+  status: AnomalyStatus | string;
+  explanation: string;
+  evidence_metadata: Record<string, any>;
+  rule_code?: string | null;
+  model_version: string;
+  detected_at: string;
+  resolved_at?: string | null;
+  resolved_by_id?: UUID | null;
+  resolution_notes?: string | null;
+  transaction?: AnomalyTransactionSummary | null;
+  reviews?: AnomalyReviewResponse[];
+}
+
+export interface AnomalyReviewRequest {
+  action: string;
+  reason?: string | null;
+  notes?: string | null;
+  create_exception?: boolean;
+  exception_expires_in_days?: number | null;
+}
+
+export interface DetectionRuleResponse {
+  id: UUID;
+  workspace_id?: UUID | null;
+  rule_code: string;
+  name: string;
+  description: string;
+  detection_category: string;
+  severity: AnomalySeverity | string;
+  threshold_config: Record<string, any>;
+  is_enabled: boolean;
+  version: string;
+}
+
+export interface DetectionRuleUpdateRequest {
+  is_enabled?: boolean;
+  severity?: string;
+  threshold_config?: Record<string, any>;
+}
+
+export interface DetectionExceptionCreateRequest {
+  rule_code?: string | null;
+  merchant_id?: UUID | null;
+  category_id?: UUID | null;
+  account_id?: UUID | null;
+  merchant_name_pattern?: string | null;
+  max_amount_paise?: number | null;
+  reason: string;
+  expires_at?: string | null;
+}
+
+export interface DetectionExceptionResponse {
+  id: UUID;
+  workspace_id: UUID;
+  rule_code?: string | null;
+  merchant_id?: UUID | null;
+  merchant_name?: string | null;
+  category_id?: UUID | null;
+  category_name?: string | null;
+  account_id?: UUID | null;
+  account_name?: string | null;
+  merchant_name_pattern?: string | null;
+  max_amount_paise?: number | null;
+  max_amount?: number | string | null;
+  reason: string;
+  expires_at?: string | null;
+  created_at: string;
+}
+
+export interface AnomalySummaryResponse {
+  total_detections: number;
+  open_anomalies: number;
+  high_severity_anomalies: number;
+  resolved_anomalies: number;
+  average_risk_score: number;
+}
+
+export interface AnomalyTrendPoint {
+  date: string;
+  informational: number;
+  low: number;
+  medium: number;
+  high: number;
+  critical: number;
+  total: number;
+}
+
+export interface AnomalyTrendsResponse {
+  workspace_id: UUID;
+  lookback_days: number;
+  trends: AnomalyTrendPoint[];
+}
+
+export interface AnomalyScanRequest {
+  lookback_days?: number;
+  force_recheck?: boolean;
+}
+
+
 
 
 

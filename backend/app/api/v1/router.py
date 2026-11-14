@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from app.api.v1 import (
     accounts,
     analytics_routes,
+    anomaly_routes,
     auth,
     budget_routes,
     forecast_routes,
@@ -51,3 +52,5 @@ v1_router.include_router(recurring_routes.router, prefix="/recurring")
 v1_router.include_router(recurring_routes.router, prefix="/workspaces/{workspace_id}/recurring")
 v1_router.include_router(forecast_routes.router, prefix="/forecasts")
 v1_router.include_router(forecast_routes.router, prefix="/workspaces/{workspace_id}/forecasts")
+v1_router.include_router(anomaly_routes.router, prefix="/anomalies")
+v1_router.include_router(anomaly_routes.router, prefix="/workspaces/{workspace_id}/anomalies")

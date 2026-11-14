@@ -12,6 +12,7 @@ import Budgets from '@/pages/Budgets';
 import Goals from '@/pages/Goals';
 import Recurring from '@/pages/Recurring';
 import { Forecast } from '@/pages/Forecast';
+import { Anomalies } from '@/pages/Anomalies';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
@@ -157,6 +158,26 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Forecast />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/anomalies"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Anomalies />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/risk"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Anomalies />
               </AppLayout>
             </ProtectedRoute>
           }

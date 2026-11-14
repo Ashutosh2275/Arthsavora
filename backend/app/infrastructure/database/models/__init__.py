@@ -59,6 +59,12 @@ from app.infrastructure.database.models.forecast import (
     FinancialScenario,
     ForecastEvaluation,
 )
+from app.infrastructure.database.models.anomaly import (
+    AnomalyDetection,
+    AnomalyReview,
+    DetectionRule,
+    DetectionException,
+)
 
 __all__ = [
     "User",
@@ -104,4 +110,8 @@ __all__ = [
     "ForecastPoint",
     "FinancialScenario",
     "ForecastEvaluation",
+    "AnomalyDetection",
+    "AnomalyReview",
+    "DetectionRule",
+    "DetectionException",
 ]
