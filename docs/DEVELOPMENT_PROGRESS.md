@@ -47,7 +47,7 @@
 | **09** | Stage 2 | Transaction Management and Financial Data Integrity | **COMPLETED** | `0265864` |
 | **10** | Stage 2 | Double-Entry Accounting Engine and General Ledger | **COMPLETED** | `8ae6475` |
 | **11** | Stage 3 | Transaction Import, Statement Processing and Data Acquisition | **COMPLETED** | `1ae1131` |
-| **12** | Stage 3 | Transaction Categorization and Merchant Intelligence | **COMPLETED** | Pending Commit |
+| **12** | Stage 3 | Transaction Categorization and Merchant Intelligence | **COMPLETED** | `37e9164` |
 | **13** | Stage 3 | Milestone Goals & Real Ledger-Backed Savings Velocity Engine | UPCOMING | - |
 | **14** | Stage 3 | Financial Anomaly & Fraud Risk Detection Engine | UPCOMING | - |
 | **15** | Stage 3 | Indian Tax Intelligence (Old vs New Regime, 80C, 80D, Capital Gains) | UPCOMING | - |
