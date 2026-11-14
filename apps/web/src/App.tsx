@@ -13,6 +13,7 @@ import Goals from '@/pages/Goals';
 import Recurring from '@/pages/Recurring';
 import { Forecast } from '@/pages/Forecast';
 import { Anomalies } from '@/pages/Anomalies';
+import { Assistant } from '@/pages/Assistant';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
@@ -178,6 +179,26 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Anomalies />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/assistant"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Assistant />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Assistant />
               </AppLayout>
             </ProtectedRoute>
           }

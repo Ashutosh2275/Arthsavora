@@ -2314,6 +2314,104 @@ export interface AnomalyScanRequest {
   force_recheck?: boolean;
 }
 
+// -------------------------------------------------------------------------
+// Prompt 18: AI Financial Assistant & Conversational Intelligence
+// -------------------------------------------------------------------------
+
+export type AssistantConversationStatus = 'active' | 'archived' | 'deleted';
+export type AssistantMessageRole = 'user' | 'assistant' | 'system';
+export type AssistantActionDraftStatus = 'pending' | 'confirmed' | 'cancelled' | 'expired';
+
+export interface AssistantConversation {
+  id: UUID;
+  workspace_id: UUID;
+  user_id: UUID;
+  title: string;
+  status: AssistantConversationStatus;
+  model_provider: string;
+  model_name: string;
+  message_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AssistantConversationCreateRequest {
+  title?: string;
+}
+
+export interface AssistantConversationUpdateRequest {
+  title?: string;
+  status?: AssistantConversationStatus;
+}
+
+export interface AssistantActionDraft {
+  id: UUID;
+  conversation_id: UUID;
+  workspace_id: UUID;
+  action_type: string;
+  action_summary: string;
+  parameters: Record<string, any>;
+  status: AssistantActionDraftStatus;
+  confirmation_token: string;
+  expires_at: string;
+  created_at: string;
+}
+
+export interface AssistantActionConfirmRequest {
+  confirmation_token: string;
+}
+
+export interface AssistantActionConfirmResponse {
+  action_id: UUID;
+  status: string;
+  action_type: string;
+  message: string;
+  execution_result: Record<string, any>;
+}
+
+export interface AssistantToolCall {
+  name: string;
+  arguments: Record<string, any>;
+}
+
+export interface AssistantToolResult {
+  tool_name: string;
+  status: string;
+  summary?: string;
+  data?: any;
+}
+
+export interface AssistantMessage {
+  id: UUID;
+  conversation_id: UUID;
+  workspace_id: UUID;
+  role: AssistantMessageRole;
+  content: string;
+  intent?: string | null;
+  tool_calls: Record<string, any>[];
+  tool_results: Record<string, any>[];
+  structured_data: Record<string, any>;
+  action_draft?: AssistantActionDraft | null;
+  tokens_prompt: number;
+  tokens_completion: number;
+  latency_ms: number;
+  created_at: string;
+}
+
+export interface AssistantMessageCreateRequest {
+  content: string;
+}
+
+export interface AssistantUsageSummary {
+  total_requests: number;
+  total_tokens: number;
+  tokens_prompt: number;
+  tokens_completion: number;
+  estimated_cost_usd: number;
+  avg_latency_ms: number;
+}
+
+
 
 
 

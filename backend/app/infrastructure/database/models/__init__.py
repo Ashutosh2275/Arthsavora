@@ -65,6 +65,12 @@ from app.infrastructure.database.models.anomaly import (
     DetectionRule,
     DetectionException,
 )
+from app.infrastructure.database.models.assistant import (
+    AssistantConversation,
+    AssistantMessage,
+    AssistantActionDraft,
+    AssistantUsageLog,
+)
 
 __all__ = [
     "User",
@@ -114,4 +120,8 @@ __all__ = [
     "AnomalyReview",
     "DetectionRule",
     "DetectionException",
+    "AssistantConversation",
+    "AssistantMessage",
+    "AssistantActionDraft",
+    "AssistantUsageLog",
 ]

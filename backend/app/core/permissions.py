@@ -103,6 +103,10 @@ class Permission(str, Enum):
     VIEW_ANOMALIES = "anomalies:view"
     MANAGE_ANOMALIES = "anomalies:manage"
 
+    # AI Financial Assistant & Conversational Intelligence
+    USE_ASSISTANT = "assistant:use"
+    MANAGE_ASSISTANT = "assistant:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -149,6 +153,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.MANAGE_ANOMALIES,
+            Permission.USE_ASSISTANT,
+            Permission.MANAGE_ASSISTANT,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -175,6 +181,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.MANAGE_ANOMALIES,
+            Permission.USE_ASSISTANT,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -192,6 +199,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_SUBSCRIPTIONS,
             Permission.VIEW_FORECASTS,
             Permission.VIEW_ANOMALIES,
+            Permission.USE_ASSISTANT,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -239,6 +247,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.MANAGE_ANOMALIES,
+            Permission.USE_ASSISTANT,
+            Permission.MANAGE_ASSISTANT,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -275,6 +285,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.MANAGE_ANOMALIES,
+            Permission.USE_ASSISTANT,
+            Permission.MANAGE_ASSISTANT,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -295,6 +307,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_FORECASTS,
             Permission.VIEW_ANOMALIES,
             Permission.MANAGE_ANOMALIES,
+            Permission.USE_ASSISTANT,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -312,6 +325,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_SUBSCRIPTIONS,
             Permission.VIEW_FORECASTS,
             Permission.VIEW_ANOMALIES,
+            Permission.USE_ASSISTANT,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -328,6 +342,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_SUBSCRIPTIONS,
             Permission.VIEW_FORECASTS,
             Permission.VIEW_ANOMALIES,
+            Permission.USE_ASSISTANT,
         },
     },
 }

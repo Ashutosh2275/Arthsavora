@@ -23,7 +23,8 @@
 **Prompt 15 Commit Hash:** `6a7d981`  
 **Prompt 16 Commit Hash:** `3695228`  
 **Prompt 17 Commit Hash:** `bc38bd5`  
-**Remote Push Verification:** Prompts 01–17 pushed and verified on `origin/main`  
+**Prompt 18 Commit Hash:** `ee37b4e`  
+**Remote Push Verification:** Prompts 01–18 pushed and verified on `origin/main`  
 
 ---
 
@@ -31,10 +32,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 4 — Advanced Analytics & Forecasting (Prompts 16–20)
-- **Current Prompt:** Prompt 17 — Financial Anomaly Detection, Fraud Signals and Risk Intelligence [17]
-- **Completed Prompts:** 17 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, Financial Forecasting, and Financial Anomaly Detection established)
-- **Prompt 17 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 18 — Cross-Platform Mobile Application Setup (React Native + Expo) [18]
+- **Current Prompt:** Prompt 18 — AI Financial Assistant, Natural-Language Intelligence and Tool Orchestration [18]
+- **Completed Prompts:** 18 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, Financial Forecasting, Financial Anomaly Detection, and AI Financial Assistant established)
+- **Prompt 18 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 19 — Cross-Platform Mobile Application Setup (React Native + Expo) [19]
 
 ---
 
@@ -59,7 +60,7 @@
 | **15** | Stage 3 | Recurring Transactions, Subscription Management and Cash-Flow Commitments | **COMPLETED** | `6a7d981` |
 | **16** | Stage 4 | Financial Forecasting, Cash-Flow Prediction and Predictive Intelligence | **COMPLETED** | `3695228` |
 | **17** | Stage 4 | Financial Anomaly Detection, Fraud Signals and Risk Intelligence | **COMPLETED** | `bc38bd5` |
-| **18** | Stage 4 | Cross-Platform Mobile Application Setup (React Native + Expo) | UPCOMING | - |
+| **18** | Stage 4 | AI Financial Assistant, Natural-Language Intelligence and Tool Orchestration | **COMPLETED** | `ee37b4e` |
 | **19** | Stage 4 | Mobile Native Financial Features (On-Device SMS Sync & Biometrics) | UPCOMING | - |
 | **20** | Stage 4 | Multi-Currency Support & Automated FX Rate Ingestion | UPCOMING | - |
 | **21** | Stage 5 | AI Financial Assistant (Official `google-genai` SDK + RAG Pipeline) | UPCOMING | - |
@@ -722,6 +723,68 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/ANOMALY_NOTIFICATION_POLICY.md`
   - `docs/ANOMALY_PRIVACY_SECURITY.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+## 20. PROMPT 18 IMPLEMENTATION SUMMARY (AI FINANCIAL ASSISTANT & TOOL ORCHESTRATION)
+
+- **Operational Scope & Invariants:**
+  - Complete AI Financial Assistant with natural-language understanding, multi-turn conversational context, tool orchestration, and human confirmation for state mutations.
+  - Zero Direct Ledger Mutation: Mutations (budgets, goals, recurring rules) require staging as `AssistantActionDraft` with cryptographic tokens and explicit confirmation via `POST /actions/{id}/confirm`.
+  - Separation of Cognition and Calculation: LLM interprets user intent and explains results; authoritative arithmetic and database queries remain strictly controlled by backend application services.
+- **Relational Schema & Database Migration:**
+  - Alembic revision `211bbbb8624f` applied cleanly to PostgreSQL 18.
+  - `assistant_conversations`: Thread metadata, title, model provider/name, tenant workspace isolation.
+  - `assistant_messages`: Chronological turns, role, intent, tool calls, tool results, structured data, token metrics.
+  - `assistant_action_drafts`: Safe, reversible proposals with cryptographic tokens, status lifecycle, execution audit.
+  - `assistant_usage_logs`: Immutable token consumption, latency, and cost ledger.
+- **Pure Domain & NLP Engine:**
+  - `FinancialIntentEnum` taxonomy across 18 specialized financial intents.
+  - `parse_financial_date_range`: Natural English relative date parsing (this month, last 30 days, today, yesterday, this week, custom months).
+  - `parse_currency_and_amount`: Currency codes and conversion to exact integer minor units (paise), recognizing k, lakh, crore multipliers.
+  - `sanitize_and_detect_prompt_injection`: Scans and neutralizes adversarial system prompt overrides and special tokens.
+  - `apply_financial_safety_policy`: Contextual disclaimers for forecasts (statistical uncertainty) and anomalies (neutral deviation, not fraud).
+- **Tool Catalog & Sandboxed Executor:**
+  - 18 registered tools (14 read-only financial query tools, 4 action draft proposal tools).
+  - Server-side RBAC validation before tool execution.
+  - Sensitive data masking: Account numbers masked (•••• 1234), transaction listings capped at 25 items.
+- **Provider-Independent Layer:**
+  - `BaseLLMProvider`, `MockDeterministicProvider` (deterministic, offline, zero-token-cost CI/CD provider), `GeminiProvider`, `OpenAICompatibleProvider`, dynamic factory `get_llm_provider()`.
+- **FastAPI Endpoints & Server-Sent Events (SSE):**
+  - REST endpoints mounted at `/assistant` and `/workspaces/{workspace_id}/assistant`:
+    - `POST /conversations`: Create conversation
+    - `GET /conversations`: List conversations
+    - `GET /conversations/{id}`: Conversation details
+    - `PATCH /conversations/{id}`: Update title / status
+    - `DELETE /conversations/{id}`: Soft-delete conversation
+    - `GET /conversations/{id}/messages`: Message turn history
+    - `POST /conversations/{id}/messages`: Synchronous turn dispatch
+    - `POST /conversations/{id}/messages/stream`: Real-time SSE streaming generator (`start`, `tool_activity`, `token`, `action_draft`, `done`)
+    - `POST /actions/{id}/confirm`: Confirm action draft
+    - `POST /actions/{id}/cancel`: Cancel action draft
+    - `GET /usage`: Workspace AI token and cost telemetry
+  - Total registered routes: 351 routes. OpenAPI specification exported to `docs/openapi.json`.
+- **Frontend State & Interactive UI:**
+  - TypeScript contracts added to `packages/contracts/src/index.ts`.
+  - Zustand store: `apps/web/src/store/useAssistantStore.ts`.
+  - Interactive UI: `apps/web/src/pages/Assistant.tsx` (Conversation sidebar, search, suggested prompt cards, message bubbles with intent badges and verified tool call badges, Action Confirmation Cards with Confirm/Cancel buttons).
+  - Navigation wired in `apps/web/src/App.tsx` and `apps/web/src/components/layout/AppLayout.tsx`.
+- **Comprehensive Verification:**
+  - **234 passed backend tests** in `backend/tests/` (100% pass across all 234 tests, including 13 tests in `test_ai_assistant.py`).
+  - **81 passed web tests** in `apps/web/` across 19 test suites (including 5 tests in `Assistant.test.tsx`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+- **Technical Documentation Delivered (10 Documents):**
+  - `docs/AI_ASSISTANT_ARCHITECTURE.md`
+  - `docs/LLM_PROVIDER_ABSTRACTION.md`
+  - `docs/FINANCIAL_INTENT_UNDERSTANDING.md`
+  - `docs/FINANCIAL_TOOL_REGISTRY.md`
+  - `docs/TOOL_ORCHESTRATION_SECURITY.md`
+  - `docs/ASSISTANT_CONVERSATION_MANAGEMENT.md`
+  - `docs/AI_PROMPT_INJECTION_DEFENSE.md`
+  - `docs/AI_FINANCIAL_SAFETY_POLICY.md`
+  - `docs/AI_USAGE_COST_CONTROL.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

@@ -112,6 +112,17 @@ class ConflictException(ArthsavoraException):
         super().__init__(message, code=code, status_code=status.HTTP_409_CONFLICT)
 
 
+class BusinessRuleViolationException(ValidationException):
+    """Raised when a domain or workflow business rule invariant is violated."""
+
+    def __init__(self, message: str = "Business rule violation", code: str = "BUSINESS_RULE_VIOLATION"):
+        super().__init__(message, code=code)
+
+
+# Alias PermissionDeniedException to ForbiddenException for convenience
+PermissionDeniedException = ForbiddenException
+
+
 class RateLimitExceededException(ArthsavoraException):
     """Raised when rate limits are exceeded."""
 

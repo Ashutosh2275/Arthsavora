@@ -22851,6 +22851,1554 @@
         }
       }
     },
+    "/api/v1/assistant/conversations": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Create New Financial Conversation",
+        "description": "Initializes a new persistent multi-turn conversational thread for the workspace user.",
+        "operationId": "create_conversation_api_v1_assistant_conversations_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ConversationCreateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ConversationResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "List Conversations",
+        "description": "Lists active or archived conversation threads for the current user in the workspace.",
+        "operationId": "list_conversations_api_v1_assistant_conversations_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_ConversationResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Get Conversation Details",
+        "description": "Retrieves metadata for a specific conversation thread.",
+        "operationId": "get_conversation_api_v1_assistant_conversations__conversation_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ConversationResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Update Conversation",
+        "description": "Updates title or archive status of a conversation thread.",
+        "operationId": "update_conversation_api_v1_assistant_conversations__conversation_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ConversationResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Delete Conversation",
+        "description": "Soft-deletes a conversation thread and its associated message turns.",
+        "operationId": "delete_conversation_api_v1_assistant_conversations__conversation_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_bool_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/conversations/{conversation_id}/messages": {
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Get Conversation Messages",
+        "description": "Retrieves chronological message turns with associated tool invocations and action drafts.",
+        "operationId": "get_messages_api_v1_assistant_conversations__conversation_id__messages_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_MessageResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Send Message (Synchronous)",
+        "description": "Submits a financial query, executes needed tools, and returns the synthesized assistant response.",
+        "operationId": "send_message_api_v1_assistant_conversations__conversation_id__messages_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_MessageResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/conversations/{conversation_id}/messages/stream": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Stream Message Turn (Server-Sent Events)",
+        "description": "Streams real-time token chunks, tool activity indicators, and action drafts via text/event-stream.",
+        "operationId": "stream_message_api_v1_assistant_conversations__conversation_id__messages_stream_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/actions/{action_id}/confirm": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Confirm Action Draft",
+        "description": "Explicitly confirms and executes a staged assistant action with permission re-validation.",
+        "operationId": "confirm_action_api_v1_assistant_actions__action_id__confirm_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Action Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionConfirmRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ActionConfirmResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/actions/{action_id}/cancel": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Cancel Action Draft",
+        "description": "Cancels a pending assistant action proposal without executing mutations.",
+        "operationId": "cancel_action_api_v1_assistant_actions__action_id__cancel_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Action Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assistant/usage": {
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Get Workspace AI Usage Telemetry",
+        "description": "Retrieves aggregate prompt/completion tokens, latency metrics, and estimated costs for the workspace.",
+        "operationId": "get_usage_summary_api_v1_assistant_usage_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional ISO datetime cutoff",
+              "title": "Since"
+            },
+            "description": "Optional ISO datetime cutoff"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AssistantUsageResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assistant/conversations": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Create New Financial Conversation",
+        "description": "Initializes a new persistent multi-turn conversational thread for the workspace user.",
+        "operationId": "create_conversation_api_v1_workspaces__workspace_id__assistant_conversations_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ConversationCreateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ConversationResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "List Conversations",
+        "description": "Lists active or archived conversation threads for the current user in the workspace.",
+        "operationId": "list_conversations_api_v1_workspaces__workspace_id__assistant_conversations_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_ConversationResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assistant/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Get Conversation Details",
+        "description": "Retrieves metadata for a specific conversation thread.",
+        "operationId": "get_conversation_api_v1_workspaces__workspace_id__assistant_conversations__conversation_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ConversationResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Update Conversation",
+        "description": "Updates title or archive status of a conversation thread.",
+        "operationId": "update_conversation_api_v1_workspaces__workspace_id__assistant_conversations__conversation_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ConversationResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Delete Conversation",
+        "description": "Soft-deletes a conversation thread and its associated message turns.",
+        "operationId": "delete_conversation_api_v1_workspaces__workspace_id__assistant_conversations__conversation_id__delete",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_bool_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assistant/conversations/{conversation_id}/messages": {
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Get Conversation Messages",
+        "description": "Retrieves chronological message turns with associated tool invocations and action drafts.",
+        "operationId": "get_messages_api_v1_workspaces__workspace_id__assistant_conversations__conversation_id__messages_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_List_MessageResponse__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Send Message (Synchronous)",
+        "description": "Submits a financial query, executes needed tools, and returns the synthesized assistant response.",
+        "operationId": "send_message_api_v1_workspaces__workspace_id__assistant_conversations__conversation_id__messages_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_MessageResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assistant/conversations/{conversation_id}/messages/stream": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Stream Message Turn (Server-Sent Events)",
+        "description": "Streams real-time token chunks, tool activity indicators, and action drafts via text/event-stream.",
+        "operationId": "stream_message_api_v1_workspaces__workspace_id__assistant_conversations__conversation_id__messages_stream_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Conversation Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assistant/actions/{action_id}/confirm": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Confirm Action Draft",
+        "description": "Explicitly confirms and executes a staged assistant action with permission re-validation.",
+        "operationId": "confirm_action_api_v1_workspaces__workspace_id__assistant_actions__action_id__confirm_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Action Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActionConfirmRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_ActionConfirmResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assistant/actions/{action_id}/cancel": {
+      "post": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Cancel Action Draft",
+        "description": "Cancels a pending assistant action proposal without executing mutations.",
+        "operationId": "cancel_action_api_v1_workspaces__workspace_id__assistant_actions__action_id__cancel_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "action_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Action Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_Dict_str__Any__"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assistant/usage": {
+      "get": {
+        "tags": [
+          "AI Financial Assistant & Conversational Intelligence"
+        ],
+        "summary": "Get Workspace AI Usage Telemetry",
+        "description": "Retrieves aggregate prompt/completion tokens, latency metrics, and estimated costs for the workspace.",
+        "operationId": "get_usage_summary_api_v1_workspaces__workspace_id__assistant_usage_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional ISO datetime cutoff",
+              "title": "Since"
+            },
+            "description": "Optional ISO datetime cutoff"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse_AssistantUsageResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/signup": {
       "post": {
         "tags": [
@@ -24703,6 +26251,118 @@
         ],
         "title": "AccountingPeriodResponse"
       },
+      "ActionConfirmRequest": {
+        "properties": {
+          "confirmation_token": {
+            "type": "string",
+            "title": "Confirmation Token",
+            "description": "Unique confirmation token from draft proposal"
+          }
+        },
+        "type": "object",
+        "required": [
+          "confirmation_token"
+        ],
+        "title": "ActionConfirmRequest"
+      },
+      "ActionConfirmResponse": {
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Action Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "action_type": {
+            "type": "string",
+            "title": "Action Type"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "execution_result": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Execution Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action_id",
+          "status",
+          "action_type",
+          "message"
+        ],
+        "title": "ActionConfirmResponse"
+      },
+      "ActionDraftResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "conversation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Conversation Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "action_type": {
+            "type": "string",
+            "title": "Action Type"
+          },
+          "action_summary": {
+            "type": "string",
+            "title": "Action Summary"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parameters"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "confirmation_token": {
+            "type": "string",
+            "title": "Confirmation Token"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "conversation_id",
+          "workspace_id",
+          "action_type",
+          "action_summary",
+          "parameters",
+          "status",
+          "confirmation_token",
+          "expires_at",
+          "created_at"
+        ],
+        "title": "ActionDraftResponse"
+      },
       "AddMemberRequest": {
         "properties": {
           "email": {
@@ -25323,6 +26983,37 @@
         ],
         "title": "AnomalyTrendsResponse"
       },
+      "ApiResponse_ActionConfirmResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ActionConfirmResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[ActionConfirmResponse]"
+      },
       "ApiResponse_AnomalyDetectionResponse_": {
         "properties": {
           "status": {
@@ -25415,6 +27106,37 @@
           "data"
         ],
         "title": "ApiResponse[AnomalyTrendsResponse]"
+      },
+      "ApiResponse_AssistantUsageResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AssistantUsageResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[AssistantUsageResponse]"
       },
       "ApiResponse_BatchCategorizeResponse_": {
         "properties": {
@@ -25756,6 +27478,37 @@
           "data"
         ],
         "title": "ApiResponse[ClassificationResponse]"
+      },
+      "ApiResponse_ConversationResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConversationResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[ConversationResponse]"
       },
       "ApiResponse_DetectionExceptionResponse_": {
         "properties": {
@@ -26310,6 +28063,41 @@
         ],
         "title": "ApiResponse[List[CategoryTreeResponse]]"
       },
+      "ApiResponse_List_ConversationResponse__": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ConversationResponse"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[List[ConversationResponse]]"
+      },
       "ApiResponse_List_DetectionExceptionResponse__": {
         "properties": {
           "status": {
@@ -26556,6 +28344,41 @@
         ],
         "title": "ApiResponse[List[MerchantResponse]]"
       },
+      "ApiResponse_List_MessageResponse__": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/MessageResponse"
+            },
+            "type": "array",
+            "title": "Data",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[List[MessageResponse]]"
+      },
       "ApiResponse_List_OccurrenceResponse__": {
         "properties": {
           "status": {
@@ -26796,6 +28619,37 @@
           "data"
         ],
         "title": "ApiResponse[MerchantSpendingResponse]"
+      },
+      "ApiResponse_MessageResponse_": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Response status (success)",
+            "default": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MessageResponse",
+            "description": "Payload data"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Optional informational message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "ApiResponse[MessageResponse]"
       },
       "ApiResponse_NetWorthResponse_": {
         "properties": {
@@ -27236,6 +29090,44 @@
         ],
         "title": "AssetAccountSummary",
         "description": "Asset account balance line item."
+      },
+      "AssistantUsageResponse": {
+        "properties": {
+          "total_requests": {
+            "type": "integer",
+            "title": "Total Requests"
+          },
+          "total_tokens": {
+            "type": "integer",
+            "title": "Total Tokens"
+          },
+          "tokens_prompt": {
+            "type": "integer",
+            "title": "Tokens Prompt"
+          },
+          "tokens_completion": {
+            "type": "integer",
+            "title": "Tokens Completion"
+          },
+          "estimated_cost_usd": {
+            "type": "number",
+            "title": "Estimated Cost Usd"
+          },
+          "avg_latency_ms": {
+            "type": "integer",
+            "title": "Avg Latency Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_requests",
+          "total_tokens",
+          "tokens_prompt",
+          "tokens_completion",
+          "estimated_cost_usd",
+          "avg_latency_ms"
+        ],
+        "title": "AssistantUsageResponse"
       },
       "AuthSessionResponse": {
         "properties": {
@@ -30262,6 +32154,118 @@
           "total_amount"
         ],
         "title": "CommitmentBreakdownByType"
+      },
+      "ConversationCreateRequest": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Optional title for new conversation"
+          }
+        },
+        "type": "object",
+        "title": "ConversationCreateRequest"
+      },
+      "ConversationResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "model_provider": {
+            "type": "string",
+            "title": "Model Provider"
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "message_count": {
+            "type": "integer",
+            "title": "Message Count",
+            "default": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "workspace_id",
+          "user_id",
+          "title",
+          "status",
+          "model_provider",
+          "model_name",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ConversationResponse"
+      },
+      "ConversationUpdateRequest": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(active|archived|deleted)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "title": "ConversationUpdateRequest"
       },
       "CreateInvitationRequest": {
         "properties": {
@@ -34089,6 +36093,121 @@
         ],
         "title": "MerchantSpendingResponse",
         "description": "Expenditure distribution across commercial merchants."
+      },
+      "MessageCreateRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Content",
+            "description": "User financial question or instruction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "MessageCreateRequest"
+      },
+      "MessageResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "conversation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Conversation Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "intent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intent"
+          },
+          "tool_calls": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tool Calls"
+          },
+          "tool_results": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Tool Results"
+          },
+          "structured_data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Structured Data"
+          },
+          "action_draft": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ActionDraftResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tokens_prompt": {
+            "type": "integer",
+            "title": "Tokens Prompt",
+            "default": 0
+          },
+          "tokens_completion": {
+            "type": "integer",
+            "title": "Tokens Completion",
+            "default": 0
+          },
+          "latency_ms": {
+            "type": "integer",
+            "title": "Latency Ms",
+            "default": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "conversation_id",
+          "workspace_id",
+          "role",
+          "content",
+          "created_at"
+        ],
+        "title": "MessageResponse"
       },
       "NetWorthResponse": {
         "properties": {
