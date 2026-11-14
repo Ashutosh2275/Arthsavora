@@ -132,6 +132,117 @@ def create_transaction_created_event(
     )
 
 
+def create_transaction_posted_event(
+    workspace_id: uuid.UUID,
+    transaction_id: uuid.UUID,
+    account_id: uuid.UUID,
+    amount_str: str,
+    currency: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="transaction.posted",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "transaction_id": str(transaction_id),
+            "account_id": str(account_id),
+            "amount": amount_str,
+            "currency": currency,
+        },
+    )
+
+
+def create_transaction_cancelled_event(
+    workspace_id: uuid.UUID,
+    transaction_id: uuid.UUID,
+    actor_id: Optional[uuid.UUID] = None,
+    reason: Optional[str] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="transaction.cancelled",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "transaction_id": str(transaction_id),
+            "reason": reason,
+        },
+    )
+
+
+def create_transaction_reversed_event(
+    workspace_id: uuid.UUID,
+    original_transaction_id: uuid.UUID,
+    reversal_transaction_id: uuid.UUID,
+    reason: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="transaction.reversed",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "original_transaction_id": str(original_transaction_id),
+            "reversal_transaction_id": str(reversal_transaction_id),
+            "reason": reason,
+        },
+    )
+
+
+def create_transaction_refunded_event(
+    workspace_id: uuid.UUID,
+    original_transaction_id: uuid.UUID,
+    refund_transaction_id: uuid.UUID,
+    refund_amount_str: str,
+    currency: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="transaction.refunded",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "original_transaction_id": str(original_transaction_id),
+            "refund_transaction_id": str(refund_transaction_id),
+            "refund_amount": refund_amount_str,
+            "currency": currency,
+        },
+    )
+
+
+def create_transfer_created_event(
+    workspace_id: uuid.UUID,
+    transfer_id: uuid.UUID,
+    source_account_id: uuid.UUID,
+    destination_account_id: uuid.UUID,
+    amount_str: str,
+    currency: str,
+    actor_id: Optional[uuid.UUID] = None,
+    correlation_id: Optional[str] = None,
+) -> DomainEvent:
+    return DomainEvent(
+        event_type="transfer.created",
+        workspace_id=workspace_id,
+        actor_id=actor_id,
+        correlation_id=correlation_id,
+        payload={
+            "transfer_id": str(transfer_id),
+            "source_account_id": str(source_account_id),
+            "destination_account_id": str(destination_account_id),
+            "amount": amount_str,
+            "currency": currency,
+        },
+    )
+
+
 def create_journal_posted_event(
     workspace_id: uuid.UUID,
     journal_id: uuid.UUID,

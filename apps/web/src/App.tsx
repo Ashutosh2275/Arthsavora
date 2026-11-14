@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Auth from '@/pages/Auth';
 import Dashboard from '@/pages/Dashboard';
 import Accounts from '@/pages/Accounts';
+import Transactions from '@/pages/Transactions';
 import Expenses from '@/pages/Expenses';
 import Budget from '@/pages/Budget';
 import Goals from '@/pages/Goals';
@@ -41,6 +42,16 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Accounts />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/transactions"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Transactions />
               </AppLayout>
             </ProtectedRoute>
           }

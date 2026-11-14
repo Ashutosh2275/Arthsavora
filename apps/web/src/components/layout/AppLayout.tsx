@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Trophy,
   FileText,
+  Receipt,
   Menu,
   X,
 } from 'lucide-react';
@@ -28,6 +29,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   const navItems = [
     { name: 'Analytics', path: '/dashboard', icon: <LayoutDashboard size={18} /> },
     { name: 'Accounts', path: '/accounts', icon: <Landmark size={18} /> },
+    { name: 'Transactions', path: '/transactions', icon: <Receipt size={18} /> },
     { name: 'Expenses', path: '/expenses', icon: <Wallet size={18} /> },
     { name: 'Budget & AI', path: '/budget', icon: <Target size={18} /> },
     { name: 'Milestones', path: '/goals', icon: <Trophy size={18} /> },

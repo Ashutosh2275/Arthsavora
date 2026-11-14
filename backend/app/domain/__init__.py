@@ -19,12 +19,25 @@ from .events import (
     create_journal_posted_event,
     create_member_joined_event,
     create_transaction_created_event,
+    create_transaction_posted_event,
+    create_transaction_cancelled_event,
+    create_transaction_reversed_event,
+    create_transaction_refunded_event,
+    create_transfer_created_event,
     create_workspace_created_event,
 )
 from .rules import (
     validate_ai_prediction_invariants,
     validate_refund_invariants,
     validate_transfer_invariants,
+)
+from .transaction_types import (
+    TransactionDirection,
+    TransactionSourceType,
+    TransactionStatus,
+    TransactionType,
+    resolve_transaction_direction,
+    validate_transaction_lifecycle_transition,
 )
 
 __all__ = [
@@ -41,8 +54,19 @@ __all__ = [
     "create_journal_posted_event",
     "create_member_joined_event",
     "create_transaction_created_event",
+    "create_transaction_posted_event",
+    "create_transaction_cancelled_event",
+    "create_transaction_reversed_event",
+    "create_transaction_refunded_event",
+    "create_transfer_created_event",
     "create_workspace_created_event",
     "validate_ai_prediction_invariants",
     "validate_refund_invariants",
     "validate_transfer_invariants",
+    "TransactionDirection",
+    "TransactionSourceType",
+    "TransactionStatus",
+    "TransactionType",
+    "resolve_transaction_direction",
+    "validate_transaction_lifecycle_transition",
 ]

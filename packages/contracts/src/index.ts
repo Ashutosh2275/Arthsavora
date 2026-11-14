@@ -212,7 +212,6 @@ export type ExpenseCategory =
   | 'Uncategorized';
 
 export type TransactionSource = 'MANUAL' | 'SMS' | 'OCR' | 'BANK_FEED' | 'IMPORT';
-export type TransactionStatus = 'DRAFT' | 'PENDING' | 'POSTED' | 'RECONCILED' | 'REVERSED';
 
 export interface ExpenseResponse {
   id: string;
@@ -474,18 +473,135 @@ export interface AccountResponse {
   balances: BalanceBreakdown;
 }
 
+export type TransactionDirection = 'inflow' | 'outflow' | 'neutral';
+
+export type TransactionStatus =
+  | 'pending'
+  | 'posted'
+  | 'failed'
+  | 'cancelled'
+  | 'reversed'
+  | 'DRAFT'
+  | 'PENDING'
+  | 'POSTED'
+  | 'RECONCILED'
+  | 'REVERSED';
+
+export type TransactionSourceType =
+  | 'manual'
+  | 'csv_import'
+  | 'pdf_import'
+  | 'bank_feed'
+  | 'account_aggregator'
+  | 'credit_card_statement'
+  | 'ocr'
+  | 'internal_adjustment'
+  | 'system';
+
+export type TransactionType =
+  | 'income'
+  | 'expense'
+  | 'transfer'
+  | 'refund'
+  | 'reversal'
+  | 'adjustment'
+  | 'deposit'
+  | 'withdrawal'
+  | 'interest'
+  | 'bank_fee'
+  | 'tax'
+  | 'credit_card_purchase'
+  | 'credit_card_payment'
+  | 'credit_card_refund'
+  | 'credit_card_fee'
+  | 'credit_card_interest'
+  | 'loan_disbursal'
+  | 'loan_principal_repayment'
+  | 'loan_interest_payment'
+  | 'loan_fee'
+  | 'investment_contribution'
+  | 'investment_withdrawal'
+  | 'dividend'
+  | 'interest_income'
+  | 'investment_fee'
+  | 'cash_transaction'
+  | 'unknown';
+
 export interface TransactionCreateRequest {
   account_id: UUID;
   amount: string;
-  currency?: CurrencyCode;
-  transaction_type: 'income' | 'expense' | 'transfer' | 'refund' | 'repayment' | 'adjustment';
+  currency?: CurrencyCode | string;
+  transaction_type: TransactionType | string;
+  direction?: TransactionDirection;
   transaction_date: string;
+  settlement_date?: string | null;
   description: string;
   merchant_name?: string | null;
   category_id?: UUID | null;
+  status?: 'posted' | 'pending';
+  source_type?: TransactionSourceType | string;
+  source_reference?: string | null;
   external_transaction_id?: string | null;
+  related_transaction_id?: UUID | null;
   is_ai_predicted?: boolean;
   ai_confidence?: number | null;
+  source_provenance?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+export interface TransactionUpdateRequest {
+  description?: string;
+  merchant_name?: string | null;
+  category_id?: UUID | null;
+  metadata?: Record<string, unknown>;
+}
+
+export interface TransactionPostRequest {
+  settlement_date?: string | null;
+}
+
+export interface TransactionCancelRequest {
+  cancellation_reason?: string | null;
+}
+
+export interface TransactionReverseRequest {
+  reason: string;
+}
+
+export interface TransactionRefundRequest {
+  refund_amount: string;
+  refund_date?: string | null;
+  description?: string | null;
+  external_refund_id?: string | null;
+}
+
+export interface TransferCreateRequest {
+  source_account_id: UUID;
+  destination_account_id: UUID;
+  amount: string;
+  currency?: CurrencyCode | string;
+  transfer_date: string;
+  description?: string;
+  status?: 'posted' | 'pending';
+  external_transaction_id?: string | null;
+  exchange_rate?: number | null;
+  destination_amount?: string | null;
+  metadata?: Record<string, unknown>;
+}
+
+export interface TransferResponse {
+  transfer_id: UUID;
+  workspace_id: UUID;
+  source_account_id: UUID;
+  destination_account_id: UUID;
+  amount: string;
+  currency: string;
+  transfer_date: string;
+  status: string;
+  description: string;
+  source_transaction_id: UUID;
+  destination_transaction_id: UUID;
+  created_at: ISODateString;
 }
 
 export interface TransactionResponse {
@@ -493,17 +609,37 @@ export interface TransactionResponse {
   workspace_id: UUID;
   account_id: UUID;
   amount: string;
-  currency: CurrencyCode;
-  transaction_type: string;
+  amount_paise: number;
+  currency: CurrencyCode | string;
+  transaction_type: TransactionType | string;
+  direction: TransactionDirection;
   transaction_date: string;
   settlement_date?: string | null;
   description: string;
   merchant_name?: string | null;
   category_id?: UUID | null;
-  status: string;
+  status: TransactionStatus | string;
+  source_type: TransactionSourceType | string;
+  source_reference?: string | null;
   external_transaction_id?: string | null;
+  related_transaction_id?: UUID | null;
+  original_transaction_id?: UUID | null;
+  transfer_id?: UUID | null;
+  created_by_id?: UUID | null;
+  reversal_reason?: string | null;
   is_ai_predicted: boolean;
   ai_confidence?: number | null;
+  source_provenance: Record<string, unknown>;
+  metadata: Record<string, unknown>;
   created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+export interface TransactionHistoryEntry {
+  id: UUID;
+  action: string;
+  actor_id?: UUID | null;
+  timestamp: ISODateString;
+  details: Record<string, unknown>;
 }
 

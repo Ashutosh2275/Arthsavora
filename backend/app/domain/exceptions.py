@@ -68,6 +68,7 @@ class BusinessRuleViolationError(DomainError):
         code: str = "BUSINESS_RULE_VIOLATION",
         details: Optional[Dict[str, Any]] = None,
     ):
+        self.rule_name = rule_name
         d = details or {}
         d["rule"] = rule_name
         super().__init__(message, code=code, details=d)

@@ -2811,14 +2811,14 @@
         }
       }
     },
-    "/api/v1/transactions/": {
+    "/api/v1/transactions": {
       "get": {
         "tags": [
           "Operational Transactions"
         ],
         "summary": "List paginated transactions for current workspace",
-        "description": "Retrieves paginated transactions with bounded limits strictly scoped to workspace.",
-        "operationId": "list_transactions_api_v1_transactions__get",
+        "description": "Retrieves paginated transactions strictly scoped to the caller's workspace context.",
+        "operationId": "list_transactions_api_v1_transactions_get",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -2866,48 +2866,47 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter by account",
+              "description": "Filter by account UUID",
               "title": "Account Id"
             },
-            "description": "Filter by account"
+            "description": "Filter by account UUID"
           },
           {
-            "name": "start_date",
+            "name": "category_id",
             "in": "query",
             "required": false,
             "schema": {
               "anyOf": [
                 {
                   "type": "string",
-                  "format": "date"
+                  "format": "uuid"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "Start date filter",
-              "title": "Start Date"
+              "description": "Filter by category UUID",
+              "title": "Category Id"
             },
-            "description": "Start date filter"
+            "description": "Filter by category UUID"
           },
           {
-            "name": "end_date",
+            "name": "status",
             "in": "query",
             "required": false,
             "schema": {
               "anyOf": [
                 {
-                  "type": "string",
-                  "format": "date"
+                  "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "End date filter",
-              "title": "End Date"
+              "description": "Filter by status (pending, posted, failed, cancelled, reversed)",
+              "title": "Status"
             },
-            "description": "End date filter"
+            "description": "Filter by status (pending, posted, failed, cancelled, reversed)"
           },
           {
             "name": "transaction_type",
@@ -2926,6 +2925,124 @@
               "title": "Transaction Type"
             },
             "description": "Filter by transaction type"
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by direction (inflow, outflow, neutral)",
+              "title": "Direction"
+            },
+            "description": "Filter by direction (inflow, outflow, neutral)"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date filter (inclusive)",
+              "title": "Start Date"
+            },
+            "description": "Start date filter (inclusive)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date filter (inclusive)",
+              "title": "End Date"
+            },
+            "description": "End date filter (inclusive)"
+          },
+          {
+            "name": "min_amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum amount filter",
+              "title": "Min Amount"
+            },
+            "description": "Minimum amount filter"
+          },
+          {
+            "name": "max_amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum amount filter",
+              "title": "Max Amount"
+            },
+            "description": "Maximum amount filter"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Text search across description and merchant name",
+              "title": "Search"
+            },
+            "description": "Text search across description and merchant name"
           },
           {
             "name": "X-Workspace-ID",
@@ -2971,9 +3088,9 @@
         "tags": [
           "Operational Transactions"
         ],
-        "summary": "Intake or record a financial transaction",
-        "description": "Intakes an operational transaction with Money validation and external ID deduplication.\nRequires active workspace membership with posting privileges.",
-        "operationId": "create_transaction_api_v1_transactions__post",
+        "summary": "Record or intake a financial transaction",
+        "description": "Intakes an operational transaction with Money validation and external ID deduplication.\nRequires active workspace membership with creation privileges.",
+        "operationId": "create_transaction_api_v1_transactions_post",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -3014,6 +3131,1645 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}": {
+      "get": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Get single transaction by ID",
+        "description": "Retrieves a single operational transaction. Returns 404 anti-IDOR if cross-workspace.",
+        "operationId": "get_transaction_api_v1_transactions__transaction_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Update editable transaction metadata",
+        "description": "Updates non-financial metadata (description, merchant, category, tags).\nStrictly prohibits modifying financial facts on posted transactions.",
+        "operationId": "update_transaction_api_v1_transactions__transaction_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/post": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Post a pending transaction to clear it",
+        "description": "Transitions a pending transaction to posted and impacts account balances.",
+        "operationId": "post_transaction_api_v1_transactions__transaction_id__post_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/TransactionPostRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/cancel": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Cancel an unposted pending transaction",
+        "description": "Cancels a pending transaction and restores available balance.",
+        "operationId": "cancel_transaction_api_v1_transactions__transaction_id__cancel_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/TransactionCancelRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/reverse": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Issue a formal reversal for a posted transaction",
+        "description": "Formally reverses a posted transaction by inverting account balances and\ngenerating an auditable compensating reversal record.",
+        "operationId": "reverse_transaction_api_v1_transactions__transaction_id__reverse_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionReverseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/refunds": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Issue a partial or full refund for a posted transaction",
+        "description": "Issues a refund for an outflow transaction, enforcing that cumulative refunds\ncannot exceed the original amount.",
+        "operationId": "refund_transaction_api_v1_transactions__transaction_id__refunds_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionRefundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{transaction_id}/history": {
+      "get": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Get auditable change history for a transaction",
+        "description": "Retrieves immutable audit history log for a transaction.",
+        "operationId": "get_transaction_history_api_v1_transactions__transaction_id__history_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransactionHistoryEntry"
+                  },
+                  "title": "Response Get Transaction History Api V1 Transactions  Transaction Id  History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transactions": {
+      "get": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "List paginated transactions for current workspace",
+        "description": "Retrieves paginated transactions strictly scoped to the caller's workspace context.",
+        "operationId": "list_transactions_api_v1_workspaces__workspace_id__transactions_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page (max 100)",
+              "default": 20,
+              "title": "Page Size"
+            },
+            "description": "Items per page (max 100)"
+          },
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by account UUID",
+              "title": "Account Id"
+            },
+            "description": "Filter by account UUID"
+          },
+          {
+            "name": "category_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by category UUID",
+              "title": "Category Id"
+            },
+            "description": "Filter by category UUID"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status (pending, posted, failed, cancelled, reversed)",
+              "title": "Status"
+            },
+            "description": "Filter by status (pending, posted, failed, cancelled, reversed)"
+          },
+          {
+            "name": "transaction_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by transaction type",
+              "title": "Transaction Type"
+            },
+            "description": "Filter by transaction type"
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by direction (inflow, outflow, neutral)",
+              "title": "Direction"
+            },
+            "description": "Filter by direction (inflow, outflow, neutral)"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date filter (inclusive)",
+              "title": "Start Date"
+            },
+            "description": "Start date filter (inclusive)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date filter (inclusive)",
+              "title": "End Date"
+            },
+            "description": "End date filter (inclusive)"
+          },
+          {
+            "name": "min_amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Minimum amount filter",
+              "title": "Min Amount"
+            },
+            "description": "Minimum amount filter"
+          },
+          {
+            "name": "max_amount",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Maximum amount filter",
+              "title": "Max Amount"
+            },
+            "description": "Maximum amount filter"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Text search across description and merchant name",
+              "title": "Search"
+            },
+            "description": "Text search across description and merchant name"
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse_TransactionResponse_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Record or intake a financial transaction",
+        "description": "Intakes an operational transaction with Money validation and external ID deduplication.\nRequires active workspace membership with creation privileges.",
+        "operationId": "create_transaction_api_v1_workspaces__workspace_id__transactions_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transactions/{transaction_id}": {
+      "get": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Get single transaction by ID",
+        "description": "Retrieves a single operational transaction. Returns 404 anti-IDOR if cross-workspace.",
+        "operationId": "get_transaction_api_v1_workspaces__workspace_id__transactions__transaction_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Update editable transaction metadata",
+        "description": "Updates non-financial metadata (description, merchant, category, tags).\nStrictly prohibits modifying financial facts on posted transactions.",
+        "operationId": "update_transaction_api_v1_workspaces__workspace_id__transactions__transaction_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transactions/{transaction_id}/post": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Post a pending transaction to clear it",
+        "description": "Transitions a pending transaction to posted and impacts account balances.",
+        "operationId": "post_transaction_api_v1_workspaces__workspace_id__transactions__transaction_id__post_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/TransactionPostRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transactions/{transaction_id}/cancel": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Cancel an unposted pending transaction",
+        "description": "Cancels a pending transaction and restores available balance.",
+        "operationId": "cancel_transaction_api_v1_workspaces__workspace_id__transactions__transaction_id__cancel_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/TransactionCancelRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Data"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transactions/{transaction_id}/reverse": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Issue a formal reversal for a posted transaction",
+        "description": "Formally reverses a posted transaction by inverting account balances and\ngenerating an auditable compensating reversal record.",
+        "operationId": "reverse_transaction_api_v1_workspaces__workspace_id__transactions__transaction_id__reverse_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionReverseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transactions/{transaction_id}/refunds": {
+      "post": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Issue a partial or full refund for a posted transaction",
+        "description": "Issues a refund for an outflow transaction, enforcing that cumulative refunds\ncannot exceed the original amount.",
+        "operationId": "refund_transaction_api_v1_workspaces__workspace_id__transactions__transaction_id__refunds_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransactionRefundRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transactions/{transaction_id}/history": {
+      "get": {
+        "tags": [
+          "Operational Transactions"
+        ],
+        "summary": "Get auditable change history for a transaction",
+        "description": "Retrieves immutable audit history log for a transaction.",
+        "operationId": "get_transaction_history_api_v1_workspaces__workspace_id__transactions__transaction_id__history_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transaction Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TransactionHistoryEntry"
+                  },
+                  "title": "Response Get Transaction History Api V1 Workspaces  Workspace Id  Transactions  Transaction Id  History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transfers": {
+      "post": {
+        "tags": [
+          "Transfers"
+        ],
+        "summary": "Execute an internal transfer between accounts",
+        "description": "Executes an internal transfer creating paired source (outflow) and destination (inflow) legs.\nHandles credit card debt reduction without double-counting expenses.",
+        "operationId": "create_transfer_api_v1_transfers_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transfers/{transfer_id}": {
+      "get": {
+        "tags": [
+          "Transfers"
+        ],
+        "summary": "Get paired transfer details by transfer ID",
+        "description": "Retrieves paired transfer legs by transfer UUID.",
+        "operationId": "get_transfer_api_v1_transfers__transfer_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transfer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transfer Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transfers": {
+      "post": {
+        "tags": [
+          "Transfers"
+        ],
+        "summary": "Execute an internal transfer between accounts",
+        "description": "Executes an internal transfer creating paired source (outflow) and destination (inflow) legs.\nHandles credit card debt reduction without double-counting expenses.",
+        "operationId": "create_transfer_api_v1_workspaces__workspace_id__transfers_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/transfers/{transfer_id}": {
+      "get": {
+        "tags": [
+          "Transfers"
+        ],
+        "summary": "Get paired transfer details by transfer ID",
+        "description": "Retrieves paired transfer legs by transfer UUID.",
+        "operationId": "get_transfer_api_v1_workspaces__workspace_id__transfers__transfer_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transfer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Transfer Id"
+            }
+          },
+          {
+            "name": "X-Workspace-ID",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Workspace-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
                 }
               }
             }
@@ -5819,13 +7575,33 @@
         "title": "TokenResponse",
         "description": "Token issuance payload containing signed JWTs and lifetime metadata."
       },
+      "TransactionCancelRequest": {
+        "properties": {
+          "cancellation_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancellation Reason",
+            "description": "Reason for cancellation"
+          }
+        },
+        "type": "object",
+        "title": "TransactionCancelRequest",
+        "description": "Payload to cancel an unposted/pending transaction."
+      },
       "TransactionCreateRequest": {
         "properties": {
           "account_id": {
             "type": "string",
             "format": "uuid",
             "title": "Account Id",
-            "description": "Target account UUID"
+            "description": "Target financial account UUID"
           },
           "amount": {
             "anyOf": [
@@ -5841,26 +7617,51 @@
               }
             ],
             "title": "Amount",
-            "description": "Exact monetary amount as a decimal string or Decimal"
+            "description": "Exact monetary amount as a decimal string (e.g. '1500.50')"
           },
           "currency": {
             "type": "string",
             "maxLength": 3,
             "minLength": 3,
             "title": "Currency",
-            "description": "ISO currency code",
+            "description": "ISO 4217 currency code",
             "default": "INR"
           },
           "transaction_type": {
             "type": "string",
             "title": "Transaction Type",
-            "description": "Classification: income, expense, transfer, refund, repayment, adjustment"
+            "description": "Functional type: income, expense, transfer, refund, reversal, adjustment, deposit, withdrawal, interest, bank_fee, tax, credit_card_purchase, credit_card_payment, credit_card_refund, credit_card_fee, credit_card_interest, loan_disbursal, loan_principal_repayment, loan_interest_payment, loan_fee, investment_contribution, investment_withdrawal, dividend, interest_income, investment_fee, cash_transaction, unknown"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction",
+            "description": "Transaction direction: inflow, outflow, neutral (auto-inferred if omitted)"
           },
           "transaction_date": {
             "type": "string",
             "format": "date",
             "title": "Transaction Date",
             "description": "Date of the financial event"
+          },
+          "settlement_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settlement Date",
+            "description": "Actual bank/settlement clearing date"
           },
           "description": {
             "type": "string",
@@ -5880,7 +7681,7 @@
               }
             ],
             "title": "Merchant Name",
-            "description": "Merchant or counterparty name"
+            "description": "Merchant, counterparty, or vendor name"
           },
           "category_id": {
             "anyOf": [
@@ -5893,7 +7694,46 @@
               }
             ],
             "title": "Category Id",
-            "description": "Optional category UUID"
+            "description": "Optional category reference"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "Initial lifecycle status: posted (default) or pending",
+            "default": "posted"
+          },
+          "source_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Type",
+            "description": "Source provenance: manual, csv_import, pdf_import, bank_feed, account_aggregator, credit_card_statement, ocr, internal_adjustment, system",
+            "default": "manual"
+          },
+          "source_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Reference",
+            "description": "External batch or file identifier"
           },
           "external_transaction_id": {
             "anyOf": [
@@ -5906,7 +7746,20 @@
               }
             ],
             "title": "External Transaction Id",
-            "description": "Unique bank/UPI reference for idempotent deduplication"
+            "description": "Unique bank/UPI reference for idempotent deduplication within workspace"
+          },
+          "related_transaction_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Transaction Id",
+            "description": "UUID of associated transaction (e.g. paired transfer leg, refunded item, reversal)"
           },
           "is_ai_predicted": {
             "type": "boolean",
@@ -5926,7 +7779,33 @@
               }
             ],
             "title": "Ai Confidence",
-            "description": "AI confidence score"
+            "description": "AI confidence score between 0.0 and 1.0"
+          },
+          "source_provenance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Provenance",
+            "description": "Raw ingested provenance (raw description, batch ID, import timestamp, raw payload)"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata",
+            "description": "User-defined non-sensitive tags, project codes, or memo notes"
           }
         },
         "type": "object",
@@ -5938,7 +7817,136 @@
           "description"
         ],
         "title": "TransactionCreateRequest",
-        "description": "Payload for recording or importing a transaction."
+        "description": "Payload for recording or importing a financial transaction."
+      },
+      "TransactionHistoryEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "actor_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "action",
+          "timestamp",
+          "details"
+        ],
+        "title": "TransactionHistoryEntry",
+        "description": "Item in the auditable history trail of a transaction."
+      },
+      "TransactionPostRequest": {
+        "properties": {
+          "settlement_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settlement Date",
+            "description": "Effective settlement clearing date"
+          }
+        },
+        "type": "object",
+        "title": "TransactionPostRequest",
+        "description": "Payload to transition a pending transaction to posted."
+      },
+      "TransactionRefundRequest": {
+        "properties": {
+          "refund_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Refund Amount",
+            "description": "Exact refund monetary decimal amount"
+          },
+          "refund_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refund Date",
+            "description": "Date of refund (defaults to today)"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 512
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Refund narrative or credit note"
+          },
+          "external_refund_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Refund Id",
+            "description": "External refund or gateway reference"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refund_amount"
+        ],
+        "title": "TransactionRefundRequest",
+        "description": "Payload to issue a partial or full refund for a posted transaction."
       },
       "TransactionResponse": {
         "properties": {
@@ -5959,8 +7967,11 @@
           },
           "amount": {
             "type": "string",
-            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
             "title": "Amount"
+          },
+          "amount_paise": {
+            "type": "integer",
+            "title": "Amount Paise"
           },
           "currency": {
             "type": "string",
@@ -5969,6 +7980,10 @@
           "transaction_type": {
             "type": "string",
             "title": "Transaction Type"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction"
           },
           "transaction_date": {
             "type": "string",
@@ -6018,6 +8033,21 @@
             "type": "string",
             "title": "Status"
           },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
+          },
+          "source_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Reference"
+          },
           "external_transaction_id": {
             "anyOf": [
               {
@@ -6028,6 +8058,65 @@
               }
             ],
             "title": "External Transaction Id"
+          },
+          "related_transaction_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Related Transaction Id"
+          },
+          "original_transaction_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Original Transaction Id"
+          },
+          "transfer_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transfer Id"
+          },
+          "created_by_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By Id"
+          },
+          "reversal_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reversal Reason"
           },
           "is_ai_predicted": {
             "type": "boolean",
@@ -6044,10 +8133,25 @@
             ],
             "title": "Ai Confidence"
           },
+          "source_provenance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Source Provenance"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
             "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
           }
         },
         "type": "object",
@@ -6056,16 +8160,401 @@
           "workspace_id",
           "account_id",
           "amount",
+          "amount_paise",
           "currency",
           "transaction_type",
+          "direction",
           "transaction_date",
           "description",
           "status",
+          "source_type",
           "is_ai_predicted",
-          "created_at"
+          "source_provenance",
+          "created_at",
+          "updated_at"
         ],
         "title": "TransactionResponse",
         "description": "Public representation of an operational transaction."
+      },
+      "TransactionReverseRequest": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Reason",
+            "description": "Auditable justification for reversing this transaction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "TransactionReverseRequest",
+        "description": "Payload to issue a formal reversal of a posted transaction."
+      },
+      "TransactionUpdateRequest": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 512,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Updated narrative"
+          },
+          "merchant_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merchant Name",
+            "description": "Updated counterparty"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id",
+            "description": "Updated category UUID"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata",
+            "description": "Updated non-financial metadata/tags"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "account_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
+          },
+          "transaction_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Date"
+          },
+          "transaction_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Transaction Type"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "title": "TransactionUpdateRequest",
+        "description": "Payload for updating transaction metadata.\nEditable metadata only: description, merchant, category, user metadata.\nFinancial facts (amount, currency, account, date, status) cannot be changed on posted transactions."
+      },
+      "TransferCreateRequest": {
+        "properties": {
+          "source_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Source Account Id",
+            "description": "Source financial account (outflow)"
+          },
+          "destination_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Destination Account Id",
+            "description": "Destination financial account (inflow)"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              }
+            ],
+            "title": "Amount",
+            "description": "Transfer amount in source account currency"
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "minLength": 3,
+            "title": "Currency",
+            "description": "ISO 4217 currency code",
+            "default": "INR"
+          },
+          "transfer_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Transfer Date",
+            "description": "Date of the transfer"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 512
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Transfer narrative",
+            "default": "Account transfer"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "Initial lifecycle state: posted or pending",
+            "default": "posted"
+          },
+          "external_transaction_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Transaction Id",
+            "description": "Unique external reference"
+          },
+          "exchange_rate": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange Rate",
+            "description": "Conversion exchange rate if multi-currency"
+          },
+          "destination_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Amount",
+            "description": "Explicit destination currency amount"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata",
+            "description": "Optional metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_account_id",
+          "destination_account_id",
+          "amount",
+          "transfer_date"
+        ],
+        "title": "TransferCreateRequest",
+        "description": "Payload for executing an internal transfer between two accounts in the same workspace."
+      },
+      "TransferResponse": {
+        "properties": {
+          "transfer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transfer Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Workspace Id"
+          },
+          "source_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Source Account Id"
+          },
+          "destination_account_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Destination Account Id"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "transfer_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Transfer Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "source_transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Source Transaction Id"
+          },
+          "destination_transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Destination Transaction Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "transfer_id",
+          "workspace_id",
+          "source_account_id",
+          "destination_account_id",
+          "amount",
+          "currency",
+          "transfer_date",
+          "status",
+          "description",
+          "source_transaction_id",
+          "destination_transaction_id",
+          "created_at"
+        ],
+        "title": "TransferResponse",
+        "description": "Response model for a logical transfer linking two paired transaction legs."
       },
       "UpdateMemberRoleRequest": {
         "properties": {

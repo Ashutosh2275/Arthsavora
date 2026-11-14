@@ -25,7 +25,7 @@ def validate_transfer_invariants(
             rule_name="TRANSFER_SAME_ACCOUNT",
             message="Internal transfers cannot be made to the same source account.",
         )
-    if not amount.is_positive():
+    if not amount.is_positive:
         raise BusinessRuleViolationError(
             rule_name="TRANSFER_POSITIVE_AMOUNT",
             message="Transfer amount must be strictly greater than zero.",
@@ -41,7 +41,7 @@ def validate_refund_invariants(
     Enforces that a refund does not exceed the original transaction amount
     and preserves original transaction currency.
     """
-    if not refund_amount.is_positive():
+    if not refund_amount.is_positive:
         raise BusinessRuleViolationError(
             rule_name="REFUND_POSITIVE_AMOUNT",
             message="Refund amount must be strictly positive.",

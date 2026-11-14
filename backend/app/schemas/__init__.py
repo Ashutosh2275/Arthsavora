@@ -50,8 +50,16 @@ from .account import (
     BalanceTypeEnum,
 )
 from .transaction import (
+    TransactionCancelRequest,
     TransactionCreateRequest,
+    TransactionHistoryEntry,
+    TransactionPostRequest,
+    TransactionRefundRequest,
     TransactionResponse,
+    TransactionReverseRequest,
+    TransactionUpdateRequest,
+    TransferCreateRequest,
+    TransferResponse,
 )
 
 __all__ = [
@@ -84,4 +92,12 @@ __all__ = [
     "AccountResponse",
     "TransactionCreateRequest",
     "TransactionResponse",
+    "TransactionUpdateRequest",
+    "TransactionPostRequest",
+    "TransactionCancelRequest",
+    "TransactionReverseRequest",
+    "TransactionRefundRequest",
+    "TransferCreateRequest",
+    "TransferResponse",
+    "TransactionHistoryEntry",
 ]
