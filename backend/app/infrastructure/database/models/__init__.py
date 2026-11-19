@@ -92,6 +92,17 @@ from app.infrastructure.database.models.family import (
     FamilyAccountShare,
     FamilyActivity,
 )
+from app.infrastructure.database.models.business import (
+    BusinessProfile,
+    BusinessClient,
+    BusinessVendor,
+    BusinessInvoice,
+    BusinessInvoiceLineItem,
+    BusinessInvoicePayment,
+    BusinessPayable,
+    BusinessPayablePayment,
+    BusinessActivity,
+)
 
 __all__ = [
     "User",
@@ -160,4 +171,13 @@ __all__ = [
     "FamilyMemberContribution",
     "FamilyAccountShare",
     "FamilyActivity",
+    "BusinessProfile",
+    "BusinessClient",
+    "BusinessVendor",
+    "BusinessInvoice",
+    "BusinessInvoiceLineItem",
+    "BusinessInvoicePayment",
+    "BusinessPayable",
+    "BusinessPayablePayment",
+    "BusinessActivity",
 ]

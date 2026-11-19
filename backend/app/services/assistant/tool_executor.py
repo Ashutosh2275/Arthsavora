@@ -146,6 +146,22 @@ class ToolExecutor:
             elif tool_call.tool_name == "get_family_commitments":
                 return await self._exec_family_commitments(tool_call, user_id, workspace_id, args)
 
+            # 21. Business Overview
+            elif tool_call.tool_name == "get_business_overview":
+                return await self._exec_business_overview(tool_call, user_id, workspace_id, args)
+
+            # 22. Business Receivables Summary
+            elif tool_call.tool_name == "get_business_receivables_summary":
+                return await self._exec_business_receivables(tool_call, user_id, workspace_id, args)
+
+            # 23. Business Payables Summary
+            elif tool_call.tool_name == "get_business_payables_summary":
+                return await self._exec_business_payables(tool_call, user_id, workspace_id, args)
+
+            # 24. Business Cash Flow Summary
+            elif tool_call.tool_name == "get_business_cash_flow_summary":
+                return await self._exec_business_cash_flow(tool_call, user_id, workspace_id, args)
+
             # 17-20. Action Proposal Drafts
             elif tool_call.tool_name in (
                 "create_budget_draft",
@@ -759,4 +775,225 @@ class ToolExecutor:
             tool_name=tc.tool_name,
             success=True,
             data={"commitments_count": len(commitments), "commitments": commitments},
+        )
+
+    async def _exec_business_overview(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.services.business_service import BusinessService
+        from app.core.permissions import WorkspaceContext
+
+        stmt = select(Workspace).where(Workspace.id == ws_id)
+        ws = (await self.db.execute(stmt)).scalar_one_or_none()
+        if not ws or ws.type != "business":
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="Active workspace is not a commercial business workspace.",
+            )
+
+        user_stmt = select(User).where(User.id == user_id)
+        user = (await self.db.execute(user_stmt)).scalar_one()
+
+        member_stmt = select(WorkspaceMember).where(
+            WorkspaceMember.workspace_id == ws_id,
+            WorkspaceMember.user_id == user_id,
+        )
+        membership = (await self.db.execute(member_stmt)).scalar_one_or_none()
+        if not membership:
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="User is not an active member of this business workspace.",
+            )
+
+        context = WorkspaceContext(
+            workspace=ws,
+            membership=membership,
+            current_user=user,
+            role=membership.role,
+        )
+        service = BusinessService(self.db)
+        kpis = await service.get_overview(context)
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={
+                "invoiced_revenue": f"₹{kpis['invoiced_revenue_paise'] / 100:,.2f}",
+                "collected_revenue": f"₹{kpis['collected_revenue_paise'] / 100:,.2f}",
+                "total_receivables": f"₹{kpis['total_receivables_paise'] / 100:,.2f}",
+                "total_vendor_bills": f"₹{kpis['total_bills_paise'] / 100:,.2f}",
+                "paid_vendor_bills": f"₹{kpis['paid_bills_paise'] / 100:,.2f}",
+                "total_payables": f"₹{kpis['total_payables_paise'] / 100:,.2f}",
+                "net_operating_result": f"₹{kpis['net_operating_result_paise'] / 100:,.2f}",
+                "active_clients": kpis["active_clients_count"],
+                "active_vendors": kpis["active_vendors_count"],
+                "open_invoices": kpis["total_invoices_count"],
+                "overdue_invoices": kpis["overdue_invoices_count"],
+            },
+        )
+
+    async def _exec_business_receivables(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.services.business_service import BusinessService
+        from app.core.permissions import WorkspaceContext
+
+        stmt = select(Workspace).where(Workspace.id == ws_id)
+        ws = (await self.db.execute(stmt)).scalar_one_or_none()
+        if not ws or ws.type != "business":
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="Active workspace is not a commercial business workspace.",
+            )
+
+        user_stmt = select(User).where(User.id == user_id)
+        user = (await self.db.execute(user_stmt)).scalar_one()
+
+        member_stmt = select(WorkspaceMember).where(
+            WorkspaceMember.workspace_id == ws_id,
+            WorkspaceMember.user_id == user_id,
+        )
+        membership = (await self.db.execute(member_stmt)).scalar_one_or_none()
+        if not membership:
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="User is not an active member of this business workspace.",
+            )
+
+        context = WorkspaceContext(
+            workspace=ws,
+            membership=membership,
+            current_user=user,
+            role=membership.role,
+        )
+        service = BusinessService(self.db)
+        ar_aging = await service.get_receivables_aging(context)
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={
+                "current": f"₹{ar_aging['current_paise'] / 100:,.2f}",
+                "days_1_30": f"₹{ar_aging['days_1_30_paise'] / 100:,.2f}",
+                "days_31_60": f"₹{ar_aging['days_31_60_paise'] / 100:,.2f}",
+                "days_61_90": f"₹{ar_aging['days_61_90_paise'] / 100:,.2f}",
+                "days_91_plus": f"₹{ar_aging['days_91_plus_paise'] / 100:,.2f}",
+                "total_outstanding_receivables": f"₹{ar_aging['total_outstanding_paise'] / 100:,.2f}",
+            },
+        )
+
+    async def _exec_business_payables(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.services.business_service import BusinessService
+        from app.core.permissions import WorkspaceContext
+
+        stmt = select(Workspace).where(Workspace.id == ws_id)
+        ws = (await self.db.execute(stmt)).scalar_one_or_none()
+        if not ws or ws.type != "business":
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="Active workspace is not a commercial business workspace.",
+            )
+
+        user_stmt = select(User).where(User.id == user_id)
+        user = (await self.db.execute(user_stmt)).scalar_one()
+
+        member_stmt = select(WorkspaceMember).where(
+            WorkspaceMember.workspace_id == ws_id,
+            WorkspaceMember.user_id == user_id,
+        )
+        membership = (await self.db.execute(member_stmt)).scalar_one_or_none()
+        if not membership:
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="User is not an active member of this business workspace.",
+            )
+
+        context = WorkspaceContext(
+            workspace=ws,
+            membership=membership,
+            current_user=user,
+            role=membership.role,
+        )
+        service = BusinessService(self.db)
+        ap_aging = await service.get_payables_aging(context)
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={
+                "current": f"₹{ap_aging['current_paise'] / 100:,.2f}",
+                "days_1_30": f"₹{ap_aging['days_1_30_paise'] / 100:,.2f}",
+                "days_31_60": f"₹{ap_aging['days_31_60_paise'] / 100:,.2f}",
+                "days_61_90": f"₹{ap_aging['days_61_90_paise'] / 100:,.2f}",
+                "days_91_plus": f"₹{ap_aging['days_91_plus_paise'] / 100:,.2f}",
+                "total_outstanding_payables": f"₹{ap_aging['total_outstanding_paise'] / 100:,.2f}",
+            },
+        )
+
+    async def _exec_business_cash_flow(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.services.business_service import BusinessService
+        from app.core.permissions import WorkspaceContext
+
+        stmt = select(Workspace).where(Workspace.id == ws_id)
+        ws = (await self.db.execute(stmt)).scalar_one_or_none()
+        if not ws or ws.type != "business":
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="Active workspace is not a commercial business workspace.",
+            )
+
+        user_stmt = select(User).where(User.id == user_id)
+        user = (await self.db.execute(user_stmt)).scalar_one()
+
+        member_stmt = select(WorkspaceMember).where(
+            WorkspaceMember.workspace_id == ws_id,
+            WorkspaceMember.user_id == user_id,
+        )
+        membership = (await self.db.execute(member_stmt)).scalar_one_or_none()
+        if not membership:
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error="User is not an active member of this business workspace.",
+            )
+
+        context = WorkspaceContext(
+            workspace=ws,
+            membership=membership,
+            current_user=user,
+            role=membership.role,
+        )
+        service = BusinessService(self.db)
+        kpis = await service.get_overview(context)
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={
+                "operating_cash_inflow": f"₹{kpis['collected_revenue_paise'] / 100:,.2f}",
+                "operating_cash_outflow": f"₹{kpis['paid_bills_paise'] / 100:,.2f}",
+                "net_operating_cash_flow": f"₹{kpis['net_cash_result_paise'] / 100:,.2f}",
+                "accrual_operating_result": f"₹{kpis['net_operating_result_paise'] / 100:,.2f}",
+                "pending_client_collections": f"₹{kpis['total_receivables_paise'] / 100:,.2f}",
+                "pending_vendor_payments": f"₹{kpis['total_payables_paise'] / 100:,.2f}",
+            },
         )

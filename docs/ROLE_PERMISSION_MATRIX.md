@@ -36,6 +36,12 @@ Arthsavora defines 16 granular application-level permissions:
 | `MANAGE_FAMILY_ALLOCATIONS` | `family:allocations:manage` | Create, revise, or cancel shared expense allocations |
 | `MANAGE_FAMILY_CONTRIBUTIONS` | `family:contributions:manage` | Record, confirm, or waive pool contributions |
 | `MANAGE_FAMILY_SETTINGS` | `family:settings:manage` | Modify family profile and restricted member view policies |
+| `VIEW_BUSINESS_FINANCE` | `business:view_finance` | View business profile, aging charts, cash flow, and financial overview |
+| `MANAGE_BUSINESS_FINANCE` | `business:manage_finance` | Configure business profile, GSTIN, PAN, and commercial defaults |
+| `MANAGE_INVOICES` | `business:manage_invoices` | Draft, issue, cancel, and record customer payments on invoices |
+| `MANAGE_CLIENTS` | `business:manage_clients` | Create, update, and manage business client profiles |
+| `MANAGE_VENDORS` | `business:manage_vendors` | Create, update, and manage business vendor profiles |
+| `MANAGE_PAYABLES` | `business:manage_payables` | Record vendor bills, schedule disbursements, and record bill payments |
 
 ---
 
@@ -110,6 +116,12 @@ Business workspaces support statutory operations, general ledger accounting, app
 | `CREATE_TRANSACTIONS` | Yes | Yes | Yes | Yes | Yes | No |
 | `UPDATE_TRANSACTIONS` | Yes | Yes | Yes | No | No | No |
 | `MANAGE_BUSINESS_PROFILE`| Yes | Yes | No | No | No | No |
+| `VIEW_BUSINESS_FINANCE` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `MANAGE_BUSINESS_FINANCE` | Yes | Yes | Yes | No | No | No |
+| `MANAGE_INVOICES` | Yes | Yes | Yes | Yes | Yes | No |
+| `MANAGE_CLIENTS` | Yes | Yes | Yes | Yes | Yes | No |
+| `MANAGE_VENDORS` | Yes | Yes | Yes | Yes | No | No |
+| `MANAGE_PAYABLES` | Yes | Yes | Yes | Yes | No | No |
 
 ---
 

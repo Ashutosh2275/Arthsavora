@@ -17,6 +17,7 @@ import { Assistant } from '@/pages/Assistant';
 import { Documents } from '@/pages/Documents';
 import { Notifications } from '@/pages/Notifications';
 import { Family } from '@/pages/Family';
+import { Business } from '@/pages/Business';
 import Reports from '@/pages/Reports';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
@@ -252,6 +253,26 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Family />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/business"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Business />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/invoices"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Business />
               </AppLayout>
             </ProtectedRoute>
           }

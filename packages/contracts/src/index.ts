@@ -2901,6 +2901,295 @@ export interface FamilyOverviewDTO {
   }>;
 }
 
+// ---------------------------------------------------------------------------
+// Small Business Finance & Commercial Operations Contracts (Prompt 22)
+// ---------------------------------------------------------------------------
+
+export type BusinessType =
+  | 'freelancer'
+  | 'consultant'
+  | 'independent_professional'
+  | 'service_provider'
+  | 'small_agency'
+  | 'sole_proprietorship'
+  | 'other';
+
+export type ClientType = 'individual' | 'business' | 'organization';
+
+export type VendorType =
+  | 'contractor'
+  | 'software_saas'
+  | 'service_provider'
+  | 'utility'
+  | 'landlord'
+  | 'other';
+
+export type InvoiceStatus =
+  | 'draft'
+  | 'issued'
+  | 'partially_paid'
+  | 'paid'
+  | 'overdue'
+  | 'cancelled';
+
+export type PayableStatus =
+  | 'draft'
+  | 'recorded'
+  | 'due'
+  | 'partially_paid'
+  | 'paid'
+  | 'overdue'
+  | 'cancelled';
+
+export type BusinessPaymentMethod =
+  | 'bank_transfer'
+  | 'upi'
+  | 'neft_rtgs'
+  | 'cheque'
+  | 'card'
+  | 'cash'
+  | 'other';
+
+export interface BusinessProfileDTO {
+  id: UUID;
+  workspace_id: UUID;
+  business_name: string;
+  business_type: BusinessType | string;
+  business_description?: string | null;
+  business_email?: string | null;
+  business_phone?: string | null;
+  business_address?: Record<string, unknown>;
+  country: string;
+  currency: string;
+  financial_year_start_month: number;
+  timezone: string;
+  gstin?: string | null;
+  pan?: string | null;
+  tax_configuration?: Record<string, unknown>;
+  invoice_settings?: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BusinessClientDTO {
+  id: UUID;
+  workspace_id: UUID;
+  name: string;
+  client_type: ClientType | string;
+  email?: string | null;
+  phone?: string | null;
+  billing_address?: Record<string, unknown>;
+  gstin?: string | null;
+  pan?: string | null;
+  payment_terms_days: number;
+  currency: string;
+  notes?: string | null;
+  status: 'active' | 'archived' | string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BusinessVendorDTO {
+  id: UUID;
+  workspace_id: UUID;
+  name: string;
+  vendor_type: VendorType | string;
+  email?: string | null;
+  phone?: string | null;
+  billing_details?: Record<string, unknown>;
+  gstin?: string | null;
+  pan?: string | null;
+  payment_terms_days: number;
+  notes?: string | null;
+  status: 'active' | 'archived' | string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InvoiceLineItemDTO {
+  id?: UUID;
+  description: string;
+  hsn_sac_code?: string | null;
+  quantity: number | string;
+  unit_price_paise?: number;
+  unit_price_decimal: number;
+  discount_paise?: number;
+  tax_rate_percent: number;
+  cgst_rate_percent?: number;
+  sgst_rate_percent?: number;
+  igst_rate_percent?: number;
+  tax_amount_paise?: number;
+  tax_amount_decimal?: number;
+  total_amount_paise?: number;
+  total_amount_decimal?: number;
+  line_order?: number;
+}
+
+export interface BusinessInvoicePaymentDTO {
+  id: UUID;
+  invoice_id: UUID;
+  payment_date: string;
+  amount_paise: number;
+  amount_decimal: number;
+  payment_method: BusinessPaymentMethod | string;
+  reference_number?: string | null;
+  financial_account_id?: UUID | null;
+  journal_entry_id?: UUID | null;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface BusinessInvoiceDTO {
+  id: UUID;
+  workspace_id: UUID;
+  client_id: UUID;
+  client_name?: string | null;
+  invoice_number: string;
+  invoice_date: string;
+  due_date: string;
+  currency: string;
+  subtotal_amount_paise: number;
+  subtotal_amount_decimal: number;
+  discount_amount_paise: number;
+  discount_amount_decimal: number;
+  tax_amount_paise: number;
+  tax_amount_decimal: number;
+  total_amount_paise: number;
+  total_amount_decimal: number;
+  paid_amount_paise: number;
+  paid_amount_decimal: number;
+  balance_amount_paise: number;
+  balance_amount_decimal: number;
+  status: InvoiceStatus | string;
+  notes?: string | null;
+  payment_instructions?: string | null;
+  issued_at?: string | null;
+  cancelled_at?: string | null;
+  cancellation_reason?: string | null;
+  version: number;
+  journal_entry_id?: UUID | null;
+  line_items: InvoiceLineItemDTO[];
+  payments: BusinessInvoicePaymentDTO[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BusinessPayablePaymentDTO {
+  id: UUID;
+  payable_id: UUID;
+  payment_date: string;
+  amount_paise: number;
+  amount_decimal: number;
+  payment_method: BusinessPaymentMethod | string;
+  reference_number?: string | null;
+  financial_account_id?: UUID | null;
+  journal_entry_id?: UUID | null;
+  notes?: string | null;
+  created_at: string;
+}
+
+export interface BusinessPayableDTO {
+  id: UUID;
+  workspace_id: UUID;
+  vendor_id: UUID;
+  vendor_name?: string | null;
+  bill_number?: string | null;
+  bill_date: string;
+  due_date: string;
+  currency: string;
+  subtotal_amount_paise: number;
+  subtotal_amount_decimal: number;
+  tax_amount_paise: number;
+  tax_amount_decimal: number;
+  total_amount_paise: number;
+  total_amount_decimal: number;
+  paid_amount_paise: number;
+  paid_amount_decimal: number;
+  balance_amount_paise: number;
+  balance_amount_decimal: number;
+  status: PayableStatus | string;
+  category_id?: UUID | null;
+  document_id?: UUID | null;
+  journal_entry_id?: UUID | null;
+  notes?: string | null;
+  payments: BusinessPayablePaymentDTO[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReceivablesAgingDTO {
+  current_paise: number;
+  current_decimal: number;
+  days_1_30_paise: number;
+  days_1_30_decimal: number;
+  days_31_60_paise: number;
+  days_31_60_decimal: number;
+  days_61_90_paise: number;
+  days_61_90_decimal: number;
+  days_91_plus_paise: number;
+  days_91_plus_decimal: number;
+  total_outstanding_paise: number;
+  total_outstanding_decimal: number;
+}
+
+export interface PayablesAgingDTO {
+  current_paise: number;
+  current_decimal: number;
+  days_1_30_paise: number;
+  days_1_30_decimal: number;
+  days_31_60_paise: number;
+  days_31_60_decimal: number;
+  days_61_90_paise: number;
+  days_61_90_decimal: number;
+  days_91_plus_paise: number;
+  days_91_plus_decimal: number;
+  total_outstanding_paise: number;
+  total_outstanding_decimal: number;
+}
+
+export interface BusinessOverviewDTO {
+  invoiced_revenue_paise: number;
+  invoiced_revenue_decimal: number;
+  collected_revenue_paise: number;
+  collected_revenue_decimal: number;
+  total_receivables_paise: number;
+  total_receivables_decimal: number;
+  total_bills_paise: number;
+  total_bills_decimal: number;
+  paid_bills_paise: number;
+  paid_bills_decimal: number;
+  total_payables_paise: number;
+  total_payables_decimal: number;
+  net_operating_result_paise: number;
+  net_operating_result_decimal: number;
+  net_cash_result_paise: number;
+  net_cash_result_decimal: number;
+  active_clients_count: number;
+  active_vendors_count: number;
+  total_invoices_count: number;
+  overdue_invoices_count: number;
+}
+
+export interface BusinessAnalyticsDTO {
+  kpis: BusinessOverviewDTO;
+  ar_aging: ReceivablesAgingDTO;
+  ap_aging: PayablesAgingDTO;
+  top_clients: Array<{ client_id: string; client_name: string; total_invoiced_paise: number; invoice_count: number }>;
+  top_vendors: Array<{ vendor_id: string; vendor_name: string; total_bills_paise: number; bill_count: number }>;
+}
+
+export interface BusinessActivityDTO {
+  id: UUID;
+  activity_type: string;
+  description: string;
+  entity_type?: string | null;
+  entity_id?: UUID | null;
+  actor_user_id?: UUID | null;
+  metadata_json: Record<string, unknown>;
+  created_at: string;
+}
+
+
 
 
 

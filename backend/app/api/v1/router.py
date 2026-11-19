@@ -11,6 +11,7 @@ from app.api.v1 import (
     assistant_routes,
     auth,
     budget_routes,
+    business_routes,
     document_routes,
     family_routes,
     forecast_routes,
@@ -65,3 +66,5 @@ v1_router.include_router(document_routes.router, prefix="/workspaces/{workspace_
 v1_router.include_router(notification_routes.router, prefix="/notifications")
 v1_router.include_router(family_routes.router, prefix="/family")
 v1_router.include_router(family_routes.router, prefix="/workspaces/{workspace_id}/family")
+v1_router.include_router(business_routes.router, prefix="/business")
+v1_router.include_router(business_routes.router, prefix="/workspaces/{workspace_id}/business")

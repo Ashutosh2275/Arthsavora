@@ -366,6 +366,50 @@ FINANCIAL_TOOLS: Dict[str, FinancialToolDefinitionVO] = {
         sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
         timeout_seconds=10,
     ),
+    "get_business_overview": FinancialToolDefinitionVO(
+        name="get_business_overview",
+        description="Retrieves commercial financial KPIs for the active business workspace (invoiced revenue, collected cash, total receivables, vendor payables, net operating result, active clients/vendors).",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_BUSINESS_FINANCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_business_receivables_summary": FinancialToolDefinitionVO(
+        name="get_business_receivables_summary",
+        description="Retrieves Accounts Receivable (AR) aging schedule and unpaid invoice summaries.",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_BUSINESS_FINANCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_business_payables_summary": FinancialToolDefinitionVO(
+        name="get_business_payables_summary",
+        description="Retrieves Accounts Payable (AP) aging schedule and outstanding vendor bills.",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_BUSINESS_FINANCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_business_cash_flow_summary": FinancialToolDefinitionVO(
+        name="get_business_cash_flow_summary",
+        description="Retrieves commercial cash flow metrics comparing invoiced revenue vs collected cash and expenses vs paid bills.",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_BUSINESS_FINANCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
 }
 
 

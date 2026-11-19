@@ -6,7 +6,7 @@ and activates transaction-local Row-Level Security (RLS) tenant context.
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set
 import uuid
 from fastapi import Depends, Header, Request
 from sqlalchemy import select
@@ -121,6 +121,14 @@ class Permission(str, Enum):
     MANAGE_FAMILY_ALLOCATIONS = "family:manage_allocations"
     MANAGE_FAMILY_CONTRIBUTIONS = "family:manage_contributions"
     MANAGE_FAMILY_SETTINGS = "family:manage_settings"
+
+    # Business Finance Management & Commercial Operations
+    VIEW_BUSINESS_FINANCE = "business:view_finance"
+    MANAGE_BUSINESS_FINANCE = "business:manage_finance"
+    MANAGE_INVOICES = "business:manage_invoices"
+    MANAGE_CLIENTS = "business:manage_clients"
+    MANAGE_VENDORS = "business:manage_vendors"
+    MANAGE_PAYABLES = "business:manage_payables"
 
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
@@ -299,6 +307,12 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_BUSINESS_FINANCE,
+            Permission.MANAGE_BUSINESS_FINANCE,
+            Permission.MANAGE_INVOICES,
+            Permission.MANAGE_CLIENTS,
+            Permission.MANAGE_VENDORS,
+            Permission.MANAGE_PAYABLES,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -341,6 +355,12 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_BUSINESS_FINANCE,
+            Permission.MANAGE_BUSINESS_FINANCE,
+            Permission.MANAGE_INVOICES,
+            Permission.MANAGE_CLIENTS,
+            Permission.MANAGE_VENDORS,
+            Permission.MANAGE_PAYABLES,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -366,6 +386,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_BUSINESS_FINANCE,
+            Permission.MANAGE_INVOICES,
+            Permission.MANAGE_PAYABLES,
+            Permission.MANAGE_CLIENTS,
+            Permission.MANAGE_VENDORS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -388,6 +413,9 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_BUSINESS_FINANCE,
+            Permission.MANAGE_INVOICES,
+            Permission.MANAGE_CLIENTS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -408,15 +436,16 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
+            Permission.VIEW_BUSINESS_FINANCE,
         },
     },
 }
 
 
-def has_permission(workspace_type: str, role: str, permission: Permission) -> bool:
+def has_permission(workspace_type: Any, role: Any, permission: Permission) -> bool:
     """Evaluates whether a given workspace type and member role possesses the required permission."""
-    type_str = str(workspace_type).lower().strip()
-    role_str = str(role).lower().strip()
+    type_str = (workspace_type.value if hasattr(workspace_type, "value") else str(workspace_type)).lower().strip()
+    role_str = (role.value if hasattr(role, "value") else str(role)).lower().strip()
     perms = ROLE_PERMISSIONS.get(type_str, {}).get(role_str, set())
     return permission in perms
 
