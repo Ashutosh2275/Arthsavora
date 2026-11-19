@@ -30,6 +30,7 @@ This register tracks the complete defect triage and resolution history across al
 | **DEF-12** | P0 | Multi-Tenancy / RLS | Table `accounts` had `relrowsecurity=False` in PostgreSQL catalog | RLS was forced but not explicitly enabled on table | Ran `ALTER TABLE accounts ENABLE ROW LEVEL SECURITY;` and provisioned `arthsavora_app` non-superuser role | **RESOLVED** |
 | **DEF-13** | P2 | QA Documentation | Discrepancy in reported backend test suite counts (344 passed / 1 skipped vs 344 passed / 0 skipped) | Category P operational dependency block mistakenly transcribed into unit test summary | Validated exact empirical collection (344 items, 344 passed, 0 skipped) and reconciled audit reports | **RESOLVED** |
 | **DEF-14** | P3 | Frontend Code Quality | ESLint build failure due to `public/sw.js` global and redundant try/catch in `useCategoryStore.ts` | Missing ignore rule and unnecessary catch-throw wrapper | Configured ESLint ignore for `public/` and simplified store method | **RESOLVED** |
+| **DEF-15** | P2 | Release Certification | Discrepancy between reported route counts (17 pages vs 19 table rows vs 33 router declarations) and unclarified single-thread microbenchmark context | Early specification aggregation grouped sub-routes and conflated single-client microbenchmarks with cloud concurrent load | Enumerate all 33 routes (1 public, 20 pages, 10 aliases, 2 redirects); verify all 32 path targets in Playwright (0 crashes); publish route reconciliation and benchmark context reports | **RESOLVED** |
 
 ---
 
@@ -39,4 +40,4 @@ This register tracks the complete defect triage and resolution history across al
 - **Open P1 Defects**: **0**
 - **Open P2 Defects**: **0**
 - **Open P3 Observations**: 1 (Non-blocking bundle chunk optimization)
-- **Defect Resolution Rate**: **92.9% Resolved (13/14) / 7.1% Documented Non-Blocking (1/14)**
+- **Defect Resolution Rate**: **93.3% Resolved (14/15) / 6.7% Documented Non-Blocking (1/15)**

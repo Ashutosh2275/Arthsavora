@@ -1,0 +1,1347 @@
+{
+  "roles": [
+    {
+      "rolname": "postgres",
+      "rolsuper": true,
+      "rolbypassrls": true,
+      "rolinherit": true,
+      "rolcanlogin": true
+    },
+    {
+      "rolname": "arthsavora_app",
+      "rolsuper": false,
+      "rolbypassrls": false,
+      "rolinherit": true,
+      "rolcanlogin": true
+    }
+  ],
+  "table_summary": {
+    "total_tables": 86,
+    "tenant_owned_tables": 69,
+    "tables_with_rls_enabled": 69,
+    "tables_with_force_rls": 69,
+    "tables_with_policies": 69
+  },
+  "uuid_tests": {
+    "valid_uuid": {
+      "status": "PASS",
+      "setting": "244e7273-e7ab-4b8b-94bd-dc55d7dda642",
+      "rows_returned": 0,
+      "behavior": "Executes cleanly, returns rows matching workspace_id"
+    },
+    "missing_setting_null": {
+      "status": "PASS",
+      "setting": "",
+      "rows_returned": 0,
+      "behavior": "NULLIF returns NULL, evaluates to FALSE/UNKNOWN -> returns 0 rows (Fail-Closed)"
+    },
+    "empty_string": {
+      "status": "PASS",
+      "setting": "",
+      "rows_returned": 0,
+      "behavior": "NULLIF('', '') returns NULL, evaluates to FALSE/UNKNOWN -> returns 0 rows (Fail-Closed)"
+    },
+    "malformed_uuid": {
+      "status": "EXPECTED_EXCEPTION",
+      "error_type": "DataError",
+      "message": "invalid input syntax for type uuid: \"invalid-not-a-uuid\"",
+      "behavior": "PostgreSQL raises invalid input syntax for type uuid. Query terminates immediately; does not bypass RLS."
+    }
+  },
+  "crud_isolation_tests": {
+    "read_isolation": {
+      "status": "PASS",
+      "details": "WS 1 saw 1 rows (expected only account_1)",
+      "account_1_seen": true,
+      "account_2_seen": false
+    },
+    "cross_tenant_insert_prevention": {
+      "status": "PASS",
+      "message": "Blocked by WITH CHECK policy violation or RLS constraint",
+      "error": "new row violates row-level security policy for table \"accounts\""
+    },
+    "cross_tenant_update_prevention": {
+      "status": "PASS",
+      "result": "UPDATE 0",
+      "details": "WS 1 attempted to update WS 2 record, 0 rows affected"
+    },
+    "cross_tenant_delete_prevention": {
+      "status": "PASS",
+      "result": "DELETE 0",
+      "details": "WS 1 attempted to delete WS 2 record, 0 rows affected"
+    },
+    "ownership_hijack_prevention": {
+      "status": "PASS",
+      "message": "Blocked by WITH CHECK policy violation",
+      "error": "new row violates row-level security policy for table \"accounts\""
+    },
+    "connection_pool_hygiene": {
+      "status": "PASS",
+      "setting_after_tx": "",
+      "details": "SET LOCAL correctly scoped to transaction; cleared upon transaction end"
+    }
+  },
+  "tenant_tables": [
+    {
+      "table_name": "account_balance_snapshots",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "account_balance_snapshots_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "accounting_periods",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "accounting_periods_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "accounts",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "accounts_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "anomaly_detections",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "anomaly_detections_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "anomaly_reviews",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "anomaly_reviews_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "assistant_action_drafts",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "assistant_action_drafts_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "assistant_conversations",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "assistant_conversations_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "assistant_messages",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "assistant_messages_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "assistant_usage_logs",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "assistant_usage_logs_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "audit_logs",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "audit_logs_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "budget_alerts",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "budget_alerts_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "budget_allocations",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "budget_allocations_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "budget_revisions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "budget_revisions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "budgets",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "budgets_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_activities",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_activities_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_clients",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_clients_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_invoice_payments",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_invoice_payments_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_invoices",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_invoices_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_payable_payments",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_payable_payments_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_payables",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_payables_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_profiles",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_profiles_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "business_vendors",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "business_vendors_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "categories",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "categories_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "classification_rules",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "classification_rules_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "connection_audit_events",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "connection_audit_events_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "consent_records",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "consent_records_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "data_sources",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "data_sources_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "detection_exceptions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "detection_exceptions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "detection_rules",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "detection_rules_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "document_extractions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "document_extractions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "document_reviews",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "document_reviews_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "document_transaction_associations",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "document_transaction_associations_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "external_account_references",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "external_account_references_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "family_activities",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "family_activities_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "family_expense_allocations",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "family_expense_allocations_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "family_member_contributions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "family_member_contributions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "family_profiles",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "family_profiles_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "financial_connections",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "financial_connections_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "financial_consents",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "financial_consents_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "financial_documents",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "financial_documents_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "financial_goals",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "financial_goals_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "financial_scenarios",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "financial_scenarios_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "forecast_evaluations",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "forecast_evaluations_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "forecast_points",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "forecast_points_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "forecast_runs",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "forecast_runs_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "generated_reports",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "generated_reports_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "goal_activities",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "goal_activities_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "import_batches",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "import_batches_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "import_candidates",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "import_candidates_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "import_jobs",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "import_jobs_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "journal_entries",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "journal_entries_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "ledger_accounts",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "ledger_accounts_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "merchants",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "merchants_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "notifications",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "notifications_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "reconciliation_records",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "reconciliation_records_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "recurring_definitions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "recurring_definitions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "recurring_occurrences",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "recurring_occurrences_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "recurring_reminders",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "recurring_reminders_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "recurring_suggestions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "recurring_suggestions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "report_validation_findings",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "report_validation_findings_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "subscriptions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "subscriptions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "sync_jobs",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "sync_jobs_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "tax_classification_records",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "tax_classification_records_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "tax_estimate_snapshots",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "tax_estimate_snapshots_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "transaction_classifications",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "transaction_classifications_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "transactions",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "transactions_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "user_classification_feedback",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "user_classification_feedback_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "workspace_invitations",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "workspace_invitations_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    },
+    {
+      "table_name": "workspace_members",
+      "has_workspace_id": true,
+      "rls_enabled": true,
+      "force_rls": true,
+      "policies": [
+        {
+          "policy_name": "workspace_members_tenant_isolation",
+          "cmd": "b'*'",
+          "roles": [
+            "PUBLIC"
+          ],
+          "using": "(workspace_id = (NULLIF(current_setting('app.current_workspace_id'::text, true), ''::text))::uuid)",
+          "with_check": null
+        }
+      ],
+      "is_tenant_owned": true
+    }
+  ],
+  "non_tenant_tables": [
+    "alembic_version",
+    "business_invoice_line_items",
+    "family_account_shares",
+    "family_expense_allocation_items",
+    "financial_providers",
+    "import_files",
+    "journal_lines",
+    "merchant_aliases",
+    "notification_deliveries",
+    "notification_preferences",
+    "notification_templates",
+    "push_subscriptions",
+    "sync_checkpoints",
+    "tax_rules",
+    "user_profiles",
+    "users",
+    "workspaces"
+  ]
+}
