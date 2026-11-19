@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <defs>
+    <linearGradient id="bgGrad192" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad192" x1="24" y1="24" x2="168" y2="168" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="goldGrad192" x1="56" y1="45" x2="135" y2="142" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="192" height="192" rx="48" fill="url(#bgGrad192)"/>
+  <rect width="190" height="190" x="1" y="1" rx="47" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Shield -->
+  <path d="M96 24L148 42V96C148 130 126 156 96 168C66 156 44 130 44 96V42L96 24Z" fill="url(#shieldGrad192)"/>
+  <path d="M96 36L138 52V94C138 122 120 144 96 154C72 144 54 122 54 94V52L96 36Z" fill="#0f172a" fill-opacity="0.85"/>
+
+  <!-- Rupee Symbol (₹) -->
+  <path d="M74 64H118" stroke="url(#goldGrad192)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M74 80H118" stroke="url(#goldGrad192)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M92 64V112C92 122 101 125 111 125" stroke="url(#goldGrad192)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M81 95L115 135" stroke="url(#goldGrad192)" stroke-width="10" stroke-linecap="round"/>
+</svg>

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   FileText,
   Upload,
+  Camera,
   CheckCircle2,
   AlertTriangle,
   XCircle,
@@ -29,8 +30,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useDocumentStore } from '@/store/useDocumentStore';
 import { useAccountStore } from '@/store/useAccountStore';
+import { CameraUploadModal } from '@/components/documents/CameraUploadModal';
 
 export function Documents() {
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const {
     documents,
     selectedDocument,
@@ -88,6 +91,23 @@ export function Documents() {
       setSelectedAccountId(accounts[0].id);
     }
   }, [accounts, selectedAccountId]);
+
+  // Deep-link trigger for Scan Document modal (?action=scan)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('action') === 'scan') {
+          setIsCameraModalOpen(true);
+          const url = new URL(window.location.href);
+          url.searchParams.delete('action');
+          window.history.replaceState({}, '', url.pathname + url.search);
+        }
+      } catch {
+        // Ignored
+      }
+    }
+  }, []);
 
   // Sync edit form when selectedDocument changes
   useEffect(() => {
@@ -248,6 +268,14 @@ export function Documents() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setIsCameraModalOpen(true)}
+            className="flex items-center gap-2 border-indigo-500/40 text-indigo-400 hover:bg-indigo-600/10 text-white"
+          >
+            <Camera className="h-4 w-4" />
+            Scan / Camera
+          </Button>
           <Button
             variant="primary"
             onClick={() => fileInputRef.current?.click()}
@@ -792,6 +820,16 @@ export function Documents() {
           )}
         </div>
       </div>
+
+      {/* Camera / Mobile Document Upload Modal */}
+      <CameraUploadModal
+        isOpen={isCameraModalOpen}
+        onClose={() => setIsCameraModalOpen(false)}
+        onSuccess={(docId) => {
+          fetchDocuments();
+          fetchDocumentDetails(docId).then((d) => setSelectedDocument(d));
+        }}
+      />
     </div>
   );
 }

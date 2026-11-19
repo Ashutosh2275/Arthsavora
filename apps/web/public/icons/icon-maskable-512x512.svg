@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGradMask" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="50%" stop-color="#090d16"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="shieldGradMask" x1="120" y1="100" x2="392" y2="412" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="50%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#3730a3"/>
+    </linearGradient>
+    <linearGradient id="goldGradMask" x1="180" y1="150" x2="332" y2="350" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Full bleed background for maskable icon -->
+  <rect width="512" height="512" fill="url(#bgGradMask)"/>
+
+  <!-- Safe Zone Graphic (within 80% circle, r=204) -->
+  <g transform="translate(0, 0)">
+    <!-- Shield -->
+    <path d="M256 100L368 140V254C368 328 320 384 256 408C192 384 144 328 144 254V140L256 100Z" fill="url(#shieldGradMask)"/>
+    <path d="M256 125L348 158V248C348 310 308 356 256 376C204 356 164 310 164 248V158L256 125Z" fill="#0f172a" fill-opacity="0.9"/>
+
+    <!-- Rupee Monogram -->
+    <path d="M208 184H304" stroke="url(#goldGradMask)" stroke-width="20" stroke-linecap="round"/>
+    <path d="M208 220H304" stroke="url(#goldGradMask)" stroke-width="20" stroke-linecap="round"/>
+    <path d="M248 184V290C248 310 268 318 288 318" stroke="url(#goldGradMask)" stroke-width="20" stroke-linecap="round"/>
+    <path d="M224 252L298 340" stroke="url(#goldGradMask)" stroke-width="20" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -22,6 +22,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { useNotificationStore } from '@/store/useNotificationStore';
+import { useWebPush } from '@/pwa/useWebPush';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -52,6 +53,15 @@ export const Notifications: React.FC = () => {
   const [quietHoursEnd, setQuietHoursEnd] = useState('08:00');
   const [timezone, setTimezone] = useState('Asia/Kolkata');
   const [quietEnabled, setQuietEnabled] = useState(false);
+
+  const {
+    supportStatus,
+    permissionStatus,
+    isSubscribed,
+    isLoading: isPushLoading,
+    subscribeToPush,
+    unsubscribeFromPush,
+  } = useWebPush();
 
   useEffect(() => {
     fetchNotifications();
@@ -262,6 +272,65 @@ export const Notifications: React.FC = () => {
                   Save Quiet Hours
                 </Button>
               </div>
+            </div>
+          </Card>
+
+          {/* Web Push Device Registration Card */}
+          <Card className="p-5 bg-slate-900/90 border-slate-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-indigo-400" />
+                  Web Push Notification Device Management
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">
+                  Receive real-time financial security and transaction alerts directly on this browser or mobile device.
+                </p>
+              </div>
+              <Badge
+                variant={isSubscribed ? 'income' : supportStatus === 'unsupported' ? 'expense' : 'neutral'}
+                size="sm"
+              >
+                {isSubscribed ? 'Subscribed' : supportStatus === 'unsupported' ? 'Unsupported' : 'Inactive'}
+              </Badge>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="space-y-1">
+                <div className="text-slate-300">
+                  <strong>Permission State:</strong>{' '}
+                  <span className="font-mono text-indigo-400 capitalize">{permissionStatus}</span>
+                </div>
+                <div className="text-[11px] text-slate-400">
+                  Lock-screen privacy: Card numbers and PAN identifiers are scrubbed before push dispatch.
+                </div>
+              </div>
+
+              {supportStatus === 'supported' && (
+                <div className="shrink-0">
+                  {isSubscribed ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => unsubscribeFromPush()}
+                      disabled={isPushLoading}
+                      className="text-xs text-rose-400 border-rose-500/30 hover:bg-rose-500/10"
+                    >
+                      {isPushLoading ? 'Revoking...' : 'Revoke Device Push'}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => subscribeToPush()}
+                      disabled={isPushLoading || permissionStatus === 'denied'}
+                      className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white"
+                    >
+                      {isPushLoading ? 'Enabling...' : 'Enable Web Push Alerts'}
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </Card>
 

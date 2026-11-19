@@ -127,6 +127,23 @@ export default function Transactions() {
     });
   }, [fetchTransactions, page, search, statusFilter, directionFilter, accountFilter]);
 
+  // Deep-link trigger for New Transaction modal (?action=new)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('action') === 'new') {
+          setIsTxModalOpen(true);
+          const url = new URL(window.location.href);
+          url.searchParams.delete('action');
+          window.history.replaceState({}, '', url.pathname + url.search);
+        }
+      } catch {
+        // Ignored
+      }
+    }
+  }, []);
+
   // Derived KPIs
   const stats = useMemo(() => {
     let inflowPaise = 0;
@@ -642,6 +659,8 @@ export default function Transactions() {
               </label>
               <Input
                 type="number"
+                inputMode="decimal"
+                pattern="[0-9]*"
                 step="0.01"
                 min="0.01"
                 placeholder="0.00"
@@ -649,6 +668,21 @@ export default function Transactions() {
                 onChange={(e) => setTxForm({ ...txForm, amount: e.target.value })}
                 required
               />
+              <div className="flex items-center gap-1.5 pt-1.5">
+                {[100, 500, 1000, 5000].map((addAmt) => (
+                  <button
+                    key={addAmt}
+                    type="button"
+                    onClick={() => {
+                      const cur = parseFloat(txForm.amount) || 0;
+                      setTxForm({ ...txForm, amount: (cur + addAmt).toFixed(2) });
+                    }}
+                    className="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-mono text-slate-300 hover:text-white hover:bg-slate-700 active:scale-95 transition-all"
+                  >
+                    +₹{addAmt}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">

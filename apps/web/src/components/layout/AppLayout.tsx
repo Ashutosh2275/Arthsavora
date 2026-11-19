@@ -4,7 +4,11 @@ import { Toaster } from 'sonner';
 import AIChatbot from '@/components/AIChatbot';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import MobileTabBar from './MobileTabBar';
 import OnboardingModal from './OnboardingModal';
+import { OfflineBanner } from '../pwa/OfflineBanner';
+import { UpdatePrompt } from '../pwa/UpdatePrompt';
+import { initServiceWorker } from '@/pwa/registerServiceWorker';
 import { useThemeStore } from '@/store/useThemeStore';
 import useWorkspaceStore from '@/store/useWorkspaceStore';
 
@@ -20,10 +24,14 @@ export function AppLayout({ children }: AppLayoutProps) {
   useEffect(() => {
     initTheme();
     fetchWorkspaces();
+    const cleanupSw = initServiceWorker();
+    return () => {
+      cleanupSw();
+    };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0b0f1a] text-white flex">
+    <div className="min-h-screen bg-[#0b0f1a] text-white flex flex-col lg:flex-row">
       <Toaster position="top-right" theme="dark" richColors />
 
       {/* Skip to Main Content Link (Accessibility WCAG 2.2 AA) */}
@@ -70,12 +78,27 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main App Content Layout */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Offline Notification Banner */}
+        <OfflineBanner />
+
+        {/* Top Header Command Center */}
         <TopBar onMobileMenuToggle={() => setMobileMenuOpen((prev) => !prev)} />
 
-        <main id="main-content" tabIndex={-1} className="flex-1 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 focus:outline-none">
+        {/* Main Content Area */}
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 pb-24 md:pb-8 focus:outline-none"
+        >
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileTabBar />
+
+      {/* PWA Update Notice */}
+      <UpdatePrompt />
 
       {/* Global AI Assistant Floating Co-Pilot */}
       <AIChatbot />

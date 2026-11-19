@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="favBg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="favShield" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="favGold" x1="16" y1="14" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="16" fill="url(#favBg)"/>
+  <path d="M32 8L49 14V32C49 43 42 52 32 56C22 52 15 43 15 32V14L32 8Z" fill="url(#favShield)"/>
+  <path d="M32 12L46 17V31C46 41 39 48 32 52C25 48 18 41 18 31V17L32 12Z" fill="#0f172a" fill-opacity="0.9"/>
+  <path d="M24 21H40" stroke="url(#favGold)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 26H40" stroke="url(#favGold)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M31 21V37C31 40 34 41 37 41" stroke="url(#favGold)" stroke-width="3" stroke-linecap="round"/>
+  <path d="M27 31L38 44" stroke="url(#favGold)" stroke-width="3" stroke-linecap="round"/>
+</svg>
