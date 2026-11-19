@@ -205,12 +205,8 @@ export const useCategoryStore = create<CategoryState>((set, get) => ({
   },
 
   previewSuggestion: async (description: string, direction: string = 'outflow') => {
-    try {
-      const res = await api.post('/categories/suggest', { description, direction });
-      return res.data.data;
-    } catch (err: any) {
-      throw err;
-    }
+    const res = await api.post('/categories/suggest', { description, direction });
+    return res.data.data;
   },
 }));
 

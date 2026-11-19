@@ -87,3 +87,12 @@ The ARTHSAVORA documentation corpus provides exhaustive architectural, operation
 - [MASTER_INFRASTRUCTURE_VERIFICATION.md](file:///d:/Arthsavora/docs/MASTER_INFRASTRUCTURE_VERIFICATION.md)
 - [DEPLOYMENT_EVIDENCE_MATRIX.md](file:///d:/Arthsavora/docs/DEPLOYMENT_EVIDENCE_MATRIX.md)
 - [OPERATIONAL_READINESS_GAPS.md](file:///d:/Arthsavora/docs/OPERATIONAL_READINESS_GAPS.md)
+
+### 2.8 Post-Audit QA & Component Testing Results
+- [COMPONENT_TEST_EXECUTION_REPORT.md](file:///d:/Arthsavora/docs/COMPONENT_TEST_EXECUTION_REPORT.md)
+- [COMPONENT_TEST_MATRIX.md](file:///d:/Arthsavora/docs/COMPONENT_TEST_MATRIX.md)
+- [E2E_WORKFLOW_TEST_RESULTS.md](file:///d:/Arthsavora/docs/E2E_WORKFLOW_TEST_RESULTS.md)
+- [FRONTEND_BROWSER_TEST_RESULTS.md](file:///d:/Arthsavora/docs/FRONTEND_BROWSER_TEST_RESULTS.md)
+- [SECURITY_REGRESSION_TEST_RESULTS.md](file:///d:/Arthsavora/docs/SECURITY_REGRESSION_TEST_RESULTS.md)
+- [PERFORMANCE_TEST_RESULTS.md](file:///d:/Arthsavora/docs/PERFORMANCE_TEST_RESULTS.md)
+- [COMPONENT_DEFECT_REGISTER.md](file:///d:/Arthsavora/docs/COMPONENT_DEFECT_REGISTER.md)

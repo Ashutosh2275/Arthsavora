@@ -6,7 +6,18 @@ Extracts embedded digital text directly from vector PDF invoices and receipts us
 import asyncio
 import logging
 from pathlib import Path
-from pypdf import PdfReader
+
+try:
+    from pypdf import PdfReader
+    HAS_PYPDF = True
+except ImportError:
+    HAS_PYPDF = False
+
+try:
+    import pdfplumber
+    HAS_PDFPLUMBER = True
+except ImportError:
+    HAS_PDFPLUMBER = False
 
 from app.services.document.ocr.base_ocr import BaseOCREngine, OCRRawResult
 
@@ -26,11 +37,26 @@ class PdfTextExtractor(BaseOCREngine):
             raise FileNotFoundError(f"PDF document not found at {file_path}")
 
         try:
-            reader = PdfReader(src)
             page_texts = []
-            for i, page in enumerate(reader.pages):
-                page_text = page.extract_text() or ""
-                page_texts.append(page_text)
+            page_count = 0
+            provider_used = "native_pdf"
+
+            if HAS_PYPDF:
+                reader = PdfReader(src)
+                page_count = len(reader.pages)
+                provider_used = "pypdf_native"
+                for i, page in enumerate(reader.pages):
+                    page_text = page.extract_text() or ""
+                    page_texts.append(page_text)
+            elif HAS_PDFPLUMBER:
+                with pdfplumber.open(src) as pdf:
+                    page_count = len(pdf.pages)
+                    provider_used = "pdfplumber_native"
+                    for page in pdf.pages:
+                        page_text = page.extract_text() or ""
+                        page_texts.append(page_text)
+            else:
+                raise RuntimeError("Neither pypdf nor pdfplumber is available for PDF extraction.")
 
             full_text = "\n\n--- Page Break ---\n\n".join(page_texts).strip()
 
@@ -40,10 +66,10 @@ class PdfTextExtractor(BaseOCREngine):
             return OCRRawResult(
                 text=full_text,
                 confidence=confidence,
-                provider="pypdf_native",
-                version="pypdf",
-                page_count=len(reader.pages),
-                metadata={"pages": len(reader.pages)},
+                provider=provider_used,
+                version="1.0",
+                page_count=page_count,
+                metadata={"pages": page_count},
             )
         except Exception as e:
             logger.error(f"Native PDF extraction failed on {file_path}: {e}")
