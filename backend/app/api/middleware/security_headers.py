@@ -27,12 +27,22 @@ def setup_security_headers(app: FastAPI) -> None:
         # 4. Strict referrer policy
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
-        # 5. Disable caching on financial API endpoints to prevent local disk exposure
+        # 5. Restrict Permissions / Feature Policy
+        response.headers["Permissions-Policy"] = (
+            "accelerometer=(), camera=(), geolocation=(), gyroscope=(), "
+            "magnetometer=(), microphone=(), payment=(), usb=()"
+        )
+
+        # 6. Prevent Flash / PDF cross-domain policy leaks
+        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+
+        # 7. Disable caching and enforce strict Content Security Policy on financial API endpoints
         if request.url.path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
             response.headers["Pragma"] = "no-cache"
+            response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
 
-        # 6. HTTP Strict Transport Security (HSTS) in staging/production
+        # 8. HTTP Strict Transport Security (HSTS) in staging/production
         if settings.ENABLE_HSTS:
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
 

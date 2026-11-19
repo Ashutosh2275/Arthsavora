@@ -14,6 +14,25 @@ from app.core.config import settings
 from app.core.exceptions import InvalidTokenException, TokenExpiredException
 
 
+_REVOKED_JTIS: set[str] = set()
+
+
+def revoke_token_jti(jti: str) -> None:
+    """Adds a JWT identifier (jti) to the active revocation registry."""
+    if jti:
+        _REVOKED_JTIS.add(str(jti))
+
+
+def is_token_revoked(jti: str) -> bool:
+    """Checks whether a token's jti has been explicitly revoked."""
+    return str(jti) in _REVOKED_JTIS
+
+
+def clear_revoked_tokens() -> None:
+    """Clears revocation set (for testing or lifecycle maintenance)."""
+    _REVOKED_JTIS.clear()
+
+
 def create_access_token(
     subject: Union[str, Any],
     email: Optional[str] = None,
@@ -133,6 +152,11 @@ def decode_token(
     # Ensure subject claim is present
     if not payload.get("sub"):
         raise InvalidTokenException("Token is missing subject claim ('sub').")
+
+    # Check revocation registry for session invalidation
+    jti = payload.get("jti")
+    if jti and is_token_revoked(jti):
+        raise InvalidTokenException("Token has been revoked.")
 
     return payload
 

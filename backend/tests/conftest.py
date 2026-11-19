@@ -61,6 +61,9 @@ async def db_session() -> AsyncSession:
 @pytest.fixture
 async def client():
     """Provides an async HTTP client for testing FastAPI route endpoints with DB override."""
+    from app.core.limiter import limiter
+    limiter.reset()
+
     async def override_get_db():
         async with test_session_factory() as session:
             try:

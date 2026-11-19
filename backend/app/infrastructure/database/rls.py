@@ -10,14 +10,86 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 # Tenant-scoped tables subject to PostgreSQL Row-Level Security
 RLS_TABLES = [
+    # Core Financial & Identity
     "accounts",
     "transactions",
     "ledger_accounts",
     "journal_entries",
+    "accounting_periods",
+    "account_balance_snapshots",
+    "categories",
+    "merchants",
+    "classification_rules",
+    "transaction_classifications",
+    "user_classification_feedback",
     "data_sources",
     "consent_records",
     "import_jobs",
+    "import_batches",
+    "import_candidates",
     "audit_logs",
+    # Planning & Foresight
+    "budgets",
+    "budget_allocations",
+    "budget_revisions",
+    "budget_alerts",
+    "financial_goals",
+    "goal_activities",
+    "recurring_definitions",
+    "recurring_occurrences",
+    "recurring_reminders",
+    "recurring_suggestions",
+    "subscriptions",
+    "forecast_runs",
+    "forecast_points",
+    "forecast_evaluations",
+    "financial_scenarios",
+    # Anomaly & Risk Intelligence
+    "anomaly_detections",
+    "anomaly_reviews",
+    "detection_rules",
+    "detection_exceptions",
+    # AI Assistant
+    "assistant_conversations",
+    "assistant_messages",
+    "assistant_action_drafts",
+    "assistant_usage_logs",
+    # Document & Receipt Intelligence
+    "financial_documents",
+    "document_extractions",
+    "document_reviews",
+    "document_transaction_associations",
+    # Unified Notifications
+    "notifications",
+    # Family Finance
+    "family_profiles",
+    "family_activities",
+    "family_expense_allocations",
+    "family_member_contributions",
+    # Small Business Finance
+    "business_profiles",
+    "business_activities",
+    "business_clients",
+    "business_vendors",
+    "business_invoices",
+    "business_invoice_payments",
+    "business_payables",
+    "business_payable_payments",
+    # Financial Data Connectivity & Account Aggregation
+    "financial_connections",
+    "financial_consents",
+    "sync_jobs",
+    "external_account_references",
+    "connection_audit_events",
+    "reconciliation_records",
+    # Financial Reporting & Tax Intelligence
+    "generated_reports",
+    "report_validation_findings",
+    "tax_classification_records",
+    "tax_estimate_snapshots",
+    # Membership & Invitations
+    "workspace_members",
+    "workspace_invitations",
 ]
 
 

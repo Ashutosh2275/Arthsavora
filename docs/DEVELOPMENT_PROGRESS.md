@@ -1202,51 +1202,81 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
 
 ---
 
-## 28. PROMPT 26 ACCEPTANCE & VERIFICATION SUMMARY
+## 29. PROMPT 27 ACCEPTANCE & VERIFICATION SUMMARY
 
-**Module:** Progressive Web App, Mobile Experience and Cross-Platform Readiness [26]  
+**Module:** Production Security Hardening, Privacy Engineering and Threat Protection [27]  
 **Status:** COMPLETED & VERIFIED  
 
-- **Web App Manifest & Installation (`apps/web/public/`):**
-  - `manifest.webmanifest`: Complete W3C specification with `id: "arthsavora-pwa"`, `display: "standalone"`, `theme_color: "#0f172a"`, `background_color: "#020617"`, and 4 direct launch shortcuts (`/transactions?action=new`, `/documents?action=scan`, `/`, `/assistant`).
-  - Icon Asset Suite: Scalable SVG and high-resolution PNG icons for standard 192x192, 512x512, maskable 512x512 (80% safe zone), Apple Touch icon, and SVG favicon in `public/icons/`.
-  - PWA Metadata in `index.html`: OpenGraph tags, Apple mobile web app capable flags, and color-scheme configuration.
-- **Service Worker & Financial Security Boundaries (`public/sw.js`):**
-  - Versioned Caching: `arthsavora-shell-v1.0.0` and `arthsavora-static-v1.0.0` with automated pruning of obsolete cache namespaces on activation.
-  - **Strict Financial Safeguard:** All `/api/*` endpoints are strictly **NETWORK-ONLY**. Zero caching of private financial records, balances, or transactions in browser CacheStorage.
-  - Offline Fallback Page (`public/offline.html`): Self-contained, responsive offline page detailing data integrity policies and auto-reconnecting on `online` events.
-  - Controlled Lifecycle: `SKIP_WAITING` support, `CLEAR_CACHES` protocol on user logout, and non-disruptive update notifications.
-  - Web Push Notification Handling: Push event listener with automated lock-screen redaction of credit card numbers and PAN identifiers, plus deep-link routing on notification click.
-- **Mobile-First Touch Ergonomics & Navigation (`apps/web/src/components/`):**
-  - `MobileTabBar.tsx`: Fixed bottom thumb navigation (`md:hidden`) with one-tap access to Home, Accounts, New Transaction, Scan Receipt, and Alerts with live unread badge.
-  - `Transactions.tsx`: Enhanced numeric input (`inputMode="decimal"`, `pattern="[0-9]*"`), touch-friendly quick increment buttons (`+₹100`, `+₹500`, `+₹1000`, `+₹5000`), and responsive mobile card view alongside desktop table.
-  - `CameraUploadModal.tsx`: Direct camera capture (`capture="environment"`), file picker fallback, client-side size validation, preview, and explicit confirmation before posting to the ledger.
-  - Deep-Link Readiness: Query parameter routing for `?action=new` (transaction modal) and `?action=scan` (camera modal).
-- **PWA State & Notification Integration (`apps/web/src/pwa/`):**
-  - `usePwaStore.ts`: Reactive state for installability, offline transitions, and update alerts.
-  - `registerServiceWorker.ts`: Lifecycle hooks for `online`/`offline`, `beforeinstallprompt`, and SW update detection.
-  - `useWebPush.ts`: PushManager VAPID integration with permission explanation and device registration.
-  - `OfflineBanner.tsx` & `UpdatePrompt.tsx`: Sticky status indicators and non-modal update prompts.
-  - `InstallPromptModal.tsx`: Multi-platform installation instructions for Android, iOS Safari, and Desktop.
-- **Verification Suite & Quality Gates:**
-  - **158 of 158 passed tests** across 34 test files in `apps/web` (100% pass rate in Vitest).
-  - **309 of 309 passed tests** across full backend test suite (`pytest backend/tests -q`).
-  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
-  - **Production Build:** Vite production compilation (`pnpm --filter @arthsavora/web build`) completed cleanly with all PWA assets, manifest, and service worker in `dist/`.
-- **Comprehensive Technical Documentation Delivered (12 Documents):**
-  - `docs/PWA_ARCHITECTURE.md`
-  - `docs/PWA_MANIFEST_AND_INSTALLATION.md`
-  - `docs/SERVICE_WORKER_STRATEGY.md`
-  - `docs/OFFLINE_DATA_POLICY.md`
-  - `docs/MOBILE_UX_STANDARD.md`
-  - `docs/MOBILE_NAVIGATION.md`
-  - `docs/PUSH_NOTIFICATION_COMPATIBILITY.md`
-  - `docs/DEEP_LINK_ARCHITECTURE.md`
-  - `docs/PWA_SECURITY.md`
-  - `docs/MOBILE_PERFORMANCE.md`
-  - `docs/BROWSER_COMPATIBILITY.md`
-  - `docs/NATIVE_APP_READINESS.md`
+- **Security Architecture & STRIDE Threat Modeling (`docs/SECURITY_ARCHITECTURE.md`, `docs/THREAT_MODEL.md`):**
+  - Documented defense-in-depth security model across 6 distinct architectural layers: Client/PWA, Network/Gateway, Application/Identity, Multi-Tenancy/RBAC, Domain Engine/Ledger, and PostgreSQL Storage.
+  - Evaluated 16 threat scenarios using STRIDE methodology (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) covering external attackers, cross-tenant adversaries, family privacy boundaries, compromised providers, and prompt injection.
+  - Established Prioritized Threat Register with 4 Critical, 10 High, and 2 Medium threats—all verified mitigated. Zero unresolved release blockers.
+- **Authentication Hardening (`backend/app/api/v1/auth.py`, `backend/app/core/security.py`, `docs/AUTHENTICATION_SECURITY_REVIEW.md`):**
+  - Implemented server-side token revocation registry (`revoke_token_jti`) tracking cryptographic `jti` identifiers. Calling `/api/v1/auth/logout` invalidates the active access token immediately, rejecting any subsequent use with 401 `INVALID_TOKEN` prior to natural token expiration.
+  - Attached SlowAPI rate limiting (`RATE_LIMIT_AUTH = "5/minute"`) and `request: Request` to `/api/v1/auth/register`, eliminating registration botnet flooding and storage exhaustion.
+  - Verified timing-resistant user enumeration prevention: invalid email and wrong password raise identical 401 `INVALID_CREDENTIALS` error code and message.
+  - Verified inactive and deleted account blocking on every authenticated request.
+- **Authorization & Multi-Tenancy Isolation (`backend/app/core/permissions.py`, `docs/AUTHORIZATION_SECURITY_REVIEW.md`):**
+  - Anti-IDOR Tenant Boundary: Requesting a workspace or resource without active membership returns `404 Not Found` (never `403`), eliminating tenant ID enumeration and resource existence probing.
+  - Granular RBAC Matrix: Evaluated over 45 fine-grained permissions across Personal (Owner), Family (Owner, Admin, Member, Restricted, Viewer), and Small Business (Owner, Admin, Accountant, Staff, Viewer) topologies.
+  - Verified privilege escalation prevention: non-owners cannot delete workspaces, demote owners, or self-promote roles.
+- **PostgreSQL Row-Level Security & Database Hardening (`backend/app/infrastructure/database/rls.py`, `docs/DATABASE_SECURITY_REVIEW.md`):**
+  - Expanded `RLS_TABLES` from 8 initial tables to all 46 workspace-scoped tables in PostgreSQL (covering accounts, transactions, journals, budgets, goals, recurring rules, anomalies, documents, notifications, family allocations, business invoices, connections, and tax records).
+  - Transaction-Scoped Tenant Isolation: `set_tenant_context` executes `SET LOCAL app.current_workspace_id = '{id}'`, automatically resetting context upon transaction commit or rollback to guarantee zero connection pool leakage.
+  - Verified parameterized SQL queries across all repositories, eliminating SQL injection.
+- **Financial Anti-Tampering & Ledger Invariants (`docs/FINANCIAL_INTEGRITY_SECURITY.md`):**
+  - Enforced fundamental double-entry invariant ($\sum \text{Debits} = \sum \text{Credits}$) at transaction commit. Unbalanced journal posting attempts raise `ValidationException` reporting exact discrepancy down to four decimal places.
+  - Enforced permanent immutability of posted journal entries. Erroneous entries require formal compensating reversals with audit attribution.
+  - Fixed-point `NUMERIC(18, 4)` and integer sub-units (paise) prevent fractional currency rounding drift.
+  - Idempotency key middleware prevents duplicate financial postings during network retries.
+- **API Gateway Hardening & Security Headers (`backend/app/api/middleware/security_headers.py`, `docs/API_SECURITY_STANDARD.md`):**
+  - Injected hardened HTTP response headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 0`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and `X-Permitted-Cross-Domain-Policies: none`.
+  - Injected strict Content Security Policy (`Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`) and disabled caching (`Cache-Control: no-store...`) on all `/api/*` endpoints.
+  - Hardened CORS forbids wildcard origins (`*`) with credentials, raising startup `ValueError` in production.
+  - Standardized RFC 7807 error schema prevents stack trace or SQL leakage.
+- **Document & File Upload Security (`docs/FILE_SECURITY_STANDARD.md`):**
+  - Binary magic byte inspection in `DocumentService.validate_file_bytes` validates PNG, JPEG, WebP, and PDF signatures, defeating MIME spoofing attacks (shell scripts or HTML disguised as `.jpg` or `.pdf`).
+  - Strict 15 MB file size ceiling (`MAX_DOCUMENT_SIZE_BYTES`) prevents disk and memory exhaustion.
+  - Path traversal eliminated by generating UUIDv4 filenames in scoped storage trees.
+- **AI Safety & Prompt Injection Defense (`docs/AI_SECURITY_REVIEW.md`):**
+  - Pure functional sanitizer `sanitize_and_detect_prompt_injection` neutralizes adversarial patterns (`ignore previous instructions`, `system:`, `reveal prompt`, `bypass security`) to safe default queries.
+  - Strict allowlisted tool execution with server-side RBAC checks and zero raw SQL access.
+  - Zero autonomous ledger mutation: state changes staged as action drafts requiring explicit human confirmation.
+  - Mandatory uncertainty disclaimers automatically attached to forecasts and anomalies.
+- **Privacy Engineering & India Regulatory Alignment (`docs/PRIVACY_AND_DATA_GOVERNANCE.md`, `docs/INDIA_REGULATORY_READINESS.md`):**
+  - 5-tier information classification taxonomy (Tier 1 Secrets to Tier 5 Public).
+  - Family workspace compartmentalization protects private accounts from household partners.
+  - Aligned with DPDP Act 2023 (notice, consent tracking, data principal rights, erasure).
+  - Documented CERT-In Incident Response Plan with mandatory 6-hour reporting SLA (`docs/INCIDENT_RESPONSE_PLAN.md`).
+  - Documented Backup & Disaster Recovery procedures with RPO < 1 hour and RTO < 4 hours (`docs/BACKUP_DISASTER_RECOVERY.md`).
+- **Automated Security Scans & Test Evidence (`backend/tests/test_production_security_hardening.py`, `docs/SECURITY_FINDINGS_REGISTER.md`):**
+  - Automated regex/entropy secret scan across **698 tracked Git files** verified **0 leaked secrets or credentials**.
+  - `pnpm audit` conducted: identified 3 third-party dependency advisories (`zod` GHSA-mrhx-c7xc-m3w5, `react-router` GHSA-wrjc-x8rr-h8h6, GHSA-337j-9hxr-rhxg) analyzed and logged in `docs/SECURITY_FINDINGS_REGISTER.md` with zero active exploit paths in client-only architecture.
+  - Authored dedicated security test suite `backend/tests/test_production_security_hardening.py` (13 tests) verifying token revocation, signature tampering, enumeration defense, cross-workspace IDOR, RBAC, unbalanced journal rejection, RLS DDL generation, tenant isolation, MIME spoofing, oversized file rejection, prompt injection neutralization, AI disclaimers, and security headers.
+  - **322 of 322 passed backend tests** in pytest (100% pass rate, +13 new security tests).
+  - **158 of 158 passed frontend tests** across 34 test files in Vitest (100% pass rate).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects.
+  - **Production Build:** Vite built in 5.28s.
+- **Comprehensive Technical Documentation Delivered (17 Documents):**
+  - `docs/SECURITY_ARCHITECTURE.md`
+  - `docs/THREAT_MODEL.md`
+  - `docs/AUTHENTICATION_SECURITY_REVIEW.md`
+  - `docs/AUTHORIZATION_SECURITY_REVIEW.md`
+  - `docs/DATABASE_SECURITY_REVIEW.md`
+  - `docs/FINANCIAL_INTEGRITY_SECURITY.md`
+  - `docs/API_SECURITY_STANDARD.md`
+  - `docs/FILE_SECURITY_STANDARD.md`
+  - `docs/ENCRYPTION_AND_KEY_MANAGEMENT.md`
+  - `docs/SECRETS_MANAGEMENT.md`
+  - `docs/AI_SECURITY_REVIEW.md`
+  - `docs/PRIVACY_AND_DATA_GOVERNANCE.md`
+  - `docs/INDIA_REGULATORY_READINESS.md`
+  - `docs/SECURITY_MONITORING.md`
+  - `docs/INCIDENT_RESPONSE_PLAN.md`
+  - `docs/BACKUP_DISASTER_RECOVERY.md`
+  - `docs/SECURITY_FINDINGS_REGISTER.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 

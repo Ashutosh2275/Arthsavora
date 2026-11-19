@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.dependencies import get_current_user
 from app.core.limiter import limiter
+from app.core.security import decode_token, revoke_token_jti
 from app.infrastructure.database.models.user import User
 from app.infrastructure.database.session import get_db_session
 from app.schemas.auth import (
@@ -29,13 +30,16 @@ router = APIRouter(tags=["Authentication & Identity"])
     status_code=status.HTTP_201_CREATED,
     summary="Register a new user account",
 )
+@limiter.limit(settings.RATE_LIMIT_AUTH)
 async def register(
+    request: Request,
     data: UserRegisterRequest,
     session: AsyncSession = Depends(get_db_session),
 ):
     """
     Registers a new user in PostgreSQL, initializes default financial preferences,
     and provisions their initial personal workspace.
+    Rate limited to prevent registration abuse and resource exhaustion.
     """
     user, tokens = await AuthService.register_user(session, data)
     return AuthSessionResponse(
@@ -93,8 +97,25 @@ async def refresh_token(
     "/logout",
     summary="Revoke or invalidate active session",
 )
-async def logout(current_user: User = Depends(get_current_user)):
-    """Logs out the user and acknowledges session invalidation."""
+async def logout(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Logs out the user and revokes the active access token's JTI.
+    Ensures the token cannot be reused even prior to its standard expiration.
+    """
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        raw_token = auth_header[7:].strip()
+        try:
+            payload = decode_token(raw_token, expected_type=None)
+            jti = payload.get("jti")
+            if jti:
+                revoke_token_jti(jti)
+        except Exception:
+            pass
+
     return {
         "status": "success",
         "message": "Session invalidated successfully.",
