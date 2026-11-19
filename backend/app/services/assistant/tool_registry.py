@@ -443,6 +443,71 @@ FINANCIAL_TOOLS: Dict[str, FinancialToolDefinitionVO] = {
         sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
         timeout_seconds=10,
     ),
+    "get_financial_statement_summary": FinancialToolDefinitionVO(
+        name="get_financial_statement_summary",
+        description="Retrieves key summary totals (revenue, expenses, surplus/deficit, cash flows, or balance sheet totals) from authoritative financial statements.",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "statement_type": {
+                    "type": "string",
+                    "enum": ["income_statement", "cash_flow", "balance_sheet", "trial_balance"],
+                    "description": "Type of financial statement to summarize",
+                },
+                "period_type": {
+                    "type": "string",
+                    "enum": ["financial_year", "quarter", "month", "custom"],
+                    "default": "financial_year",
+                },
+                "fiscal_year": {"type": "string", "description": "e.g. FY 2026-27"},
+                "basis": {"type": "string", "enum": ["cash", "accrual"], "default": "cash"},
+            },
+            "required": ["statement_type"],
+        },
+        required_permission=Permission.VIEW_FINANCIAL_REPORTS.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=15,
+    ),
+    "get_tax_classification_summary": FinancialToolDefinitionVO(
+        name="get_tax_classification_summary",
+        description="Retrieves a breakdown of tax classifications, confirmed Section 80C/80D deductions, and unclassified transactions for a financial year.",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "tax_year": {"type": "string", "description": "e.g. FY 2026-27"},
+            },
+        },
+        required_permission=Permission.VIEW_TAX_INTELLIGENCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=15,
+    ),
+    "get_gst_reporting_summary": FinancialToolDefinitionVO(
+        name="get_gst_reporting_summary",
+        description="Retrieves GST readiness summary including taxable turnover, output CGST, SGST, IGST from issued invoices with statutory non-filing disclaimers.",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "period_type": {"type": "string", "default": "financial_year"},
+                "fiscal_year": {"type": "string", "description": "e.g. FY 2026-27"},
+            },
+        },
+        required_permission=Permission.VIEW_TAX_INTELLIGENCE.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=15,
+    ),
+    "explain_report_discrepancies": FinancialToolDefinitionVO(
+        name="explain_report_discrepancies",
+        description="Explains balance sheet equation variances (Assets != Liabilities + Equity) or trial balance inequalities (Debits != Credits) and lists active validation audit findings.",
+        parameters_schema={
+            "type": "object",
+            "properties": {
+                "fiscal_year": {"type": "string", "description": "e.g. FY 2026-27"},
+            },
+        },
+        required_permission=Permission.VIEW_FINANCIAL_REPORTS.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=15,
+    ),
 }
 
 

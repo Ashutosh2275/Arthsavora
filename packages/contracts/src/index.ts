@@ -3357,6 +3357,217 @@ export interface ResolveReconciliationPayload {
   explanation: string;
 }
 
+// -------------------------------------------------------------------------
+// Financial Reporting, Tax Intelligence & Compliance Contracts
+// -------------------------------------------------------------------------
+
+export type FinancialReportType =
+  | 'income_statement'
+  | 'cash_flow'
+  | 'balance_sheet'
+  | 'trial_balance'
+  | 'general_ledger'
+  | 'account_statement';
+
+export type AccountingBasis = 'cash' | 'accrual';
+export type ReportingPeriodType = 'financial_year' | 'quarter' | 'month' | 'custom';
+export type TaxReviewStatus = 'unclassified' | 'suggested' | 'confirmed' | 'reviewed' | 'rejected';
+export type TaxRegime = 'new_regime' | 'old_regime';
+export type ValidationSeverity = 'info' | 'warning' | 'critical';
+
+export interface ReportingPeriodDTO {
+  period_type: ReportingPeriodType | string;
+  fiscal_year: string;
+  quarter?: number | null;
+  start_date: string;
+  end_date: string;
+  label: string;
+}
+
+export interface StatementLineDTO {
+  account_code: string;
+  account_name: string;
+  account_type: string;
+  sub_type?: string | null;
+  balance_paise: number;
+  percentage_of_total: number;
+}
+
+export interface IncomeExpenseStatementDTO {
+  period: ReportingPeriodDTO;
+  basis: AccountingBasis | string;
+  currency: string;
+  total_income_paise: number;
+  total_expense_paise: number;
+  net_surplus_deficit_paise: number;
+  income_lines: StatementLineDTO[];
+  expense_lines: StatementLineDTO[];
+  data_quality_warnings: string[];
+}
+
+export interface CashFlowStatementDTO {
+  period: ReportingPeriodDTO;
+  currency: string;
+  operating_inflows_paise: number;
+  operating_outflows_paise: number;
+  net_operating_cash_flow_paise: number;
+  net_investing_cash_flow_paise: number;
+  net_financing_cash_flow_paise: number;
+  net_cash_change_paise: number;
+  opening_cash_balance_paise: number;
+  closing_cash_balance_paise: number;
+  data_quality_warnings: string[];
+}
+
+export interface BalanceSheetDTO {
+  as_of_date: string;
+  currency: string;
+  total_assets_paise: number;
+  total_liabilities_paise: number;
+  total_equity_paise: number;
+  is_balanced: boolean;
+  discrepancy_paise: number;
+  asset_lines: StatementLineDTO[];
+  liability_lines: StatementLineDTO[];
+  equity_lines: StatementLineDTO[];
+  validation_notes: string[];
+}
+
+export interface TrialBalanceDTO {
+  as_of_date: string;
+  currency: string;
+  total_debits_paise: number;
+  total_credits_paise: number;
+  is_balanced: boolean;
+  discrepancy_paise: number;
+  lines: StatementLineDTO[];
+}
+
+export interface GenerateReportPayload {
+  report_type: FinancialReportType | string;
+  period_type?: ReportingPeriodType | string;
+  fiscal_year?: string;
+  quarter?: number;
+  start_date?: string;
+  end_date?: string;
+  as_of_date?: string;
+  basis?: AccountingBasis | string;
+  format?: 'json' | 'csv' | string;
+}
+
+export interface GeneratedReportDTO {
+  id: UUID;
+  workspace_id: UUID;
+  report_type: string;
+  title: string;
+  accounting_basis: string;
+  period_type: string;
+  start_date: string;
+  end_date: string;
+  validation_status: string;
+  file_format?: string | null;
+  parameters_json: Record<string, any>;
+  report_data_json: Record<string, any>;
+  checksum?: string | null;
+  generated_by_id?: UUID | null;
+  created_at: string;
+}
+
+export interface TaxClassificationDTO {
+  id: UUID;
+  workspace_id: UUID;
+  transaction_id: UUID;
+  tax_year: string;
+  tax_category: string;
+  tax_category_code?: string | null;
+  review_status: TaxReviewStatus | string;
+  rule_code?: string | null;
+  rule_version?: string | null;
+  taxable_amount_paise: number;
+  deductible_amount_paise: number;
+  gst_rate_percent?: number | null;
+  gst_amount_paise?: number | null;
+  evidence_document_id?: UUID | null;
+  user_notes?: string | null;
+  reviewed_by_id?: UUID | null;
+  reviewed_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReviewTaxClassificationPayload {
+  tax_category: string;
+  review_status?: TaxReviewStatus | string;
+  notes?: string;
+  deductible_amount_paise?: number;
+  evidence_document_id?: UUID;
+}
+
+export interface SuggestTaxClassificationsPayload {
+  tax_year?: string;
+}
+
+export interface GSTReportSummaryDTO {
+  period: ReportingPeriodDTO;
+  currency: string;
+  taxable_turnover_paise: number;
+  exempt_turnover_paise: number;
+  total_turnover_paise: number;
+  output_cgst_paise: number;
+  output_sgst_paise: number;
+  output_igst_paise: number;
+  total_output_gst_paise: number;
+  estimated_input_tax_credit_paise: number;
+  estimated_net_gst_payable_paise: number;
+  invoices_analyzed_count: number;
+  disclaimer: string;
+}
+
+export interface TaxEstimateDTO {
+  financial_year: string;
+  assessment_year: string;
+  taxpayer_category: string;
+  regime: TaxRegime | string;
+  gross_income_paise: number;
+  standard_deduction_paise: number;
+  chapter_via_deductions_paise: number;
+  taxable_income_paise: number;
+  slab_tax_paise: number;
+  rebate_87a_paise: number;
+  health_education_cess_paise: number;
+  total_estimated_tax_paise: number;
+  effective_tax_rate_percent: number;
+  assumptions_narrative: string;
+  missing_data_warnings: string[];
+  statutory_disclaimer: string;
+}
+
+export interface CreateTaxEstimatePayload {
+  financial_year?: string;
+  regime?: TaxRegime | string;
+}
+
+export interface ReportValidationFindingDTO {
+  id: UUID;
+  workspace_id: UUID;
+  report_type: string;
+  period_start: string;
+  period_end: string;
+  rule_code: string;
+  severity: ValidationSeverity | string;
+  title: string;
+  description: string;
+  recommended_action?: string | null;
+  is_resolved: boolean;
+  resolved_at?: string | null;
+  created_at: string;
+}
+
+export interface ResolveValidationFindingPayload {
+  notes?: string;
+}
+
+
 
 
 

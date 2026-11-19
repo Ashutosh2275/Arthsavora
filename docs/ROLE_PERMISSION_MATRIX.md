@@ -45,6 +45,11 @@ Arthsavora defines 16 granular application-level permissions:
 | `VIEW_FINANCIAL_CONNECTIONS` | `connections:view` | Inspect connected institutions, discovered accounts, sync history, and reconciliations |
 | `MANAGE_FINANCIAL_CONNECTIONS` | `connections:manage` | Initiate connections, link/unlink accounts, revoke consents, and disconnect integrations |
 | `SYNC_FINANCIAL_CONNECTIONS` | `connections:sync` | Trigger manual data synchronization and resolve balance reconciliations |
+| `VIEW_FINANCIAL_REPORTS` | `reports:view` | View financial statements, period definitions, and generated reports |
+| `GENERATE_FINANCIAL_REPORTS` | `reports:generate` | Generate and snapshot P&L, cash-flow, balance sheet, and trial balance reports |
+| `EXPORT_FINANCIAL_REPORTS` | `reports:export` | Export sanitized CSV and PDF workpapers with formula injection defenses |
+| `VIEW_TAX_INTELLIGENCE` | `tax:view` | View tax classifications, GST summaries, and income tax estimations |
+| `MANAGE_TAX_INTELLIGENCE` | `tax:manage` | Review and override tax classifications, seed rules, and compute tax estimates |
 
 ---
 
@@ -134,6 +139,11 @@ Business workspaces support statutory operations, general ledger accounting, app
 | `VIEW_FINANCIAL_CONNECTIONS` | Yes | Yes | Yes | Yes | No | Yes |
 | `MANAGE_FINANCIAL_CONNECTIONS` | Yes | Yes | No | No | No | No |
 | `SYNC_FINANCIAL_CONNECTIONS` | Yes | Yes | Yes | No | No | No |
+| `VIEW_FINANCIAL_REPORTS` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `GENERATE_FINANCIAL_REPORTS` | Yes | Yes | Yes | Yes | No | No |
+| `EXPORT_FINANCIAL_REPORTS` | Yes | Yes | Yes | Yes | Yes | No |
+| `VIEW_TAX_INTELLIGENCE` | Yes | Yes | Yes | Yes | Yes | Yes |
+| `MANAGE_TAX_INTELLIGENCE` | Yes | Yes | Yes | No | No | No |
 
 ---
 

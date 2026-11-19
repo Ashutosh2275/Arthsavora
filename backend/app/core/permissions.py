@@ -135,6 +135,13 @@ class Permission(str, Enum):
     MANAGE_FINANCIAL_CONNECTIONS = "connections:manage"
     SYNC_FINANCIAL_CONNECTIONS = "connections:sync"
 
+    # Financial Reporting, Tax Intelligence & Compliance Readiness
+    VIEW_FINANCIAL_REPORTS = "reports:view"
+    GENERATE_FINANCIAL_REPORTS = "reports:generate"
+    EXPORT_FINANCIAL_REPORTS = "reports:export"
+    VIEW_TAX_INTELLIGENCE = "tax:view"
+    MANAGE_TAX_INTELLIGENCE = "tax:manage"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -195,6 +202,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_FINANCIAL_CONNECTIONS,
             Permission.MANAGE_FINANCIAL_CONNECTIONS,
             Permission.SYNC_FINANCIAL_CONNECTIONS,
+            Permission.VIEW_FINANCIAL_REPORTS,
+            Permission.GENERATE_FINANCIAL_REPORTS,
+            Permission.EXPORT_FINANCIAL_REPORTS,
+            Permission.VIEW_TAX_INTELLIGENCE,
+            Permission.MANAGE_TAX_INTELLIGENCE,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -232,6 +244,10 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_FAMILY_CONTRIBUTIONS,
             Permission.VIEW_FINANCIAL_CONNECTIONS,
             Permission.SYNC_FINANCIAL_CONNECTIONS,
+            Permission.VIEW_FINANCIAL_REPORTS,
+            Permission.GENERATE_FINANCIAL_REPORTS,
+            Permission.EXPORT_FINANCIAL_REPORTS,
+            Permission.VIEW_TAX_INTELLIGENCE,
         },
         "restricted": {
             Permission.VIEW_WORKSPACE,
@@ -265,6 +281,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_NOTIFICATIONS,
             Permission.VIEW_FAMILY_FINANCE,
             Permission.VIEW_FINANCIAL_CONNECTIONS,
+            Permission.VIEW_FINANCIAL_REPORTS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -327,6 +344,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_FINANCIAL_CONNECTIONS,
             Permission.MANAGE_FINANCIAL_CONNECTIONS,
             Permission.SYNC_FINANCIAL_CONNECTIONS,
+            Permission.VIEW_FINANCIAL_REPORTS,
+            Permission.GENERATE_FINANCIAL_REPORTS,
+            Permission.EXPORT_FINANCIAL_REPORTS,
+            Permission.VIEW_TAX_INTELLIGENCE,
+            Permission.MANAGE_TAX_INTELLIGENCE,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -378,6 +400,11 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_FINANCIAL_CONNECTIONS,
             Permission.MANAGE_FINANCIAL_CONNECTIONS,
             Permission.SYNC_FINANCIAL_CONNECTIONS,
+            Permission.VIEW_FINANCIAL_REPORTS,
+            Permission.GENERATE_FINANCIAL_REPORTS,
+            Permission.EXPORT_FINANCIAL_REPORTS,
+            Permission.VIEW_TAX_INTELLIGENCE,
+            Permission.MANAGE_TAX_INTELLIGENCE,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -410,6 +437,9 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_VENDORS,
             Permission.VIEW_FINANCIAL_CONNECTIONS,
             Permission.SYNC_FINANCIAL_CONNECTIONS,
+            Permission.VIEW_FINANCIAL_REPORTS,
+            Permission.EXPORT_FINANCIAL_REPORTS,
+            Permission.VIEW_TAX_INTELLIGENCE,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -458,6 +488,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_NOTIFICATIONS,
             Permission.VIEW_BUSINESS_FINANCE,
             Permission.VIEW_FINANCIAL_CONNECTIONS,
+            Permission.VIEW_FINANCIAL_REPORTS,
         },
     },
 }

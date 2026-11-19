@@ -15,6 +15,7 @@ from .notification_repository import NotificationRepository
 from .family_repository import FamilyRepository
 from .business_repository import BusinessRepository
 from .financial_connection_repository import FinancialConnectionRepository
+from .financial_report_repository import FinancialReportRepository
 
 __all__ = [
     "BaseRepository",
@@ -29,4 +30,5 @@ __all__ = [
     "FamilyRepository",
     "BusinessRepository",
     "FinancialConnectionRepository",
+    "FinancialReportRepository",
 ]

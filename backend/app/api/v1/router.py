@@ -15,6 +15,7 @@ from app.api.v1 import (
     document_routes,
     family_routes,
     financial_connection_routes,
+    financial_report_routes,
     forecast_routes,
     goal_routes,
     health,
@@ -71,3 +72,6 @@ v1_router.include_router(business_routes.router, prefix="/business")
 v1_router.include_router(business_routes.router, prefix="/workspaces/{workspace_id}/business")
 v1_router.include_router(financial_connection_routes.router, prefix="")
 v1_router.include_router(financial_connection_routes.router, prefix="/workspaces/{workspace_id}")
+v1_router.include_router(financial_report_routes.router, prefix="")
+v1_router.include_router(financial_report_routes.router, prefix="/workspaces/{workspace_id}")
+

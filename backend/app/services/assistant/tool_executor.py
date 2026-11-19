@@ -174,6 +174,22 @@ class ToolExecutor:
             elif tool_call.tool_name == "get_account_reconciliation_summary":
                 return await self._exec_account_reconciliation_summary(tool_call, user_id, workspace_id)
 
+            # 28. Financial Statement Summary
+            elif tool_call.tool_name == "get_financial_statement_summary":
+                return await self._exec_financial_statement_summary(tool_call, workspace_id, args)
+
+            # 29. Tax Classification Summary
+            elif tool_call.tool_name == "get_tax_classification_summary":
+                return await self._exec_tax_classification_summary(tool_call, workspace_id, args)
+
+            # 30. GST Reporting Summary
+            elif tool_call.tool_name == "get_gst_reporting_summary":
+                return await self._exec_gst_reporting_summary(tool_call, workspace_id, args)
+
+            # 31. Explain Report Discrepancies
+            elif tool_call.tool_name == "explain_report_discrepancies":
+                return await self._exec_explain_report_discrepancies(tool_call, workspace_id, args)
+
             # 17-20. Action Proposal Drafts
             elif tool_call.tool_name in (
                 "create_budget_draft",
@@ -1093,4 +1109,186 @@ class ToolExecutor:
             tool_name=tc.tool_name,
             success=True,
             data={"total_records": len(items), "reconciliations": items},
+        )
+
+    async def _exec_financial_statement_summary(
+        self, tc: ToolCallVO, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.domain.financial_report import calculate_indian_financial_year
+        from app.services.financial_reporting_service import FinancialReportingService
+
+        service = FinancialReportingService(self.db)
+        period_type = args.get("period_type", "financial_year")
+        fy = args.get("fiscal_year") or calculate_indian_financial_year(date.today())
+        statement_type = args.get("statement_type", "income_statement")
+        basis = args.get("basis", "cash")
+
+        period = service.resolve_reporting_period(
+            period_type=period_type,
+            fiscal_year=fy,
+        )
+
+        if statement_type in ["income_statement", "income_expense"]:
+            stmt = await service.generate_income_and_expense_statement(ws_id, period, basis=basis)
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=True,
+                data={
+                    "statement": "Income and Expense Statement",
+                    "period": period.label,
+                    "basis": stmt.accounting_basis.value if hasattr(stmt.accounting_basis, 'value') else str(stmt.accounting_basis),
+                    "total_income": f"₹{stmt.total_income_paise / 100:,.2f}",
+                    "total_expense": f"₹{stmt.total_expenses_paise / 100:,.2f}",
+                    "net_result": f"₹{stmt.net_surplus_deficit_paise / 100:,.2f}",
+                    "result_type": "Surplus" if stmt.net_surplus_deficit_paise >= 0 else "Deficit",
+                    "line_item_count": len(stmt.income_lines) + len(stmt.expense_lines),
+                },
+            )
+        elif statement_type in ["cash_flow", "cash_flow_statement"]:
+            cf = await service.generate_cash_flow_statement(ws_id, period)
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=True,
+                data={
+                    "statement": "Cash Flow Statement",
+                    "period": period.label,
+                    "operating_cash_flow": f"₹{cf.net_operating_cash_flow_paise / 100:,.2f}",
+                    "investing_cash_flow": f"₹{cf.net_investing_cash_flow_paise / 100:,.2f}",
+                    "financing_cash_flow": f"₹{cf.net_financing_cash_flow_paise / 100:,.2f}",
+                    "net_cash_change": f"₹{cf.net_cash_change_paise / 100:,.2f}",
+                    "opening_balance": f"₹{cf.opening_cash_balance_paise / 100:,.2f}",
+                    "closing_balance": f"₹{cf.closing_cash_balance_paise / 100:,.2f}",
+                },
+            )
+        elif statement_type == "balance_sheet":
+            bs = await service.generate_balance_sheet(ws_id, period.end_date)
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=True,
+                data={
+                    "statement": "Balance Sheet",
+                    "as_of_date": str(bs.as_of_date),
+                    "total_assets": f"₹{bs.total_assets_paise / 100:,.2f}",
+                    "total_liabilities": f"₹{bs.total_liabilities_paise / 100:,.2f}",
+                    "total_equity": f"₹{bs.total_equity_paise / 100:,.2f}",
+                    "is_balanced": bs.is_balanced,
+                    "discrepancy": f"₹{bs.discrepancy_paise / 100:,.2f}",
+                },
+            )
+        elif statement_type == "trial_balance":
+            tb = await service.generate_trial_balance(ws_id, period.end_date)
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=True,
+                data={
+                    "statement": "Trial Balance",
+                    "as_of_date": str(tb.as_of_date),
+                    "total_debits": f"₹{tb.total_debits_paise / 100:,.2f}",
+                    "total_credits": f"₹{tb.total_credits_paise / 100:,.2f}",
+                    "is_balanced": tb.is_balanced,
+                    "discrepancy": f"₹{tb.discrepancy_paise / 100:,.2f}",
+                },
+            )
+        else:
+            return ToolResultVO(
+                call_id=tc.call_id,
+                tool_name=tc.tool_name,
+                success=False,
+                error=f"Unsupported statement type '{statement_type}'.",
+            )
+
+    async def _exec_tax_classification_summary(
+        self, tc: ToolCallVO, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.domain.financial_report import calculate_indian_financial_year
+        from app.services.financial_reporting_service import FinancialReportingService
+
+        service = FinancialReportingService(self.db)
+        fy = args.get("tax_year") or calculate_indian_financial_year(date.today())
+        records = await service.report_repo.list_tax_classifications(ws_id, tax_year=fy, limit=100)
+
+        confirmed_count = sum(1 for r in records if r.review_status in ["confirmed", "reviewed"])
+        suggested_count = sum(1 for r in records if r.review_status == "suggested")
+        total_deductible = sum(r.deductible_amount_paise for r in records if r.review_status in ["confirmed", "reviewed"])
+
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={
+                "financial_year": fy,
+                "total_classified_records": len(records),
+                "confirmed_count": confirmed_count,
+                "pending_review_count": suggested_count,
+                "confirmed_deductions": f"₹{total_deductible / 100:,.2f}",
+            },
+        )
+
+    async def _exec_gst_reporting_summary(
+        self, tc: ToolCallVO, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.domain.financial_report import calculate_indian_financial_year
+        from app.services.financial_reporting_service import FinancialReportingService
+
+        service = FinancialReportingService(self.db)
+        fy = args.get("fiscal_year") or calculate_indian_financial_year(date.today())
+        period = service.resolve_reporting_period(
+            period_type=args.get("period_type", "financial_year"),
+            fiscal_year=fy,
+        )
+        summary = await service.generate_gst_summary(ws_id, period)
+
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={
+                "period": period.label,
+                "taxable_turnover": f"₹{summary.taxable_sales_paise / 100:,.2f}",
+                "output_cgst": f"₹{summary.output_cgst_paise / 100:,.2f}",
+                "output_sgst": f"₹{summary.output_sgst_paise / 100:,.2f}",
+                "output_igst": f"₹{summary.output_igst_paise / 100:,.2f}",
+                "total_output_gst": f"₹{summary.total_output_tax_paise / 100:,.2f}",
+                "invoices_analyzed": summary.invoices_analyzed_count,
+                "disclaimer": summary.data_disclaimer,
+            },
+        )
+
+    async def _exec_explain_report_discrepancies(
+        self, tc: ToolCallVO, ws_id: uuid.UUID, args: Dict[str, Any]
+    ) -> ToolResultVO:
+        from app.domain.financial_report import calculate_indian_financial_year
+        from app.services.financial_reporting_service import FinancialReportingService
+
+        service = FinancialReportingService(self.db)
+        fy = args.get("fiscal_year") or calculate_indian_financial_year(date.today())
+        period = service.resolve_reporting_period(period_type="financial_year", fiscal_year=fy)
+
+        findings = await service.run_validations(ws_id, period)
+
+        items = []
+        for f in findings:
+            items.append({
+                "rule_code": f.rule_code,
+                "severity": f.severity,
+                "title": f.title,
+                "description": f.description,
+                "recommended_action": f.recommended_action,
+                "is_resolved": f.is_resolved,
+            })
+
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={
+                "period": period.label,
+                "findings_count": len(items),
+                "unresolved_count": sum(1 for item in items if not item["is_resolved"]),
+                "findings": items,
+            },
         )

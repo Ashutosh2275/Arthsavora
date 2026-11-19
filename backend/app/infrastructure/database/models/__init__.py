@@ -113,6 +113,13 @@ from app.infrastructure.database.models.financial_connection import (
     ReconciliationRecord,
     ConnectionAuditEvent,
 )
+from app.infrastructure.database.models.financial_report import (
+    GeneratedReport,
+    TaxClassificationRecord,
+    TaxRule,
+    TaxEstimateSnapshot,
+    ReportValidationFinding,
+)
 
 __all__ = [
     "User",
@@ -198,4 +205,9 @@ __all__ = [
     "SyncCheckpoint",
     "ReconciliationRecord",
     "ConnectionAuditEvent",
+    "GeneratedReport",
+    "TaxClassificationRecord",
+    "TaxRule",
+    "TaxEstimateSnapshot",
+    "ReportValidationFinding",
 ]

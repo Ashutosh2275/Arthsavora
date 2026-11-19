@@ -109,6 +109,24 @@ from .intelligence_schema import (
     FeedbackSubmitRequest,
     FeedbackResponse,
 )
+from .financial_report_schema import (
+    ReportingPeriodResponse,
+    StatementLineResponse,
+    IncomeExpenseStatementResponse,
+    CashFlowStatementResponse,
+    BalanceSheetResponse,
+    TrialBalanceResponse,
+    GenerateReportRequest,
+    GeneratedReportResponse,
+    TaxClassificationResponse,
+    ReviewTaxClassificationRequest,
+    SuggestTaxClassificationsRequest,
+    GSTReportSummaryResponse,
+    TaxEstimateResponse,
+    CreateTaxEstimateRequest,
+    ReportValidationFindingResponse,
+    ResolveValidationFindingRequest,
+)
 
 __all__ = [
     "ApiResponse",

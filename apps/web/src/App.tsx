@@ -308,6 +308,16 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/tax-intelligence"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Reports />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
