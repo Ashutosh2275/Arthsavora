@@ -162,6 +162,18 @@ class ToolExecutor:
             elif tool_call.tool_name == "get_business_cash_flow_summary":
                 return await self._exec_business_cash_flow(tool_call, user_id, workspace_id, args)
 
+            # 25. Connected Accounts Overview
+            elif tool_call.tool_name == "get_connected_accounts_overview":
+                return await self._exec_connected_accounts_overview(tool_call, user_id, workspace_id)
+
+            # 26. Connection Sync Health
+            elif tool_call.tool_name == "get_connection_sync_health":
+                return await self._exec_connection_sync_health(tool_call, user_id, workspace_id)
+
+            # 27. Account Reconciliation Summary
+            elif tool_call.tool_name == "get_account_reconciliation_summary":
+                return await self._exec_account_reconciliation_summary(tool_call, user_id, workspace_id)
+
             # 17-20. Action Proposal Drafts
             elif tool_call.tool_name in (
                 "create_budget_draft",
@@ -996,4 +1008,89 @@ class ToolExecutor:
                 "pending_client_collections": f"₹{kpis['total_receivables_paise'] / 100:,.2f}",
                 "pending_vendor_payments": f"₹{kpis['total_payables_paise'] / 100:,.2f}",
             },
+        )
+
+    async def _exec_connected_accounts_overview(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID
+    ) -> ToolResultVO:
+        from app.repositories.financial_connection_repository import FinancialConnectionRepository
+
+        repo = FinancialConnectionRepository(self.db)
+        connections = await repo.list_connections(ws_id)
+
+        items = []
+        for conn in connections:
+            refs = await repo.list_account_references(conn.id)
+            for ref in refs:
+                items.append({
+                    "connection_id": str(conn.id),
+                    "institution_name": conn.institution_name,
+                    "masked_account": ref.masked_account_number,
+                    "account_type": ref.account_type,
+                    "link_status": ref.status,
+                    "reported_balance": f"₹{(ref.current_balance_paise or 0) / 100:,.2f}" if ref.current_balance_paise is not None else "N/A",
+                    "health": conn.health_status,
+                    "last_synced": conn.last_successful_sync_at.isoformat() if conn.last_successful_sync_at else "Never",
+                })
+
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={"total_connected_accounts": len(items), "accounts": items},
+        )
+
+    async def _exec_connection_sync_health(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID
+    ) -> ToolResultVO:
+        from app.repositories.financial_connection_repository import FinancialConnectionRepository
+
+        repo = FinancialConnectionRepository(self.db)
+        connections = await repo.list_connections(ws_id)
+
+        items = []
+        for conn in connections:
+            items.append({
+                "connection_id": str(conn.id),
+                "institution_name": conn.institution_name,
+                "status": conn.status,
+                "health_status": conn.health_status,
+                "last_successful_sync": conn.last_successful_sync_at.isoformat() if conn.last_successful_sync_at else "Never",
+                "failure_count": conn.sync_failure_count,
+                "last_error": conn.last_error_message or "None",
+                "expires_at": conn.expires_at.isoformat() if conn.expires_at else "No expiry",
+            })
+
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={"connection_count": len(items), "connections": items},
+        )
+
+    async def _exec_account_reconciliation_summary(
+        self, tc: ToolCallVO, user_id: uuid.UUID, ws_id: uuid.UUID
+    ) -> ToolResultVO:
+        from app.repositories.financial_connection_repository import FinancialConnectionRepository
+
+        repo = FinancialConnectionRepository(self.db)
+        records = await repo.list_reconciliation_records(ws_id, limit=20)
+
+        items = []
+        for rec in records:
+            items.append({
+                "reconciliation_id": str(rec.id),
+                "reconciliation_date": str(rec.reconciliation_date),
+                "reported_balance": f"₹{rec.provider_reported_balance_paise / 100:,.2f}",
+                "book_balance": f"₹{rec.calculated_book_balance_paise / 100:,.2f}",
+                "variance": f"₹{rec.difference_paise / 100:,.2f}",
+                "status": rec.status,
+                "explanation": rec.explanation or "No explanation provided.",
+            })
+
+        return ToolResultVO(
+            call_id=tc.call_id,
+            tool_name=tc.tool_name,
+            success=True,
+            data={"total_records": len(items), "reconciliations": items},
         )

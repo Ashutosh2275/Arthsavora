@@ -3189,6 +3189,175 @@ export interface BusinessActivityDTO {
   created_at: string;
 }
 
+// ---------------------------------------------------------------------------
+// Prompt 23: Financial Connections, Account Aggregator & Aggregation
+// ---------------------------------------------------------------------------
+
+export type ConnectionStatus =
+  | 'not_connected'
+  | 'initiated'
+  | 'awaiting_authorization'
+  | 'authorized'
+  | 'synchronizing'
+  | 'active'
+  | 'expired'
+  | 'revoked'
+  | 'failed'
+  | 'disconnected';
+
+export type ConnectionHealthStatus =
+  | 'healthy'
+  | 'needs_authorization'
+  | 'sync_delayed'
+  | 'provider_unavailable'
+  | 'connection_expired'
+  | 'disconnected';
+
+export type ConsentStatus =
+  | 'initiated'
+  | 'pending_user_approval'
+  | 'active'
+  | 'rejected'
+  | 'expired'
+  | 'revoked';
+
+export type AccountLinkStatus = 'discovered' | 'linked' | 'unlinked' | 'archived';
+
+export type SyncJobStatus = 'queued' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+
+export type ReconciliationStatus = 'matched' | 'partially_matched' | 'unmatched' | 'requires_review' | 'resolved';
+
+export interface FinancialProviderDTO {
+  id: UUID;
+  provider_code: string;
+  name: string;
+  category: string;
+  country: string;
+  supported_institutions: Array<{ id: string; name: string; code: string }>;
+  supported_account_types: string[];
+  auth_method: string;
+  consent_capabilities: Record<string, unknown>;
+  data_capabilities: string[];
+  historical_days_limit: number;
+  sync_capabilities: Record<string, unknown>;
+  status: string;
+  is_sandbox: boolean;
+  docs_reference?: string | null;
+  config_status: string;
+  provider_metadata: Record<string, unknown>;
+}
+
+export interface DiscoveredAccountDTO {
+  id: UUID;
+  connection_id: UUID;
+  account_id?: UUID | null;
+  provider_account_id: string;
+  fip_id: string;
+  institution_name: string;
+  masked_account_number: string;
+  account_type: string;
+  currency: string;
+  status: AccountLinkStatus;
+  account_holder_name?: string | null;
+  current_balance_paise?: number | null;
+  available_balance_paise?: number | null;
+  balance_as_of?: string | null;
+  raw_metadata: Record<string, unknown>;
+}
+
+export interface FinancialConsentDTO {
+  id: UUID;
+  connection_id: UUID;
+  provider_consent_handle?: string | null;
+  purpose: string;
+  purpose_code: string;
+  data_categories: string[];
+  account_types: string[];
+  status: ConsentStatus;
+  fetch_frequency: string;
+  valid_from: string;
+  valid_to: string;
+  revoked_at?: string | null;
+  revocation_reason?: string | null;
+}
+
+export interface FinancialConnectionDTO {
+  id: UUID;
+  workspace_id: UUID;
+  user_id: UUID;
+  provider_id: UUID;
+  provider_code?: string | null;
+  provider_name?: string | null;
+  institution_id: string;
+  institution_name: string;
+  status: ConnectionStatus;
+  health_status: ConnectionHealthStatus;
+  authorization_url?: string | null;
+  authorized_at?: string | null;
+  expires_at?: string | null;
+  last_attempted_sync_at?: string | null;
+  last_successful_sync_at?: string | null;
+  sync_failure_count: number;
+  last_error_code?: string | null;
+  last_error_message?: string | null;
+  sync_schedule: string;
+  created_at: string;
+  active_consent?: FinancialConsentDTO | null;
+  account_references: DiscoveredAccountDTO[];
+}
+
+export interface SyncJobDTO {
+  id: UUID;
+  connection_id: UUID;
+  job_type: string;
+  status: SyncJobStatus;
+  started_at?: string | null;
+  completed_at?: string | null;
+  records_retrieved: number;
+  records_imported: number;
+  duplicates_detected: number;
+  errors_count: number;
+  error_summary?: string | null;
+  retry_count: number;
+}
+
+export interface ReconciliationRecordDTO {
+  id: UUID;
+  account_id: UUID;
+  connection_id: UUID;
+  reconciliation_date: string;
+  provider_reported_balance_paise: number;
+  calculated_book_balance_paise: number;
+  difference_paise: number;
+  status: ReconciliationStatus;
+  unmatched_transactions_count: number;
+  explanation?: string | null;
+  resolved_at?: string | null;
+}
+
+export interface InitiateConnectionPayload {
+  provider_code: string;
+  institution_id: string;
+  institution_name?: string;
+  purpose?: string;
+  purpose_code?: string;
+  data_categories?: string[];
+  account_types?: string[];
+  valid_days?: number;
+  sync_schedule?: string;
+}
+
+export interface LinkAccountPayload {
+  existing_account_id?: UUID;
+  create_new?: boolean;
+  account_name?: string;
+}
+
+export interface ResolveReconciliationPayload {
+  explanation: string;
+}
+
+
 
 
 

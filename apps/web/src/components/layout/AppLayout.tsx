@@ -22,6 +22,7 @@ import {
   Bell,
   Users,
   Briefcase,
+  Link2,
 } from 'lucide-react';
 import AIChatbot from '@/components/AIChatbot';
 import useAuthStore from '@/store/useAuthStore';
@@ -56,6 +57,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { name: 'Recurring', path: '/recurring', icon: <Repeat size={18} /> },
     { name: 'Family', path: '/family', icon: <Users size={18} /> },
     { name: 'Business', path: '/business', icon: <Briefcase size={18} /> },
+    { name: 'Connections', path: '/connections', icon: <Link2 size={18} /> },
     { name: 'Forecast', path: '/forecast', icon: <TrendingUp size={18} /> },
     { name: 'Security & Risk', path: '/anomalies', icon: <ShieldAlert size={18} /> },
     { name: 'Alerts', path: '/notifications', icon: <Bell size={18} /> },

@@ -103,6 +103,16 @@ from app.infrastructure.database.models.business import (
     BusinessPayablePayment,
     BusinessActivity,
 )
+from app.infrastructure.database.models.financial_connection import (
+    FinancialProvider,
+    FinancialConnection,
+    FinancialConsent,
+    ExternalAccountReference,
+    SyncJob,
+    SyncCheckpoint,
+    ReconciliationRecord,
+    ConnectionAuditEvent,
+)
 
 __all__ = [
     "User",
@@ -180,4 +190,12 @@ __all__ = [
     "BusinessPayable",
     "BusinessPayablePayment",
     "BusinessActivity",
+    "FinancialProvider",
+    "FinancialConnection",
+    "FinancialConsent",
+    "ExternalAccountReference",
+    "SyncJob",
+    "SyncCheckpoint",
+    "ReconciliationRecord",
+    "ConnectionAuditEvent",
 ]

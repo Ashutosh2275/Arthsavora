@@ -42,6 +42,9 @@ Arthsavora defines 16 granular application-level permissions:
 | `MANAGE_CLIENTS` | `business:manage_clients` | Create, update, and manage business client profiles |
 | `MANAGE_VENDORS` | `business:manage_vendors` | Create, update, and manage business vendor profiles |
 | `MANAGE_PAYABLES` | `business:manage_payables` | Record vendor bills, schedule disbursements, and record bill payments |
+| `VIEW_FINANCIAL_CONNECTIONS` | `connections:view` | Inspect connected institutions, discovered accounts, sync history, and reconciliations |
+| `MANAGE_FINANCIAL_CONNECTIONS` | `connections:manage` | Initiate connections, link/unlink accounts, revoke consents, and disconnect integrations |
+| `SYNC_FINANCIAL_CONNECTIONS` | `connections:sync` | Trigger manual data synchronization and resolve balance reconciliations |
 
 ---
 
@@ -64,6 +67,9 @@ In a Personal Workspace, the user is the sole owner. No sub-roles exist.
 | `VIEW_TRANSACTIONS` | Yes |
 | `CREATE_TRANSACTIONS` | Yes |
 | `UPDATE_TRANSACTIONS` | Yes |
+| `VIEW_FINANCIAL_CONNECTIONS` | Yes |
+| `MANAGE_FINANCIAL_CONNECTIONS` | Yes |
+| `SYNC_FINANCIAL_CONNECTIONS` | Yes |
 
 ---
 
@@ -92,6 +98,9 @@ Family workspaces coordinate household finances while protecting dependent membe
 | `MANAGE_FAMILY_ALLOCATIONS` | Yes | Yes | Yes | No | No |
 | `MANAGE_FAMILY_CONTRIBUTIONS` | Yes | Yes | Self Only | No | No |
 | `MANAGE_FAMILY_SETTINGS` | Yes | Yes | No | No | No |
+| `VIEW_FINANCIAL_CONNECTIONS` | Yes | Yes | Yes | No | Yes |
+| `MANAGE_FINANCIAL_CONNECTIONS` | Yes | Yes | No | No | No |
+| `SYNC_FINANCIAL_CONNECTIONS` | Yes | Yes | Yes | No | No |
 
 ---
 
@@ -122,6 +131,9 @@ Business workspaces support statutory operations, general ledger accounting, app
 | `MANAGE_CLIENTS` | Yes | Yes | Yes | Yes | Yes | No |
 | `MANAGE_VENDORS` | Yes | Yes | Yes | Yes | No | No |
 | `MANAGE_PAYABLES` | Yes | Yes | Yes | Yes | No | No |
+| `VIEW_FINANCIAL_CONNECTIONS` | Yes | Yes | Yes | Yes | No | Yes |
+| `MANAGE_FINANCIAL_CONNECTIONS` | Yes | Yes | No | No | No | No |
+| `SYNC_FINANCIAL_CONNECTIONS` | Yes | Yes | Yes | No | No | No |
 
 ---
 

@@ -130,6 +130,11 @@ class Permission(str, Enum):
     MANAGE_VENDORS = "business:manage_vendors"
     MANAGE_PAYABLES = "business:manage_payables"
 
+    # Financial Connectivity, Account Aggregator & Aggregation
+    VIEW_FINANCIAL_CONNECTIONS = "connections:view"
+    MANAGE_FINANCIAL_CONNECTIONS = "connections:manage"
+    SYNC_FINANCIAL_CONNECTIONS = "connections:sync"
+
 
 # Explicit Role-to-Permission Mapping Matrix per Workspace Type
 ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
@@ -187,6 +192,9 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_FAMILY_ALLOCATIONS,
             Permission.MANAGE_FAMILY_CONTRIBUTIONS,
             Permission.MANAGE_FAMILY_SETTINGS,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
+            Permission.MANAGE_FINANCIAL_CONNECTIONS,
+            Permission.SYNC_FINANCIAL_CONNECTIONS,
         },
         "member": {
             Permission.VIEW_WORKSPACE,
@@ -222,6 +230,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_FAMILY_FINANCE,
             Permission.MANAGE_FAMILY_ALLOCATIONS,
             Permission.MANAGE_FAMILY_CONTRIBUTIONS,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
+            Permission.SYNC_FINANCIAL_CONNECTIONS,
         },
         "restricted": {
             Permission.VIEW_WORKSPACE,
@@ -254,6 +264,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_DOCUMENTS,
             Permission.VIEW_NOTIFICATIONS,
             Permission.VIEW_FAMILY_FINANCE,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
         },
     },
     # 3. Business Workspace (Commercial environment with accounting & approval roles)
@@ -313,6 +324,9 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_CLIENTS,
             Permission.MANAGE_VENDORS,
             Permission.MANAGE_PAYABLES,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
+            Permission.MANAGE_FINANCIAL_CONNECTIONS,
+            Permission.SYNC_FINANCIAL_CONNECTIONS,
         },
         "accountant": {
             Permission.VIEW_WORKSPACE,
@@ -361,6 +375,9 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_CLIENTS,
             Permission.MANAGE_VENDORS,
             Permission.MANAGE_PAYABLES,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
+            Permission.MANAGE_FINANCIAL_CONNECTIONS,
+            Permission.SYNC_FINANCIAL_CONNECTIONS,
         },
         "approver": {
             Permission.VIEW_WORKSPACE,
@@ -391,6 +408,8 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.MANAGE_PAYABLES,
             Permission.MANAGE_CLIENTS,
             Permission.MANAGE_VENDORS,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
+            Permission.SYNC_FINANCIAL_CONNECTIONS,
         },
         "staff": {
             Permission.VIEW_WORKSPACE,
@@ -416,6 +435,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_BUSINESS_FINANCE,
             Permission.MANAGE_INVOICES,
             Permission.MANAGE_CLIENTS,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
         },
         "viewer": {
             Permission.VIEW_WORKSPACE,
@@ -437,6 +457,7 @@ ROLE_PERMISSIONS: Dict[str, Dict[str, Set[Permission]]] = {
             Permission.VIEW_NOTIFICATIONS,
             Permission.MANAGE_NOTIFICATIONS,
             Permission.VIEW_BUSINESS_FINANCE,
+            Permission.VIEW_FINANCIAL_CONNECTIONS,
         },
     },
 }
@@ -467,6 +488,11 @@ class WorkspaceContext:
     def user(self) -> User:
         """Returns the authenticated User entity."""
         return self.current_user
+
+    @property
+    def user_id(self) -> uuid.UUID:
+        """Returns the UUID of the authenticated User entity."""
+        return self.current_user.id
 
     def can(self, permission: Permission) -> bool:
         """Helper checking if current context user has the specified permission."""

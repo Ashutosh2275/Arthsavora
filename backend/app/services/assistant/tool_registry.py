@@ -410,6 +410,39 @@ FINANCIAL_TOOLS: Dict[str, FinancialToolDefinitionVO] = {
         sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
         timeout_seconds=10,
     ),
+    "get_connected_accounts_overview": FinancialToolDefinitionVO(
+        name="get_connected_accounts_overview",
+        description="Retrieves list of all external financial accounts connected via Account Aggregator or Open Banking, including institution, masked account number, connection health, and last sync timestamp.",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_FINANCIAL_CONNECTIONS.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_connection_sync_health": FinancialToolDefinitionVO(
+        name="get_connection_sync_health",
+        description="Retrieves synchronization health, failure logs, and consent expiration details for connected bank accounts and financial institutions.",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_FINANCIAL_CONNECTIONS.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
+    "get_account_reconciliation_summary": FinancialToolDefinitionVO(
+        name="get_account_reconciliation_summary",
+        description="Compares external bank-reported balances against Arthsavora internal book balances to identify reconciliation variances and discrepancies.",
+        parameters_schema={
+            "type": "object",
+            "properties": {},
+        },
+        required_permission=Permission.VIEW_FINANCIAL_CONNECTIONS.value,
+        sensitivity=DataSensitivityEnum.RESTRICTED_FINANCIAL,
+        timeout_seconds=10,
+    ),
 }
 
 
