@@ -69,3 +69,21 @@ The ARTHSAVORA documentation corpus provides exhaustive architectural, operation
 
 ### 2.6 Programme Tracking
 - [DEVELOPMENT_PROGRESS.md](file:///d:/Arthsavora/docs/DEVELOPMENT_PROGRESS.md)
+
+### 2.7 Master Engineering Audit & Baseline Reconciliation
+- [MASTER_AUDIT_FINDINGS.md](file:///d:/Arthsavora/docs/MASTER_AUDIT_FINDINGS.md)
+- [MASTER_REQUIREMENT_VALIDATION.md](file:///d:/Arthsavora/docs/MASTER_REQUIREMENT_VALIDATION.md)
+- [MASTER_IMPLEMENTATION_EVIDENCE_MATRIX.md](file:///d:/Arthsavora/docs/MASTER_IMPLEMENTATION_EVIDENCE_MATRIX.md)
+- [MASTER_REMEDIATION_PLAN.md](file:///d:/Arthsavora/docs/MASTER_REMEDIATION_PLAN.md)
+- [MASTER_FINANCIAL_INTEGRITY_REVIEW.md](file:///d:/Arthsavora/docs/MASTER_FINANCIAL_INTEGRITY_REVIEW.md)
+- [MONETARY_PRECISION_POLICY.md](file:///d:/Arthsavora/docs/MONETARY_PRECISION_POLICY.md)
+- [LEDGER_RECONCILIATION_EVIDENCE.md](file:///d:/Arthsavora/docs/LEDGER_RECONCILIATION_EVIDENCE.md)
+- [MASTER_SECURITY_VERIFICATION.md](file:///d:/Arthsavora/docs/MASTER_SECURITY_VERIFICATION.md)
+- [RLS_POLICY_COVERAGE_MATRIX.md](file:///d:/Arthsavora/docs/RLS_POLICY_COVERAGE_MATRIX.md)
+- [WORKSPACE_ISOLATION_EVIDENCE.md](file:///d:/Arthsavora/docs/WORKSPACE_ISOLATION_EVIDENCE.md)
+- [MASTER_AI_ML_AUDIT.md](file:///d:/Arthsavora/docs/MASTER_AI_ML_AUDIT.md)
+- [AI_MODEL_EVIDENCE_MATRIX.md](file:///d:/Arthsavora/docs/AI_MODEL_EVIDENCE_MATRIX.md)
+- [FINANCIAL_AI_SECURITY_REVIEW.md](file:///d:/Arthsavora/docs/FINANCIAL_AI_SECURITY_REVIEW.md)
+- [MASTER_INFRASTRUCTURE_VERIFICATION.md](file:///d:/Arthsavora/docs/MASTER_INFRASTRUCTURE_VERIFICATION.md)
+- [DEPLOYMENT_EVIDENCE_MATRIX.md](file:///d:/Arthsavora/docs/DEPLOYMENT_EVIDENCE_MATRIX.md)
+- [OPERATIONAL_READINESS_GAPS.md](file:///d:/Arthsavora/docs/OPERATIONAL_READINESS_GAPS.md)
