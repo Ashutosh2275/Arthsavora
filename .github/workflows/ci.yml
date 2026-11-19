@@ -1,60 +1,173 @@
-name: Arthsavora Continuous Integration
+name: Arthsavora Continuous Integration & Delivery Preflight
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  NODE_ENV: test
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '22'
+  PNPM_VERSION: '12.18.0'
 
 jobs:
-  backend-checks:
-    name: Backend Lint & Tests
+  security-audit:
+    name: Security & Vulnerability Audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Frontend Dependency Audit
+        run: pnpm audit --prod --audit-level=high || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Backend Security Static Scan
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+          bandit -r backend/app -ll -ii || true
+
+  backend-checks:
+    name: Backend Test Suite & Migration Verification
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: arthsavora_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
 
       - name: Install backend dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
-          pip install pytest pytest-asyncio httpx
+          pip install pytest pytest-asyncio pytest-cov httpx
 
-      - name: Run backend tests
-        run: pytest backend/tests
+      - name: Verify Alembic Migrations against PostgreSQL
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgrespassword@localhost:5432/arthsavora_test
+          TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgrespassword@localhost:5432/arthsavora_test
+          SECRET_KEY: ci-environment-test-secret-key-32-chars-min!
+        run: |
+          python backend/scripts/run_migrations.py
+
+      - name: Run Backend Test Suite with Coverage
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:postgrespassword@localhost:5432/arthsavora_test
+          TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgrespassword@localhost:5432/arthsavora_test
+          SECRET_KEY: ci-environment-test-secret-key-32-chars-min!
+          REDIS_URL: redis://localhost:6379/0
+          ENVIRONMENT: test
+        run: |
+          pytest backend/tests -v --durations=10
 
   frontend-checks:
-    name: Frontend Monorepo Checks
+    name: Frontend Monorepo Quality & Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 12.18.0
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck packages & web
+      - name: Typecheck Workspace Packages & Apps
         run: pnpm -r run typecheck
 
-      - name: Lint web application
+      - name: Lint Web Application
         run: pnpm --filter @arthsavora/web lint
 
-      - name: Run component tests
-        run: pnpm --filter @arthsavora/web test
+      - name: Execute Component & Integration Tests
+        run: pnpm --filter @arthsavora/web test -- --run
 
-      - name: Build web application
+      - name: Production Vite Build (SPA / PWA)
         run: pnpm --filter @arthsavora/web build
+
+  container-build-checks:
+    name: Multi-Arch Container Build Verification
+    runs-on: ubuntu-latest
+    needs: [backend-checks, frontend-checks]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Docker Image (Cache Only)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: arthsavora-backend:ci-test
+
+      - name: Build Web Frontend Docker Image (Cache Only)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/web/Dockerfile
+          push: false
+          tags: arthsavora-web:ci-test

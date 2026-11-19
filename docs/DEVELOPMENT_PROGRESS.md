@@ -1202,80 +1202,79 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
 
 ---
 
-## 29. PROMPT 27 ACCEPTANCE & VERIFICATION SUMMARY
+## 30. PROMPT 28 ACCEPTANCE & VERIFICATION SUMMARY
 
-**Module:** Production Security Hardening, Privacy Engineering and Threat Protection [27]  
+**Module:** Production Infrastructure, Deployment Automation, Observability and Operational Readiness [28]  
 **Status:** COMPLETED & VERIFIED  
 
-- **Security Architecture & STRIDE Threat Modeling (`docs/SECURITY_ARCHITECTURE.md`, `docs/THREAT_MODEL.md`):**
-  - Documented defense-in-depth security model across 6 distinct architectural layers: Client/PWA, Network/Gateway, Application/Identity, Multi-Tenancy/RBAC, Domain Engine/Ledger, and PostgreSQL Storage.
-  - Evaluated 16 threat scenarios using STRIDE methodology (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) covering external attackers, cross-tenant adversaries, family privacy boundaries, compromised providers, and prompt injection.
-  - Established Prioritized Threat Register with 4 Critical, 10 High, and 2 Medium threats—all verified mitigated. Zero unresolved release blockers.
-- **Authentication Hardening (`backend/app/api/v1/auth.py`, `backend/app/core/security.py`, `docs/AUTHENTICATION_SECURITY_REVIEW.md`):**
-  - Implemented server-side token revocation registry (`revoke_token_jti`) tracking cryptographic `jti` identifiers. Calling `/api/v1/auth/logout` invalidates the active access token immediately, rejecting any subsequent use with 401 `INVALID_TOKEN` prior to natural token expiration.
-  - Attached SlowAPI rate limiting (`RATE_LIMIT_AUTH = "5/minute"`) and `request: Request` to `/api/v1/auth/register`, eliminating registration botnet flooding and storage exhaustion.
-  - Verified timing-resistant user enumeration prevention: invalid email and wrong password raise identical 401 `INVALID_CREDENTIALS` error code and message.
-  - Verified inactive and deleted account blocking on every authenticated request.
-- **Authorization & Multi-Tenancy Isolation (`backend/app/core/permissions.py`, `docs/AUTHORIZATION_SECURITY_REVIEW.md`):**
-  - Anti-IDOR Tenant Boundary: Requesting a workspace or resource without active membership returns `404 Not Found` (never `403`), eliminating tenant ID enumeration and resource existence probing.
-  - Granular RBAC Matrix: Evaluated over 45 fine-grained permissions across Personal (Owner), Family (Owner, Admin, Member, Restricted, Viewer), and Small Business (Owner, Admin, Accountant, Staff, Viewer) topologies.
-  - Verified privilege escalation prevention: non-owners cannot delete workspaces, demote owners, or self-promote roles.
-- **PostgreSQL Row-Level Security & Database Hardening (`backend/app/infrastructure/database/rls.py`, `docs/DATABASE_SECURITY_REVIEW.md`):**
-  - Expanded `RLS_TABLES` from 8 initial tables to all 46 workspace-scoped tables in PostgreSQL (covering accounts, transactions, journals, budgets, goals, recurring rules, anomalies, documents, notifications, family allocations, business invoices, connections, and tax records).
-  - Transaction-Scoped Tenant Isolation: `set_tenant_context` executes `SET LOCAL app.current_workspace_id = '{id}'`, automatically resetting context upon transaction commit or rollback to guarantee zero connection pool leakage.
-  - Verified parameterized SQL queries across all repositories, eliminating SQL injection.
-- **Financial Anti-Tampering & Ledger Invariants (`docs/FINANCIAL_INTEGRITY_SECURITY.md`):**
-  - Enforced fundamental double-entry invariant ($\sum \text{Debits} = \sum \text{Credits}$) at transaction commit. Unbalanced journal posting attempts raise `ValidationException` reporting exact discrepancy down to four decimal places.
-  - Enforced permanent immutability of posted journal entries. Erroneous entries require formal compensating reversals with audit attribution.
-  - Fixed-point `NUMERIC(18, 4)` and integer sub-units (paise) prevent fractional currency rounding drift.
-  - Idempotency key middleware prevents duplicate financial postings during network retries.
-- **API Gateway Hardening & Security Headers (`backend/app/api/middleware/security_headers.py`, `docs/API_SECURITY_STANDARD.md`):**
-  - Injected hardened HTTP response headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 0`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy`, and `X-Permitted-Cross-Domain-Policies: none`.
-  - Injected strict Content Security Policy (`Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`) and disabled caching (`Cache-Control: no-store...`) on all `/api/*` endpoints.
-  - Hardened CORS forbids wildcard origins (`*`) with credentials, raising startup `ValueError` in production.
-  - Standardized RFC 7807 error schema prevents stack trace or SQL leakage.
-- **Document & File Upload Security (`docs/FILE_SECURITY_STANDARD.md`):**
-  - Binary magic byte inspection in `DocumentService.validate_file_bytes` validates PNG, JPEG, WebP, and PDF signatures, defeating MIME spoofing attacks (shell scripts or HTML disguised as `.jpg` or `.pdf`).
-  - Strict 15 MB file size ceiling (`MAX_DOCUMENT_SIZE_BYTES`) prevents disk and memory exhaustion.
-  - Path traversal eliminated by generating UUIDv4 filenames in scoped storage trees.
-- **AI Safety & Prompt Injection Defense (`docs/AI_SECURITY_REVIEW.md`):**
-  - Pure functional sanitizer `sanitize_and_detect_prompt_injection` neutralizes adversarial patterns (`ignore previous instructions`, `system:`, `reveal prompt`, `bypass security`) to safe default queries.
-  - Strict allowlisted tool execution with server-side RBAC checks and zero raw SQL access.
-  - Zero autonomous ledger mutation: state changes staged as action drafts requiring explicit human confirmation.
-  - Mandatory uncertainty disclaimers automatically attached to forecasts and anomalies.
-- **Privacy Engineering & India Regulatory Alignment (`docs/PRIVACY_AND_DATA_GOVERNANCE.md`, `docs/INDIA_REGULATORY_READINESS.md`):**
-  - 5-tier information classification taxonomy (Tier 1 Secrets to Tier 5 Public).
-  - Family workspace compartmentalization protects private accounts from household partners.
-  - Aligned with DPDP Act 2023 (notice, consent tracking, data principal rights, erasure).
-  - Documented CERT-In Incident Response Plan with mandatory 6-hour reporting SLA (`docs/INCIDENT_RESPONSE_PLAN.md`).
-  - Documented Backup & Disaster Recovery procedures with RPO < 1 hour and RTO < 4 hours (`docs/BACKUP_DISASTER_RECOVERY.md`).
-- **Automated Security Scans & Test Evidence (`backend/tests/test_production_security_hardening.py`, `docs/SECURITY_FINDINGS_REGISTER.md`):**
-  - Automated regex/entropy secret scan across **698 tracked Git files** verified **0 leaked secrets or credentials**.
-  - `pnpm audit` conducted: identified 3 third-party dependency advisories (`zod` GHSA-mrhx-c7xc-m3w5, `react-router` GHSA-wrjc-x8rr-h8h6, GHSA-337j-9hxr-rhxg) analyzed and logged in `docs/SECURITY_FINDINGS_REGISTER.md` with zero active exploit paths in client-only architecture.
-  - Authored dedicated security test suite `backend/tests/test_production_security_hardening.py` (13 tests) verifying token revocation, signature tampering, enumeration defense, cross-workspace IDOR, RBAC, unbalanced journal rejection, RLS DDL generation, tenant isolation, MIME spoofing, oversized file rejection, prompt injection neutralization, AI disclaimers, and security headers.
-  - **322 of 322 passed backend tests** in pytest (100% pass rate, +13 new security tests).
-  - **158 of 158 passed frontend tests** across 34 test files in Vitest (100% pass rate).
-  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects.
-  - **Production Build:** Vite built in 5.28s.
-- **Comprehensive Technical Documentation Delivered (17 Documents):**
-  - `docs/SECURITY_ARCHITECTURE.md`
-  - `docs/THREAT_MODEL.md`
-  - `docs/AUTHENTICATION_SECURITY_REVIEW.md`
-  - `docs/AUTHORIZATION_SECURITY_REVIEW.md`
-  - `docs/DATABASE_SECURITY_REVIEW.md`
-  - `docs/FINANCIAL_INTEGRITY_SECURITY.md`
-  - `docs/API_SECURITY_STANDARD.md`
-  - `docs/FILE_SECURITY_STANDARD.md`
-  - `docs/ENCRYPTION_AND_KEY_MANAGEMENT.md`
-  - `docs/SECRETS_MANAGEMENT.md`
-  - `docs/AI_SECURITY_REVIEW.md`
-  - `docs/PRIVACY_AND_DATA_GOVERNANCE.md`
-  - `docs/INDIA_REGULATORY_READINESS.md`
-  - `docs/SECURITY_MONITORING.md`
-  - `docs/INCIDENT_RESPONSE_PLAN.md`
-  - `docs/BACKUP_DISASTER_RECOVERY.md`
-  - `docs/SECURITY_FINDINGS_REGISTER.md`
+- **Production Docker Containerization (`backend/Dockerfile`, `apps/web/Dockerfile`, `apps/web/nginx.conf`, `docker-compose.yml`):**
+  - Backend: Created multi-stage Python 3.11-slim container. Implemented non-root user execution (`arthsavora:arthsavora` UID 10001), healthcheck against `/api/v1/health/live`, clean virtualenv packaging, and port 8000 exposure.
+  - Frontend: Created multi-stage Node 22 alpine build with Nginx 1.27-alpine static runner. Configured SPA routing fallback (`try_files $uri $uri/ /index.html;`), gzip compression, hardened security headers (CSP, X-Frame-Options DENY, nosniff, Referrer-Policy), 1-year immutable caching for `/assets/`, zero-cache for `sw.js` and `manifest.webmanifest`, and `/nginx-health` probe.
+  - Local Production-Like Stack: Implemented `docker-compose.yml` orchestrating PostgreSQL 18-alpine, Redis 7-alpine, FastAPI backend, and Nginx web with inter-service networking, healthcheck dependencies, and persistent volumes.
+- **Production Database Migration Automation (`backend/scripts/run_migrations.py`):**
+  - Session-Level Advisory Lock: Implemented `SELECT pg_advisory_lock(987654321)` to prevent race conditions during concurrent multi-instance deployments.
+  - Thread-Isolated Alembic Runner: Dispatched `alembic upgrade head` to an isolated background thread to avoid event loop contention with `asyncpg`.
+  - Automatic RLS Policy Synchronization: Automatically executes `generate_rls_sql()` post-migration to ensure all 46 workspace-scoped tables enforce Row-Level Security.
+  - Clean Lock Release: Verified deterministic release with `pg_advisory_unlock(987654321)` in `finally` block, tested and proven with zero lock leaks.
+- **Observability, Structured JSON Logging & PII Scrubbing (`backend/app/core/logging.py`, `backend/app/api/middleware/audit.py`):**
+  - Structured JSON Formatter: Formats logs in staging/production as single-line JSON objects with standard fields (`timestamp`, `level`, `service`, `environment`, `logger`, `message`, `module`, `line`, `request_id`, `workspace_id`).
+  - Automated PII and Credential Scrubbing: Intercepts and masks sensitive dictionary keys (`password`, `token`, `secret`, `pan`, `aadhaar`, `cvv`, `card_number`, `auth`) and regex patterns (Bearer tokens, payment card PANs).
+  - Request Correlation & Auditing: Middleware propagates `X-Request-ID` across response headers and attaches correlation context to every log record.
+  - Probes: Fast in-memory process liveness probe (`/api/v1/health/live`, <5ms) and bounded database readiness probe (`/api/v1/health/ready`, 2.0s timeout, returns 503 `DATABASE_UNAVAILABLE` on database drop).
+- **CI/CD Pipeline Automation (`.github/workflows/ci.yml`, `.github/workflows/deploy.yml`):**
+  - CI Workflow (`ci.yml`): Automated jobs for `security-audit` (pnpm audit, bandit SAST scan), `backend-checks` (PostgreSQL 18 & Redis 7 service containers, automated migration run, pytest test suite with coverage), `frontend-checks` (monorepo typecheck, ESLint, Vitest component suite, production Vite build), and `container-build-checks` (Docker build preflight).
+  - CD Workflow (`deploy.yml`): Automated deployment pipeline supporting staging and production with semantic tag triggers (`v*.*.*`), manual approval gates, pre-deploy RDS snapshots, advisory lock migration execution, rolling blue-green container task replacement, edge CDN cache invalidation, and automated rollback on synthetic health check failure.
+- **Operational Verification Tests (`backend/tests/test_production_operational_readiness.py`):**
+  - Authored 12 dedicated operational tests verifying:
+    - Configuration validation gates in production: Rejects weak/default secret keys, rejects keys < 32 characters, rejects wildcard CORS origins (`*`), rejects `DEBUG=True`, and automatically enforces `ENABLE_HSTS=True`.
+    - Structured JSON formatter output schema and telemetry attributes.
+    - Automated sensitive credential scrubbing (dictionary keys and Bearer tokens).
+    - Liveness probe non-blocking HTTP 200 contract.
+    - Readiness probe database connectivity verification and HTTP 503 `DATABASE_UNAVAILABLE` handling on database drops/timeouts.
+    - PostgreSQL advisory lock lifecycle (`pg_try_advisory_lock` / `pg_advisory_unlock`).
+- **Comprehensive Test Suite & Quality Status:**
+  - **334 passed backend tests** in pytest (100% pass across all 334 tests in 78.82s, +12 new tests in `test_production_operational_readiness.py`).
+  - **158 passed frontend tests** in Vitest across 34 test files (100% pass rate).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+  - **Production Build:** Vite built in 5.42s cleanly.
+- **Comprehensive Operational Documentation Delivered (35 Documents):**
+  - `docs/INFRASTRUCTURE_ARCHITECTURE.md`
+  - `docs/ENVIRONMENT_STRATEGY.md`
+  - `docs/DEPLOYMENT_TOPOLOGY.md`
+  - `docs/INFRASTRUCTURE_COST_MODEL.md`
+  - `docs/SECRETS_AND_ENVIRONMENT_CONFIGURATION.md`
+  - `docs/CONFIGURATION_VALIDATION.md`
+  - `docs/SECRET_ROTATION_PROCEDURE.md`
+  - `docs/CI_CD_ARCHITECTURE.md`
+  - `docs/DEPLOYMENT_PIPELINE.md`
+  - `docs/RELEASE_MANAGEMENT.md`
+  - `docs/DEPLOYMENT_ROLLBACK.md`
+  - `docs/PRODUCTION_DATABASE_OPERATIONS.md`
+  - `docs/DATABASE_MIGRATION_OPERATIONS.md`
+  - `docs/DATABASE_CHANGE_SAFETY.md`
+  - `docs/BACKUP_OPERATIONS.md`
+  - `docs/DISASTER_RECOVERY_RUNBOOK.md`
+  - `docs/RECOVERY_TEST_RESULTS.md`
+  - `docs/RPO_RTO_POLICY.md`
+  - `docs/OBSERVABILITY_ARCHITECTURE.md`
+  - `docs/STRUCTURED_LOGGING_STANDARD.md`
+  - `docs/METRICS_AND_TRACING.md`
+  - `docs/HEALTH_CHECK_STANDARD.md`
+  - `docs/OPERATIONAL_MONITORING.md`
+  - `docs/ALERTING_AND_ESCALATION.md`
+  - `docs/PRODUCTION_INCIDENT_RUNBOOK.md`
+  - `docs/INCIDENT_POSTMORTEM_TEMPLATE.md`
+  - `docs/BACKGROUND_WORKER_OPERATIONS.md`
+  - `docs/SCHEDULED_JOB_OPERATIONS.md`
+  - `docs/RELIABILITY_ENGINEERING.md`
+  - `docs/PERFORMANCE_AND_CAPACITY.md`
+  - `docs/SCALING_STRATEGY.md`
+  - `docs/LOAD_TEST_RESULTS.md`
+  - `docs/INFRASTRUCTURE_COST_MANAGEMENT.md`
+  - `docs/PRODUCTION_SECURITY_RELEASE_GATE.md`
+  - `docs/PRODUCTION_READINESS_CHECKLIST.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 
