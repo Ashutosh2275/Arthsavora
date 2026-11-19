@@ -73,8 +73,12 @@ export type WorkspaceRole = 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER' | 'BOOKKEEPE
 export interface WorkspaceResponse {
   id: UUID;
   name: string;
+  slug?: string;
   type: WorkspaceType;
   currency: CurrencyCode;
+  timezone?: string;
+  country?: string;
+  settings?: Record<string, unknown>;
   owner_id: UUID;
   created_at: ISODateString;
 }

@@ -20,6 +20,7 @@ import { Family } from '@/pages/Family';
 import { Business } from '@/pages/Business';
 import { FinancialConnections } from '@/pages/FinancialConnections';
 import Reports from '@/pages/Reports';
+import Settings from '@/pages/Settings';
 import AppLayout from '@/components/layout/AppLayout';
 import { ErrorBoundary } from '@/components/feedback/ErrorBoundary';
 import useAuthStore from '@/store/useAuthStore';
@@ -314,6 +315,26 @@ export default function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Reports />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Settings />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Settings />
               </AppLayout>
             </ProtectedRoute>
           }

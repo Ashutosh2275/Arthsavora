@@ -30,8 +30,9 @@
 **Prompt 22 Commit Hash:** `ff800fd`  
 **Prompt 23 Commit Hash:** `25ee44a`  
 **Prompt 24 Commit Hash:** `c543e90`  
-**Prompt 24 Status:** COMPLETED & VERIFIED  
-**Remote Push Verification:** Prompts 01–24 verified on `origin/main`  
+**Prompt 25 Commit Hash:** `PENDING_COMMIT`  
+**Prompt 25 Status:** COMPLETED & VERIFIED  
+**Remote Push Verification:** Prompts 01–24 verified on `origin/main` (Prompt 25 pending push)  
 
 ---
 
@@ -39,10 +40,10 @@
 
 - **Total Planned Prompts:** 30
 - **Current Stage:** Stage 5 — Multi-Entity, Collaboration & Advanced Reporting (Prompts 21–25)
-- **Current Prompt:** Prompt 24 — Advanced Financial Reporting, Tax Intelligence and Compliance Readiness [24]
-- **Completed Prompts:** 24 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, Financial Forecasting, Financial Anomaly Detection, AI Financial Assistant, Receipt Intelligence / OCR, Unified Notifications & Financial Alerts, Family Finance Management, Small Business Finance Management, Unified Financial Data Intelligence & Account Aggregation, and Advanced Financial Reporting & Tax Intelligence established)
-- **Prompt 24 Status:** COMPLETED & VERIFIED
-- **Next Prompt:** Prompt 25 — Advanced Financial Reporting, Tax Intelligence and Compliance Readiness [25]
+- **Current Prompt:** Prompt 25 — Unified Frontend Architecture, Application Shell and User Experience [25]
+- **Completed Prompts:** 25 of 30 (Repository Baseline, Architecture, Standards, Database, Backend Foundation, Domain Contracts, Identity/Workspace, Financial Accounts, Transactions, Double-Entry Ledger, Import Pipeline, Categorization/Merchant Intelligence, Financial Analytics, Personal Budgeting/Goals, Recurring Transactions/Subscriptions, Financial Forecasting, Financial Anomaly Detection, AI Financial Assistant, Receipt Intelligence / OCR, Unified Notifications & Financial Alerts, Family Finance Management, Small Business Finance Management, Unified Financial Data Intelligence & Account Aggregation, Advanced Financial Reporting & Tax Intelligence, and Unified Frontend Architecture & Application Shell established)
+- **Prompt 25 Status:** COMPLETED & VERIFIED
+- **Next Prompt:** Prompt 26 — Comprehensive Security Hardening & Penetration Testing Remediation [26]
 
 ---
 
@@ -74,7 +75,7 @@
 | **22** | Stage 5 | Small Business Finance Management and Financial Operations | **COMPLETED** | `ff800fd` |
 | **23** | Stage 5 | Unified Financial Data Intelligence and Account Aggregation Integration | **COMPLETED** | `25ee44a` |
 | **24** | Stage 5 | Advanced Financial Reporting, Tax Intelligence and Compliance Readiness | **COMPLETED** | `c543e90` |
-| **25** | Stage 6 | Premium Commercial FinTech UI/UX Polish & Design Token System | UPCOMING | - |
+| **25** | Stage 5 | Unified Frontend Architecture, Application Shell and User Experience | **COMPLETED** | `PENDING_COMMIT` |
 | **26** | Stage 6 | Comprehensive Security Hardening & Penetration Testing Remediation | UPCOMING | - |
 | **27** | Stage 6 | Comprehensive End-to-End Testing (Playwright + Test Suites) | UPCOMING | - |
 | **28** | Stage 6 | Observability, Structured Logging, APM & Sentry Integration | UPCOMING | - |
@@ -1157,6 +1158,46 @@ Prompt 02 established the foundational monorepo, pnpm workspaces, TypeScript fro
   - `docs/REPORT_EXPORT_SECURITY.md`
   - Updated `docs/ROLE_PERMISSION_MATRIX.md`
   - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
+---
+
+## 27. PROMPT 25 ACCEPTANCE & VERIFICATION SUMMARY
+
+**Module:** Unified Frontend Architecture, Application Shell and User Experience [25]  
+**Status:** COMPLETED & VERIFIED  
+
+- **Unified Application Shell (`apps/web/src/components/layout/`):**
+  - `AppLayout.tsx`: Responsive layout coordinator, WCAG 2.2 AA "Skip to main content" link (`#main-content`), mobile drawer, and global modal mounts.
+  - `Sidebar.tsx`: Structured desktop sidebar organizing 16+ core routes into 4 logical groups (Core Ledger & Accounts, Planning & Budgets, Intelligence & Compliance, Entity Workspaces), complete with active link indicators and active workspace pill.
+  - `TopBar.tsx`: Sticky command center with dynamic route breadcrumbs, Global Search trigger (`Ctrl+K`), Workspace Switcher, AI Assistant launcher, Notification bell with real-time unread badge, Theme Toggle, and User Profile menu.
+  - `GlobalSearch.tsx`: Spotlight command palette with `Ctrl+K` shortcut, debounced multi-domain search (Pages, Accounts, Transactions, Budgets, Goals, Invoices, Documents), keyboard navigation (`ArrowDown`, `ArrowUp`, `Enter`, `Escape`), and accessible empty states.
+  - `WorkspaceSwitcher.tsx`: Tenancy selector dropdown with color-coded entity pills (Personal, Family, Business), checkmark active indicator, and interactive Create Workspace modal.
+  - `OnboardingModal.tsx`: 4-step wizard guiding new users through Profile & Locale, Primary Workspace Setup, Bank Connectivity explanation (RBI AA vs manual), and Launch Summary.
+- **Frontend Pages & Settings Management:**
+  - `Settings.tsx`: Complete workspace and profile management interface with 4 functional tabs (User Profile, Workspace Configuration with GSTIN/PAN, Members & RBAC with Invite Collaborator modal, and Platform Preferences).
+  - Mounted `/settings` and `/profile` routes in `App.tsx`.
+- **Theme & Tenancy State Architecture (`apps/web/src/store/`):**
+  - `useThemeStore.ts`: Supports 'light', 'dark', and 'system' themes, synchronizing with Tailwind CSS `dark` class on root HTML element and system media query listener.
+  - `useWorkspaceStore.ts`: Manages multi-tenant workspace state, active workspace selection, persistent `localStorage` synchronization, member invitations, and a registered `onWorkspaceChangeListeners` bus to trigger cross-workspace cache eviction across all data stores.
+- **Verification Suite & Quality Gates:**
+  - **138 of 138 passed tests** across 29 test files in `apps/web` (100% pass rate in Vitest).
+  - **309 of 309 passed tests** across full backend test suite (`pytest backend/tests -q`).
+  - **0 errors** in monorepo TypeScript typecheck across all 5 workspace projects (`pnpm -r run typecheck`).
+  - **Production Build:** Vite production compilation (`pnpm --filter @arthsavora/web build`) completed cleanly with 0 errors in under 5 seconds.
+- **Comprehensive Technical Documentation Delivered (11 Documents):**
+  - `docs/FRONTEND_ARCHITECTURE.md`
+  - `docs/APPLICATION_SHELL.md`
+  - `docs/FRONTEND_ROUTING.md`
+  - `docs/WORKSPACE_SWITCHING.md`
+  - `docs/FRONTEND_STATE_MANAGEMENT.md`
+  - `docs/API_INTEGRATION_GUIDE.md`
+  - `docs/COMPONENT_LIBRARY.md`
+  - `docs/FRONTEND_ACCESSIBILITY.md`
+  - `docs/FRONTEND_PERFORMANCE.md`
+  - `docs/FRONTEND_TESTING.md`
+  - `docs/FRONTEND_ERROR_HANDLING.md`
+  - Updated `docs/DEVELOPMENT_PROGRESS.md`
+
 
 
 
