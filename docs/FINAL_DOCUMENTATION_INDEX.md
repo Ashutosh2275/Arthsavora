@@ -96,3 +96,13 @@ The ARTHSAVORA documentation corpus provides exhaustive architectural, operation
 - [SECURITY_REGRESSION_TEST_RESULTS.md](file:///d:/Arthsavora/docs/SECURITY_REGRESSION_TEST_RESULTS.md)
 - [PERFORMANCE_TEST_RESULTS.md](file:///d:/Arthsavora/docs/PERFORMANCE_TEST_RESULTS.md)
 - [COMPONENT_DEFECT_REGISTER.md](file:///d:/Arthsavora/docs/COMPONENT_DEFECT_REGISTER.md)
+
+### 2.9 Final QA Evidence Verification & Release Gate Hardening
+- [FINAL_RELEASE_GATE_REPORT.md](file:///d:/Arthsavora/docs/FINAL_RELEASE_GATE_REPORT.md)
+- [FINAL_RLS_RUNTIME_VERIFICATION.md](file:///d:/Arthsavora/docs/FINAL_RLS_RUNTIME_VERIFICATION.md)
+- [FINAL_FRONTEND_PAGE_VERIFICATION.md](file:///d:/Arthsavora/docs/FINAL_FRONTEND_PAGE_VERIFICATION.md)
+- [FINAL_ACCESSIBILITY_AND_RESPONSIVE_AUDIT.md](file:///d:/Arthsavora/docs/FINAL_ACCESSIBILITY_AND_RESPONSIVE_AUDIT.md)
+- [FINAL_E2E_WORKFLOW_EVIDENCE.md](file:///d:/Arthsavora/docs/FINAL_E2E_WORKFLOW_EVIDENCE.md)
+- [FINAL_FINANCIAL_INTEGRITY_TEST_RESULTS.md](file:///d:/Arthsavora/docs/FINAL_FINANCIAL_INTEGRITY_TEST_RESULTS.md)
+- [FINAL_PERFORMANCE_VERIFICATION.md](file:///d:/Arthsavora/docs/FINAL_PERFORMANCE_VERIFICATION.md)
+- [MASTER_DEFECT_REGISTER.md](file:///d:/Arthsavora/docs/MASTER_DEFECT_REGISTER.md)

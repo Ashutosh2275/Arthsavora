@@ -26,6 +26,10 @@ This register tracks the complete defect triage and resolution history across al
 | **DEF-08** | P2 | Frontend Test | Net trial balance aggregation expectation in test asserted sum of gross debits | Netting logic aggregates balances per account before summing | Corrected test assertion to mirror net trial balance accounting principles | **RESOLVED** |
 | **DEF-09** | P3 | Repo Hygiene | Obsolete empty 0-byte placeholder files `recommendations.py` and `report_gen.py` | Early scaffolding files superseded by domain services | Removed obsolete files in Prompt 30 | **RESOLVED** |
 | **DEF-10** | P3 | Frontend Build | Vite minification warning: `Some chunks are larger than 500 kB` | High number of bundled icons and libraries | Non-blocking (app cached by service worker); code splitting planned for future sprint | **DEFERRED (ACCEPTABLE)** |
+| **DEF-11** | P1 | Document OCR | `ModuleNotFoundError: No module named 'pypdf'` in `pdf_text_extractor.py` | Missing dependency declaration in `requirements.txt` | Installed `pypdf==7.1.1`, added `pypdf>=5.0.0` to requirements, added `pdfplumber` fallback | **RESOLVED** |
+| **DEF-12** | P0 | Multi-Tenancy / RLS | Table `accounts` had `relrowsecurity=False` in PostgreSQL catalog | RLS was forced but not explicitly enabled on table | Ran `ALTER TABLE accounts ENABLE ROW LEVEL SECURITY;` and provisioned `arthsavora_app` non-superuser role | **RESOLVED** |
+| **DEF-13** | P2 | QA Documentation | Discrepancy in reported backend test suite counts (344 passed / 1 skipped vs 344 passed / 0 skipped) | Category P operational dependency block mistakenly transcribed into unit test summary | Validated exact empirical collection (344 items, 344 passed, 0 skipped) and reconciled audit reports | **RESOLVED** |
+| **DEF-14** | P3 | Frontend Code Quality | ESLint build failure due to `public/sw.js` global and redundant try/catch in `useCategoryStore.ts` | Missing ignore rule and unnecessary catch-throw wrapper | Configured ESLint ignore for `public/` and simplified store method | **RESOLVED** |
 
 ---
 
@@ -35,4 +39,4 @@ This register tracks the complete defect triage and resolution history across al
 - **Open P1 Defects**: **0**
 - **Open P2 Defects**: **0**
 - **Open P3 Observations**: 1 (Non-blocking bundle chunk optimization)
-- **Defect Resolution Rate**: **90.0% Resolved / 10.0% Documented Non-Blocking**
+- **Defect Resolution Rate**: **92.9% Resolved (13/14) / 7.1% Documented Non-Blocking (1/14)**

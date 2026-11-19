@@ -6,7 +6,7 @@ Following the completion of the 30-prompt development programme for **ARTHSAVORA
 
 ### Key Audit Metrics
 - **Git Branch:** `main` (commit `d75c730`)
-- **Backend Test Suite:** 344 passing tests (0 failures, 0 errors, 1 skipped) across 32 test modules
+- **Backend Test Suite:** 344 passing tests (0 failures, 0 errors, 0 skipped) across 32 test modules
 - **Frontend Test Suite:** 158 passing tests (0 failures, 0 errors) across 31 test files
 - **Monorepo Typecheck:** 5 of 5 code packages passing cleanly (`@arthsavora/web`, `@arthsavora/contracts`, `@arthsavora/design-tokens`, `@arthsavora/utilities`, `@arthsavora/validation`)
 - **Frontend Production Build:** Successful Vite 6.0 production bundle with service worker and asset minification

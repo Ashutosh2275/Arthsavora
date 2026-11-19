@@ -1,74 +1,82 @@
 {
-  "Authentication": {
+  "Authentication (Argon2id + JWT)": {
     "iterations": 20,
-    "p50_ms": 193.652,
-    "p95_ms": 200.019,
-    "p99_ms": 200.019,
-    "max_ms": 200.019,
-    "throughput_ops_sec": 5.2,
+    "warmup": 2,
+    "p50_ms": 201.337,
+    "p95_ms": 206.818,
+    "p99_ms": 206.818,
+    "max_ms": 206.818,
+    "throughput_ops_sec": 5.0,
     "error_rate_pct": 0.0
   },
-  "Transaction Categorization": {
+  "Transaction Categorization (ML Inference)": {
     "iterations": 200,
-    "p50_ms": 0.543,
-    "p95_ms": 0.718,
-    "p99_ms": 1.028,
-    "max_ms": 1.345,
-    "throughput_ops_sec": 1746.3,
+    "warmup": 10,
+    "p50_ms": 0.575,
+    "p95_ms": 0.823,
+    "p99_ms": 1.163,
+    "max_ms": 1.32,
+    "throughput_ops_sec": 1633.4,
     "error_rate_pct": 0.0
   },
-  "AI Prompt Sanitizer": {
+  "AI Prompt Sanitizer & Injection Defense": {
     "iterations": 200,
+    "warmup": 10,
     "p50_ms": 0.005,
-    "p95_ms": 0.005,
-    "p99_ms": 0.006,
-    "max_ms": 0.014,
-    "throughput_ops_sec": 195045.8,
+    "p95_ms": 0.006,
+    "p99_ms": 0.014,
+    "max_ms": 0.024,
+    "throughput_ops_sec": 178906.9,
     "error_rate_pct": 0.0
   },
-  "Tax Intelligence (Sec 115BAC)": {
+  "Tax Intelligence (Sec 115BAC Calculations)": {
     "iterations": 500,
-    "p50_ms": 0.006,
-    "p95_ms": 0.007,
-    "p99_ms": 0.015,
-    "max_ms": 0.144,
-    "throughput_ops_sec": 139341.7,
+    "warmup": 20,
+    "p50_ms": 0.007,
+    "p95_ms": 0.008,
+    "p99_ms": 0.012,
+    "max_ms": 0.086,
+    "throughput_ops_sec": 133614.8,
     "error_rate_pct": 0.0
   },
-  "Document Field Extraction": {
+  "Document OCR Field Extraction": {
     "iterations": 500,
-    "p50_ms": 0.105,
-    "p95_ms": 0.121,
-    "p99_ms": 0.165,
-    "max_ms": 4.451,
-    "throughput_ops_sec": 8506.3,
+    "warmup": 20,
+    "p50_ms": 0.121,
+    "p95_ms": 0.154,
+    "p99_ms": 0.252,
+    "max_ms": 0.459,
+    "throughput_ops_sec": 7891.9,
     "error_rate_pct": 0.0
   },
   "Database Transaction Creation": {
     "iterations": 50,
-    "p50_ms": 30.003,
-    "p95_ms": 141.634,
-    "p99_ms": 147.175,
-    "max_ms": 147.175,
-    "throughput_ops_sec": 18.7,
+    "warmup": 5,
+    "p50_ms": 29.9,
+    "p95_ms": 138.987,
+    "p99_ms": 142.134,
+    "max_ms": 142.134,
+    "throughput_ops_sec": 21.5,
     "error_rate_pct": 0.0
   },
   "Database Transaction Listing": {
     "iterations": 50,
-    "p50_ms": 28.648,
-    "p95_ms": 141.312,
-    "p99_ms": 146.812,
-    "max_ms": 146.812,
-    "throughput_ops_sec": 21.8,
+    "warmup": 5,
+    "p50_ms": 29.921,
+    "p95_ms": 142.011,
+    "p99_ms": 144.396,
+    "max_ms": 144.396,
+    "throughput_ops_sec": 18.6,
     "error_rate_pct": 0.0
   },
   "Double-Entry Ledger Posting": {
     "iterations": 30,
-    "p50_ms": 40.485,
-    "p95_ms": 148.574,
-    "p99_ms": 155.983,
-    "max_ms": 155.983,
-    "throughput_ops_sec": 17.0,
+    "warmup": 3,
+    "p50_ms": 41.26,
+    "p95_ms": 153.8,
+    "p99_ms": 157.54,
+    "max_ms": 157.54,
+    "throughput_ops_sec": 14.5,
     "error_rate_pct": 0.0
   }
 }
